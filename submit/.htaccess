@@ -1,0 +1,9 @@
+# Allow GET and POST requests in this folder
+<Limit GET POST>
+    Require all granted
+</Limit>
+
+# Make sure PHP files are handled by PHP
+<FilesMatch "\.php$">
+    SetHandler application/x-httpd-php
+</FilesMatch>

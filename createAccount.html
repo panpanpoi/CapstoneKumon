@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+   
+</head>
+<body>
+    <div>
+       <h1>ACCOUNT CREATION</h1>
+    </div>
+     <div class="user-profile"> 
+        <div class="user-avatar"> LR </div>
+        <div class="user-details">
+            <div class="username"> Luke Reyes</div>
+            <div class="user-role"> Admin</div>
+        </div>
+    <br>
+<main>
+    <form action="submit/inputs.php" method="POST">
+        <div>
+            <h3>Select Account type</h3>
+            <label for="accountType">Student</label>
+            <input type="radio" name="account_type" value="student">
+             <label for="accountType">Teacher</label>
+            <input type="radio" name="account_type" value="teacher">
+             <label for="accountType">Admin</label>
+            <input type="radio" name="account_type" value="admin">
+        </div>
+        <br>
+        <div>
+          <label for="fname">*Firstname</label>
+          <input type="text" id="fname" name="fname" placeholder="Insert Firstname">
+          
+          <label for="fname">*Middle Initial</label>
+          <input type="text" id="mname" name="mname" placeholder="Insert Middle Initial">
+          
+          <label for="lname">*Lastname</label>
+          <input type="text" id="lname" name="lname" placeholder="Insert Lastname">
+            <br>
+            <br>
+
+          <label for="contact">*Contact Number</label><br>
+          <input type="text" id="contact" name="contact" placeholder="Insert Contact Number">
+          
+        </div>
+        <div>
+            <h3>Address:</h3>
+            <label for="street-address">Street:</label>
+            <input type="text" id="street-address" name="street" autocomplete="street-address"><br><br>
+
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" autocomplete="address-level2"><br><br>
+
+            <label for="state">State/Province/Region:</label>
+            <input type="text" id="state" name="state" autocomplete="address-level1"><br><br>
+
+        </div>  
+
+    <div>
+        <h3>Select Subject</h3>
+        <label for="subject">Math</label>
+        <input type="radio" id="subject-math" name="subject" value="math">
+        
+        <label for="subject-english">English</label>
+        <input type="radio" id="subject-english" name="subject" value="english">
+    </div>
+    <div>
+        <h3>Account Information</h3>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" readonly><br><br>
+
+        <label for="password">Password:</label>
+        <input type="text" id="password" name="password" readonly><br><br>
+    </div>
+        <div><button type="submit">Submit</button></div>
+    </form>
+    <script>
+    document.querySelector('form').addEventListener('input', function(e) {
+        // Get values
+        const fname = document.getElementById('fname').value.trim().toLowerCase();
+        const lname = document.getElementById('lname').value.trim().toLowerCase();
+
+        // Generate username and password
+        const username = fname + lname + 'kumon-ortigas';
+        const password = fname + lname + 'kumon';
+        
+        // Set visible fields
+        document.getElementById('username').value = username;
+        document.getElementById('password').value = password;
+    });
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Remove readonly attributes so values are submitted
+        document.getElementById('username').readOnly = false;
+        document.getElementById('password').readOnly = false;
+    });
+    </script>
+</main>
+</body>
+
+
+</html>
