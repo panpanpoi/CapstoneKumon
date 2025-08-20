@@ -1,41 +1,47 @@
 <?php
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $accountType = htmlspecialchars($_POST['account_type'] ?? '');
-    $subject = htmlspecialchars($_POST['subject'] ?? '');
-    $firstName = htmlspecialchars($_POST['fname'] ?? '');
-    $middleName = htmlspecialchars($_POST['mname'] ?? '');
-    $lastName = htmlspecialchars($_POST['lname'] ?? '');
-    $contactNumber = htmlspecialchars($_POST['contact'] ?? '');
-    $address = htmlspecialchars($_POST['street'] ?? '') . ', ' .
-              htmlspecialchars($_POST['city'] ?? '') . ', ' .
-              htmlspecialchars($_POST['state'] ?? '');
-    $username = htmlspecialchars($_POST['username'] ?? '');
-    $password = password_hash(htmlspecialchars($_POST['password'] ?? ''), PASSWORD_DEFAULT);
+    $accountType   = $_POST['account_type'] ?? '';
+    $subject       = $_POST['subject'] ?? '';
+    $firstName     = $_POST['fname'] ?? '';
+    $middleName    = $_POST['mname'] ?? '';
+    $lastName      = $_POST['lname'] ?? '';
+    $contactNumber = $_POST['contact'] ?? '';
+    $street        = $_POST['street'] ?? '';
+    $city          = $_POST['city'] ?? '';
+    $state         = $_POST['state'] ?? '';
+
+    $address = "$street, $city, $state";
+
+    $username = $_POST['username'] ?? '';
+    $password = password_hash($_POST['password'] ?? '', PASSWORD_DEFAULT);
 
     try {
-       require_once '../database.php';
-     
-       $query = "INSERT INTO users (account_type, Name, MiddleName, Surname, Address, username, password, subject) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-       $stmt = $pdo->prepare($query);
-       $stmt->execute([$accountType, $firstName, $middleName, $lastName, $address, $username, $password, $subject]);
+        require_once '../database.php';
 
-       // Close DB resources
+        $query = "INSERT INTO users 
+            (account_type, Name, MiddleName, Surname, Address, username, password, subject, mobileNumber) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([
+            $accountType, $firstName, $middleName, $lastName, 
+            $address, $username, $password, $subject, $contactNumber
+        ]);
+
+        // Cleanup
         $stmt = null;
         $pdo  = null;
 
-        // Redirect after success
-        header("Location: ../kumonAdmin.html");
-       
+        // Redirect
+        header("Location: ../pages/kumonAdmin.html");
+        exit();
 
     } catch (PDOException $e) {
-        // Show error for debugging
         echo "Database Error: " . $e->getMessage();
-    
     }
 
-}else {
-    header("Location: ../kumonAdmin.html");
+} else {
+    header("Location: ../pages/kumonAdmin.html");
     exit();
 }
