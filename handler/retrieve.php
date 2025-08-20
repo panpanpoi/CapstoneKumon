@@ -10,13 +10,23 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Get search term from query string
+$search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : "";
+
 // Query
-$sql = "SELECT * FROM users";
+if ($search !== "") {
+    $sql = "SELECT * FROM users 
+            WHERE Name LIKE '%$search%' 
+               OR Surname LIKE '%$search%' 
+               OR account_type LIKE '%$search%'";
+} else {
+    $sql = "SELECT * FROM users";
+}
+
 $result = $conn->query($sql);
-// Removed echo $result; as it causes errors
 
 $data = [];
-if ($result->num_rows > 0) {
+if ($result && $result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         $data[] = $row;
     }
@@ -26,4 +36,5 @@ if ($result->num_rows > 0) {
 header('Content-Type: application/json');
 echo json_encode($data);
 
+$conn->close();
 exit();
