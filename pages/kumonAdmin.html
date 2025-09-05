@@ -10,7 +10,7 @@
     <body>
     <div class="sidebar">
         <div class="logo">
-            <h1>KUMON test</h1>
+            <h1><a href="kumonAdmin.html">KUMON</a></h1>
             <p>Practice Makes Possibilities</p>
         </div>
     </div>
@@ -22,12 +22,21 @@
             <div class="user-role"> Admin</div>
         </div>
     </div>
-      <ul class="nav-menu">
+        <ul class="nav-menu">
                 <li><a href="kumonAdmin.html">Home</a></li>
-                <li><a href="accountList.html">Accounts List</a></li>
+                <li><a href="accountList.html">Account List</a></li>
                 <li><a href="createAccount.html">Create Account</a></li>
-                <li><a href="paymentManagement.html">Payment Management</a></li>
-      </ul>
+                <li>
+                    <div class="subnav">
+                        <button class="subnavbtn">Payment Management <i class="fa fa-caret-down"></i></button>
+                        <div class="subnav-content">
+                           <li><a href="recordPayment.html.php">Record Payment</a></li>
+                           <li><a href="viewPayment.html.php">Payments List</a></li>
+                        </div>
+                    </div>
+                </li>
+        </ul>
+
         <!-- Main Content -->
         <div class="main-content">
             <!-- Header with user info on right --> 

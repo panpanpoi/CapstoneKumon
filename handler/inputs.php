@@ -19,15 +19,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         require_once '../database.php';
 
+        // Insert into users table
         $query = "INSERT INTO users 
             (account_type, Name, MiddleName, Surname, Address, username, password, subject, mobileNumber) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            VALUES (:account_type, :Name, :MiddleName, :Surname, :Address, :username, :password, :subject, :mobileNumber);";
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([
-            $accountType, $firstName, $middleName, $lastName, 
-            $address, $username, $password, $subject, $contactNumber
+           ':account_type' => $accountType, 
+           ':Name' => $firstName, 
+           ':MiddleName' => $middleName, 
+           ':Surname' => $lastName, 
+            ':Address' => $address, 
+            ':username' => $username, 
+            ':password' => $password, 
+            ':subject' => $subject, 
+            ':mobileNumber' => $contactNumber
         ]);
+
+       if ($accountType === "student" && isset($_POST['fname'], $_POST['lname'], $_POST['plan'])) {
+    $fname = $_POST['fname'];
+    $lname = $_POST['lname'];
+    $plan  = $_POST['plan'];
+
+    // Generate studentCode like STU-2025-001
+    $year = date("Y");
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM students WHERE studentCode LIKE ?");
+    $stmt->execute(["STU$year%"]);
+    $count = $stmt->fetchColumn() + 1;
+
+    $student_code = "STU$year" . str_pad($count, 3, "0", STR_PAD_LEFT);
+
+    // Decide fee based on plan
+    $monthly_fee = ($plan === 'A') ? 2200 : 2350;
+
+    // Insert into students table
+    $query = "INSERT INTO students (studentCode, Firstname, Lastname, plan, monthlyFee) 
+              VALUES (:studentCode, :fname, :lname, :plan, :monthlyFee)";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        ':studentCode'  => $student_code,
+        ':fname'        => $fname,
+        ':lname'        => $lname,    
+        ':plan'         => $plan,
+        ':monthlyFee'  => $monthly_fee
+    ]);
+}
 
         // Cleanup
         $stmt = null;
