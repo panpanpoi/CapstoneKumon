@@ -50,4 +50,4 @@ try {
 } catch (PDOException $e) {
     echo "Error fetching payments: " . $e->getMessage();
 }
-?>
+
