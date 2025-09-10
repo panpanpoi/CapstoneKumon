@@ -1,53 +1,50 @@
 <?php
 require_once "../database.php";
 
-try {
-    $stmt = $pdo->query("
-        SELECT 
-            p.payment_id,
-            s.studentCode,
-            CONCAT(s.Firstname, ' ', s.Lastname) AS student_name,
-            p.amount,
-            p.payment_date,
-            p.payment_method,
-            p.reference_number,
-            p.remarks
-        FROM payments p
-        JOIN students s ON p.student_id = s.student_id
-        ORDER BY p.payment_date DESC
-    ");
+// fetch only active payments + join students
+$stmt = $pdo->query("
+    SELECT p.payment_id, p.amount, p.payment_date, p.payment_method, 
+           p.reference_number, p.remarks, p.status,
+           s.studentCode, s.Firstname, s.Lastname
+    FROM payments p
+    JOIN students s ON p.student_id = s.student_id
+    WHERE p.status = 'active'
+    ORDER BY p.payment_date DESC
+");
 
-    echo "<table id='paymentsTable'>";
-    echo "<thead>
-            <tr>
-                <th style='display: none;'>Payment id</th>
-                <th>Student Code</th>
-                <th>Student Name</th>
-                <th>Amount</th>
-                <th>Payment Date</th>
-                <th>Payment Method</th>
-                <th>Reference #</th>
-                <th>Remarks</th>
-            </tr>
-          </thead>
-          <tbody>";
+echo "<table id='paymentsTable'>";
+echo "<thead>
+        <tr>
+          <th>ID</th>
+          <th>Student Code</th>
+          <th>Student Name</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th>Method</th>
+          <th>Reference</th>
+          <th>Notes</th>
+          <th>Action</th>
+        </tr>
+      </thead><tbody>";
 
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo "<tr>";
-        echo "<td style ='display:none;'>" . htmlspecialchars($row['payment_id']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['studentCode']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['student_name']) . "</td>";
-        echo "<td>" . number_format($row['amount'], 2) . "</td>";
-        echo "<td>" . htmlspecialchars($row['payment_date']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['payment_method']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['reference_number']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['remarks']) . "</td>";
-        echo "</tr>";
-    }
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $studentName = htmlspecialchars($row['Firstname'] . " " . $row['Lastname']);
+    $studentCode = htmlspecialchars($row['studentCode']);
 
-    echo "</tbody></table>";
-
-} catch (PDOException $e) {
-    echo "Error fetching payments: " . $e->getMessage();
+    echo "<tr id='row-{$row['payment_id']}'>
+            <td>{$row['payment_id']}</td>
+            <td>{$studentCode}</td>
+            <td>{$studentName}</td>
+            <td>{$row['amount']}</td>
+            <td>{$row['payment_date']}</td>
+            <td>{$row['payment_method']}</td>
+            <td>{$row['reference_number']}</td>
+            <td>{$row['remarks']}</td>
+            <td>
+              <button onclick=\"archivePayment({$row['payment_id']})\">Archive</button>
+            </td>
+          </tr>";
 }
 
+echo "</tbody></table>";
+?>

@@ -20,11 +20,10 @@
     .change-btn:hover { background:#b52a37; }
   </style>
   <script>
-    // Filter by keyword (student name/code)
+    // Filter by keyword
     function filterPayments() {
       let input = document.getElementById("searchInput").value.toLowerCase();
       let rows = document.querySelectorAll("#paymentsTable tbody tr");
-
       rows.forEach(row => {
         let text = row.innerText.toLowerCase();
         row.style.display = text.includes(input) ? "" : "none";
@@ -35,7 +34,6 @@
     function filterByDate() {
       let filterMonth = document.getElementById("monthFilter").value;
       let rows = document.querySelectorAll("#paymentsTable tbody tr");
-
       rows.forEach(row => {
         let dateCell = row.querySelector("td:nth-child(4)");
         if (!filterMonth) {
@@ -47,7 +45,7 @@
       });
     }
 
-    // Live search for student
+    // Live search student
     function searchStudent(query) {
       if (query.length < 2) {
         document.getElementById("studentResults").innerHTML = "";
@@ -63,14 +61,13 @@
       xhr.send();
     }
 
-    // Select a student → filter only that student's rows
+    // Select a student
     function selectStudent(id, code, name) {
       let rows = document.querySelectorAll("#paymentsTable tbody tr");
       rows.forEach(row => {
-        let studentCell = row.querySelector("td:nth-child(2)"); // assuming 2nd column is studentCode
+        let studentCell = row.querySelector("td:nth-child(2)");
         row.style.display = studentCell.innerText.includes(code) ? "" : "none";
       });
-
       document.getElementById("studentSearch").value = "[" + code + "] " + name;
       document.getElementById("studentSearch").readOnly = true;
       document.getElementById("studentResults").innerHTML = "";
@@ -84,9 +81,61 @@
       document.getElementById("studentSearch").readOnly = false;
       document.getElementById("selectedStudent").innerHTML = "";
       document.getElementById("changeStudentBtn").style.display = "none";
-
       let rows = document.querySelectorAll("#paymentsTable tbody tr");
       rows.forEach(row => row.style.display = "");
+    }
+
+    // Archive a payment
+   function archivePayment(id) {
+    if (!confirm("Are you sure you want to archive this payment?")) return;
+
+    fetch("../handler/archivePayment.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "id=" + id
+    })
+    .then(res => res.text())
+    .then(data => {
+      console.log("Server response:", data); // 🔍 debug
+      if (data.trim() === "success") {
+        // hide row immediately
+        document.getElementById("row-" + id).style.display = "none";
+        alert("Payment archived successfully.");
+      } else {
+        alert("Error archiving payment: " + data);
+      }
+    });
+  }
+
+  // Restore function can stay in case you use it somewhere else
+  function restorePayment(id, btn) {
+    fetch("../handler/restorePayment.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "id=" + id
+    })
+    .then(res => res.text())
+    .then(data => {
+      if (data === "success") {
+        document.getElementById("row-" + id).style.display = "";
+      }
+    });
+  }
+
+    // Restore a payment
+    function restorePayment(id, btn) {
+      fetch("../handler/restorePayment.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "id=" + id
+      })
+      .then(res => res.text())
+      .then(data => {
+        if (data === "success") {
+          document.getElementById("row-" + id).style.display = "";
+          btn.parentElement.remove();
+        }
+      });
     }
   </script>
 </head>
@@ -102,7 +151,13 @@
 
   <?php if (isset($_GET['success'])): ?>
     <div class="success">Payment recorded successfully!</div>
-  <?php else: ?><div></div><?php endif; ?>
+  <?php endif; ?>
+  <?php if (isset($_GET['archived'])): ?>
+    <div class="success">Payment archived successfully.</div>
+  <?php endif; ?>
+  <?php if (isset($_GET['restored'])): ?>
+    <div class="success">Payment restored successfully.</div>
+  <?php endif; ?>
 
   <!-- Filters -->
   <div class="filters">
@@ -125,7 +180,7 @@
     <button type="button" id="changeStudentBtn" class="change-btn" onclick="changeStudent()" style="display:none;">Change Student</button>
   </div>
 
-  <!-- Payments Table -->
+  <!-- Payments Table (only active payments) -->
   <?php include "../handler/paymentList.php"; ?>
 
 </body>
