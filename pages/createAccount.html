@@ -3,14 +3,19 @@
 <head>
    
 </head>
- <div class="sidebar">
-        <div class="logo">
-            <h1><a href="kumonAdmin.html">KUMON</a></h1>
-            <p>Practice Makes Possibilities</p>
-        </div>
-    </div>
 
+    <meta charset="UTF-8">
+  <title>KUMON Account Creation</title>
+  <!-- Global shared styles -->
+  <!-- <link rel="stylesheet" href="../styles/kumonGlobalStyle.css"> -->
+</head>
 <body>
+    <div class="sidebar">
+    <div class="logo">
+      <h1><a href="kumonAdmin.html">KUMON</a></h1>
+      <p>Practice Makes Possibilities</p>
+    </div>
+  </div>
     <div>
        <h1>ACCOUNT CREATION</h1>
     </div>
@@ -92,10 +97,10 @@
         <div id ="subject" style="display:none; margin-top:15px;">
             <h3>Select Subject</h3>
             <label for="subject">Math</label>
-            <input type="radio" id="subject-math" name="subject" value="math">
+            <input type="radio" id="subject-math" name="subject" value="math" required>
             
             <label for="subject-english">English</label>
-            <input type="radio" id="subject-english" name="subject" value="english">
+            <input type="radio" id="subject-english" name="subject" value="english" required>
          </div>
 
         <div id="student-plan" style="display:none; margin-top:15px;">

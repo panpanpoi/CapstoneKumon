@@ -1,0 +1,117 @@
+/* kumonGlobalStyle.css */
+/* Shared layout + typography + sidebar */
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Work+Sans:wght@400;600&family=Montserrat:wght@400;600&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Instrument Sans', 'Work Sans', 'Montserrat', Arial, sans-serif;
+  background-color: #f4f7fb;
+  color: #333;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #6CCFF6; /* Kumon Blue */
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 20px;
+}
+
+.sidebar .logo h1 a {
+  color: white;
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.sidebar p {
+  font-size: 14px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+/* Nav Menu */
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-menu li {
+  margin-bottom: 12px;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: block;
+  transition: background 0.2s;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+  background: #4FB7B3; /* Teal hover */
+}
+
+/* Main content container */
+.main-content {
+  margin-left: 240px;
+  padding: 30px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 14px;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #4FB7B3;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #3a9491;
+}
+
+.btn-danger {
+  background: #E74C3C;
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+/* Alerts (success / error) */
+.alert {
+  padding: 12px 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.alert.success {
+  background-color: #A8FBD3; /* mint */
+  color: #0f5132;
+  border: 1px solid #4FB7B3; /* teal */
+}
+
+.alert.error {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}

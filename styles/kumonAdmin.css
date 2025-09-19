@@ -1,0 +1,201 @@
+/* Reset & Global */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f4f6f9;
+  color: #333;
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #007BFF, #1481f6);
+  color: #fff;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+  position: fixed;
+  height: 100%;
+}
+
+/* Logo */
+.sidebar .logo {
+  text-align: center;
+  padding: 15px;
+}
+
+.sidebar .logo h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.sidebar .logo h1 a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.sidebar .logo p {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #e0e0e0;
+}
+
+/* User Profile (Sidebar) */
+.sidebar .user-profile {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 15px 10px;
+  border-radius: 8px;
+}
+
+.sidebar .user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #fff;
+  color: #007BFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.sidebar .username {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sidebar .user-role {
+  font-size: 12px;
+  color: #dcdcdc;
+}
+
+/* Navigation Menu */
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.nav-menu li {
+  margin: 0;
+}
+
+.nav-menu li a,
+.subnavbtn {
+  display: block;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 14px;
+  color: #fff;
+  transition: background 0.3s;
+  cursor: pointer;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+}
+
+.nav-menu li a:hover,
+.subnavbtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Subnav Dropdown */
+.subnav {
+  position: relative;
+}
+
+.subnav-content {
+  display: none;
+  flex-direction: column;
+  background: #0064d2;
+}
+
+.subnav-content li a {
+  padding: 10px 40px;
+  font-size: 13px;
+}
+
+.subnav:hover .subnav-content {
+  display: flex;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 250px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: #fff;
+  padding: 12px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Notifications */
+.notifications {
+  position: relative;
+  font-size: 18px;
+  cursor: pointer;
+  color: #333;
+}
+
+.notifications .badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ff3b3b;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* User Info (Top Header) */
+.header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header .user-info .user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #007BFF;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.header .user-info .user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}

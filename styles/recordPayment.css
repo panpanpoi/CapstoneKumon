@@ -1,0 +1,165 @@
+/* === General Reset === */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f4f6fa;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === Header (copied from your first CSS) === */
+.sidebar {
+  background: linear-gradient(90deg, #007BFF, #0056b3);
+  color: white;
+  padding: 20px 60px;   /* ⬅️ added more left padding */
+  text-align: left;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border-radius: 0 0 12px 12px;
+}
+
+.sidebar .logo h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.sidebar .logo a {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar p {
+  margin: 3px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* === Form Container === */
+form {
+  background: #fff;
+  margin-top: 40px;
+  padding: 35px 40px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* === Heading === */
+form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 22px;
+  color: #007BFF;
+  font-weight: 600;
+}
+
+/* === Labels === */
+label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #444;
+  font-weight: 500;
+}
+
+/* === Inputs, Select & Textarea === */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #ccd0d5;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.3s, box-shadow 0.3s;
+  background: #fafafa;
+  display: block;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #007BFF;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  outline: none;
+  background: #fff;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* === Buttons === */
+button {
+  margin-top: 22px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button#submitBtn {
+  background: #007BFF;
+  color: #fff;
+}
+
+button#submitBtn:hover:enabled {
+  background: #0056b3;
+  transform: translateY(-2px);
+}
+
+button.change-btn {
+  margin-top: 10px;
+  background: #e9f2ff;
+  color: #007BFF;
+  width: auto;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+button.change-btn:hover {
+  background: #d0e4ff;
+}
+
+/* === Search Results === */
+.search-results {
+  margin-top: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+.search-results div {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-results div:hover {
+  background: #f1f6ff;
+}
+
+/* === Selected Student === */
+#selectedStudent {
+  font-size: 14px;
+  margin-top: 10px;
+  color: green;
+  font-weight: bold;
+}

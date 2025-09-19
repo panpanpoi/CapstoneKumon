@@ -17,6 +17,9 @@
     .change-btn { margin-top: 8px; background:#dc3545; color:white; padding:5px 8px; border:none; border-radius:4px; cursor:pointer; display:none; }
     .change-btn:hover { background:#b52a37; }
   </style>
+  <link rel="stylesheet" href="../styles/kumonGlobalStyle1.css">
+  <link rel="stylesheet" href="../styles/recordPayment.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     // 🔎 Live search
     function searchStudent(query) {
