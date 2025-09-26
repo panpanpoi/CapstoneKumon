@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>KUMON Login</title>
+   <link rel="stylesheet" href="../styles/login.css">
 </head>
 <body>
   <h2>Login</h2>

@@ -16,16 +16,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
-        // Base user session
+        // ✅ Base user session
         $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['role'] = strtolower($user['account_type']); // normalize case
+        $_SESSION['account_type'] = strtolower($user['account_type']); // normalize
         $_SESSION['username'] = $user['username'];
 
         // Flash welcome message
-        $_SESSION['flash_success'] = "Welcome back, " . ucfirst($user['account_type']) . "!";
+        $_SESSION['flash_success'] = "Welcome back, " . ucfirst($_SESSION['account_type']) . "!";
 
-        // Fetch role-specific IDs
-        switch ($_SESSION['role']) {
+        // ✅ Store role-specific IDs
+        switch ($_SESSION['account_type']) {
             case 'teacher':
                 $stmt = $pdo->prepare("SELECT teacher_id FROM teachers WHERE user_id = ?");
                 $stmt->execute([$user['user_id']]);

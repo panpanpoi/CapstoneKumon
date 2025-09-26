@@ -24,12 +24,29 @@ if (!$user) {
     exit;
 }
 
+// ✅ Normalize account_type
 $_SESSION['account_type'] = strtolower($user['account_type']);
 
-// Store IDs depending on role
+// ✅ Store common display info
+$_SESSION['username'] = $user['Name'] . " " . $user['Surname'];
+
+// ✅ Generate initials for avatar
+function getInitials($name) {
+    $parts = explode(" ", trim($name));
+    $initials = "";
+    foreach ($parts as $p) {
+        if ($p !== "") {
+            $initials .= strtoupper(substr($p, 0, 1));
+        }
+    }
+    return $initials;
+}
+$_SESSION['initials'] = getInitials($_SESSION['username']);
+
+// ✅ Ensure role-specific IDs are set
 switch ($_SESSION['account_type']) {
     case 'teacher':
-        if (!isset($_SESSION['teacher_id'])) {
+        if (empty($_SESSION['teacher_id'])) {
             $stmt = $pdo->prepare("SELECT teacher_id FROM teachers WHERE user_id = ?");
             $stmt->execute([$user_id]);
             $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -38,7 +55,7 @@ switch ($_SESSION['account_type']) {
         break;
 
     case 'student':
-        if (!isset($_SESSION['student_id'])) {
+        if (empty($_SESSION['student_id'])) {
             $stmt = $pdo->prepare("SELECT student_id FROM students WHERE user_id = ?");
             $stmt->execute([$user_id]);
             $student = $stmt->fetch(PDO::FETCH_ASSOC);

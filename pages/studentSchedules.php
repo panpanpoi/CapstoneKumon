@@ -45,7 +45,7 @@ $avatarInitials = strtoupper(substr($student_name, 0, 1));
             <li><i class="fas fa-home"></i><a href="kumonStudent.php">Home</a></li>
             <li><i class="fas fa-calendar-alt"></i><a href="studentSchedules.php" class="active">Schedule</a></li>
             <li><i class="fas fa-money-bill-wave"></i><a href="studentPayments.php">Balance</a></li>
-            <li><i class="fas fa-comments"></i><a href="studentPTC.php">PTC Meeting</a></li>
+            <li><i class="fas fa-comments"></i><a href="studentPtc.php">PTC Meeting</a></li>
         </ul>
     </aside>
 

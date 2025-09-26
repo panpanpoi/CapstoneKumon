@@ -1,0 +1,225 @@
+/* === Reset === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === Sidebar / Header === */
+.sidebar {
+  background: linear-gradient(90deg, #6DCFF6, #3f97f5);
+  color: white;
+  padding: 25px 60px;
+  text-align: left;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border-radius: 0 0 12px 12px;
+  margin-bottom: 25px;
+}
+
+.sidebar .logo h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.sidebar .logo a {
+  color: white;
+  text-decoration: none;
+}
+
+.sidebar p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* === Page Heading === */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #333;
+}
+
+/* === Success / Message Boxes === */
+.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 12px 18px;
+  border-radius: 6px;
+  margin: 15px auto;
+  width: 60%;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* === Filters Section === */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin: 25px auto;
+  flex-wrap: wrap;
+}
+
+.filters div {
+  text-align: left;
+}
+
+.filters label {
+  font-size: 14px;
+  color: #333;
+}
+
+.filters input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+  font-size: 14px;
+  width: 220px;
+  transition: all 0.2s ease;
+}
+
+.filters input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+/* === Student Filter === */
+.student-filter {
+  text-align: center;
+  margin: 25px auto;
+}
+
+.student-filter label {
+  font-size: 14px;
+  color: #333;
+}
+
+.student-filter input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 5px;
+  font-size: 14px;
+  width: 280px;
+  transition: all 0.2s ease;
+}
+
+.student-filter input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+.search-results {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 5px auto;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 280px;
+  font-size: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.search-results div {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.search-results div:hover {
+  background: #f0f8ff;
+}
+
+#selectedStudent {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.change-btn {
+  display: none;
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.change-btn:hover {
+  background: #0056b3;
+}
+
+/* === Payments Table === */
+table {
+  width: 90%;
+  margin: 25px auto;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+thead {
+  background: #007bff;
+  color: white;
+  font-size: 14px;
+}
+
+thead th {
+  padding: 12px;
+  text-align: center;
+}
+
+tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  text-align: center;
+}
+
+tbody tr:hover {
+  background: #f9f9f9;
+}
+
+/* === Action Buttons in Table === */
+.action-btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 2px;
+  transition: 0.2s;
+}
+
+.action-btn.archive {
+  background: #dc3545;
+  color: white;
+}
+
+.action-btn.archive:hover {
+  background: #a71d2a;
+}
+
+.action-btn.restore {
+  background: #28a745;
+  color: white;
+}
+
+.action-btn.restore:hover {
+  background: #1e7e34;
+}

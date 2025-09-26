@@ -3,18 +3,26 @@ require_once __DIR__ . '/../database.php';
 header('Content-Type: application/json');
 
 try {
-  $search = isset($_GET['search']) ? trim($_GET['search']) : "";
+  $search   = isset($_GET['search']) ? trim($_GET['search']) : "";
+  $archived = isset($_GET['archived']) ? (int) $_GET['archived'] : 0;
+
+  // Decide status filter
+  $status = $archived ? 'archived' : 'active';
 
   if ($search !== "") {
     $stmt = $pdo->prepare("
       SELECT * FROM users
-      WHERE status = 'active' AND (
+      WHERE status = :status AND (
         Name LIKE :q OR Surname LIKE :q OR account_type LIKE :q OR Address LIKE :q OR mobileNumber LIKE :q
       )
     ");
-    $stmt->execute([':q' => "%$search%"]);
+    $stmt->execute([
+      ':status' => $status,
+      ':q'      => "%$search%"
+    ]);
   } else {
-    $stmt = $pdo->query("SELECT * FROM users WHERE status = 'active'");
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE status = :status");
+    $stmt->execute([':status' => $status]);
   }
 
   echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));

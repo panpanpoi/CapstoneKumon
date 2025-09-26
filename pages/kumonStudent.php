@@ -4,7 +4,6 @@ if (!isset($_SESSION)) session_start();
 require_once "../database.php";
 require_once "../handler/auth.php";
 require_once "../handler/studentData.php";
-require_once "../handler/ptcData.php";
 require_once "../handler/studentScheduleData.php";
 
 // Ensure student is logged in
@@ -58,6 +57,7 @@ $today_schedule = $today_schedule ?? [];
             <li><i class="fas fa-calendar-alt"></i><a href="studentSchedules.php">Schedule</a></li>
             <li><i class="fas fa-money-bill-wave"></i><a href="studentPayments.php">Balance</a></li>
             <li><i class="fas fa-comments"></i><a href="studentPTC.php">PTC Meeting</a></li>
+            <li><i class="fas fa-sign-out-alt"></i><a href="logout.php">Logout</a></li>
         </ul>
     </aside>
 

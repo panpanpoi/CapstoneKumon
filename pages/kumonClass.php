@@ -31,8 +31,8 @@ $currentClassId = 1;
     <ul class="nav--menu">
       <li><a href="kumonTeacher.php">Home</a></li>
       <li><a href="kumonClass.php" class="active">My Class</a></li>
-      <li><a href="ptcSchedule.php">PTC Schedule</a></li>
-      <li><a href="../logout.php">Logout</a></li>
+      <li><a href="teacherPtcScheduler.php">PTC Schedule</a></li>
+      <li><a href="logout.php">Logout</a></li>
     </ul>
   </div>
 

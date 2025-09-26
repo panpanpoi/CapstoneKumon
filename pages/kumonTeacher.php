@@ -34,8 +34,8 @@ $currentPage = basename($_SERVER['PHP_SELF']); // get current filename
     <ul class="nav-menu">
         <li><a href="kumonTeacher.php" class="<?= $currentPage == 'kumonTeacher.php' ? 'active' : '' ?>"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="kumonClass.php" class="<?= $currentPage == 'kumonClass.php' ? 'active' : '' ?>"><i class="fa fa-users"></i> My Class</a></li>
-        <li><a href="ptcSchedule.php" class="<?= $currentPage == 'ptcSchedule.php' ? 'active' : '' ?>"><i class="fa fa-calendar"></i> PTC Schedule</a></li>
-        <li><a href="../logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
+        <li><a href="teacherPtcScheduler.php" class="<?= $currentPage == 'teacherPtcScheduler.php' ? 'active' : '' ?>"><i class="fa fa-calendar"></i> PTC Schedule</a></li>
+        <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </div>
 

@@ -45,7 +45,7 @@ $avatarInitials = strtoupper(substr($student_name, 0, 1));
             <li><i class="fas fa-home"></i><a href="kumonStudent.php">Home</a></li>
             <li><i class="fas fa-calendar-alt"></i><a href="studentSchedules.php">Schedule</a></li>
             <li><i class="fas fa-money-bill-wave"></i><a href="studentPayments.php" class="active">Balance</a></li>
-            <li><i class="fas fa-comments"></i><a href="studentPTC.php">PTC Meeting</a></li>
+            <li><i class="fas fa-comments"></i><a href="studentPtc.php">PTC Meeting</a></li>
         </ul>
     </aside>
 
@@ -97,5 +97,48 @@ $avatarInitials = strtoupper(substr($student_name, 0, 1));
         </section>
     </main>
 </div>
+                <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAcnlBtzPF9z6ahVDlPAjXOpgHlr2BIapc",
+    authDomain: "kumonnotification-53518.firebaseapp.com",
+    projectId: "kumonnotification-53518",
+    storageBucket: "kumonnotification-53518.appspot.com",
+    messagingSenderId: "346058075092",
+    appId: "1:346058075092:web:20e02a2cf742e7d3f84441",
+    measurementId: "G-YETFSFV1NL"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  // Ask permission
+  Notification.requestPermission().then(permission => {
+    if (permission === "granted") {
+      console.log("Notification permission granted.");
+      getToken(messaging, { vapidKey: "BEN2whWisY6Dfm-uQ0oFKcDbJlsWYoPkLIKq7Wi_RzqwQr9rIFgLPY7ma0Oz6hLw9obMLArD_8cECoDW0ZvH2tU" })
+        .then((token) => {
+          console.log("FCM Token:", token);
+          // Send token to backend
+          fetch("../handler/saveFCMToken.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token })
+          });
+        });
+    } else {
+      console.log("Notification permission denied.");
+    }
+  });
+
+  // Foreground messages
+  onMessage(messaging, (payload) => {
+    console.log("Message received: ", payload);
+    alert(payload.notification.title + ": " + payload.notification.body);
+  });
+</script>
 </body>
 </html>

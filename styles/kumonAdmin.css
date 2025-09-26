@@ -2,7 +2,6 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
   background-color: #f4f6f9;
   color: #333;
   display: flex;
@@ -12,7 +11,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background: linear-gradient(180deg, #007BFF, #1481f6);
+  background: linear-gradient(180deg, #6DCFF6, #3f97f5);
   color: #fff;
   padding: 20px 0;
   display: flex;
@@ -45,7 +44,7 @@ body {
   color: #e0e0e0;
 }
 
-/* User Profile (Sidebar) */
+/* User Profile */
 .sidebar .user-profile {
   display: flex;
   align-items: center;
@@ -92,12 +91,14 @@ body {
 
 .nav-menu li a,
 .subnavbtn {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 12px 20px;
   text-decoration: none;
   font-size: 14px;
   color: #fff;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
   cursor: pointer;
   border: none;
   background: none;
@@ -108,6 +109,7 @@ body {
 .nav-menu li a:hover,
 .subnavbtn:hover {
   background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
 }
 
 /* Subnav Dropdown */
@@ -118,16 +120,57 @@ body {
 .subnav-content {
   display: none;
   flex-direction: column;
-  background: #0064d2;
+  background: #3f97f5;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.subnav-content.show {
+  display: flex;
+  max-height: 500px; /* enough height for smooth expand */
+  opacity: 1;
 }
 
 .subnav-content li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 40px;
   font-size: 13px;
+  transition: all 0.3s ease;
+  color: #fff;
+  text-decoration: none;
 }
 
-.subnav:hover .subnav-content {
-  display: flex;
+.subnav-content li a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+/* Caret Icon Rotation */
+.caret-icon {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.caret-icon.rotate {
+  transform: rotate(180deg);
+}
+
+/* Caret Icon Rotation */
+.caret-icon {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.caret-icon.rotate {
+  transform: rotate(180deg);
 }
 
 /* Main Content */
@@ -174,7 +217,7 @@ body {
   font-weight: 600;
 }
 
-/* User Info (Top Header) */
+/* User Info */
 .header .user-info {
   display: flex;
   align-items: center;
