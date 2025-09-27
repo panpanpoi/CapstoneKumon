@@ -6,21 +6,29 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
+// ❌ No active session
+if (!isset($_SESSION['user_id'], $_SESSION['session_token'])) {
+    header("Location: ../pages/loginform.php");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch base user info
-$stmt = $pdo->prepare("SELECT user_id, Name, Surname, account_type FROM users WHERE user_id = ?");
+// ✅ Fetch user info + token
+$stmt = $pdo->prepare("SELECT user_id, Name, Surname, account_type, session_token FROM users WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user) {
     session_destroy();
     header("Location: ../login.php");
+    exit;
+}
+
+// ✅ Verify session token matches DB
+if ($user['session_token'] !== $_SESSION['session_token']) {
+    session_destroy();
+    header("Location: ../login.php?error=You have been logged out because another session started.");
     exit;
 }
 

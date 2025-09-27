@@ -9,7 +9,7 @@ require_once "../handler/studentScheduleData.php";
 // Ensure student is logged in
 if (empty($student)) {
     $_SESSION['error'] = "Student profile not found.";
-    header("Location: ../login.php");
+    header("Location: loginform.php");
     exit;
 }
 

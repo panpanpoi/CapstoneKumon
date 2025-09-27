@@ -1,102 +1,59 @@
-/* General Page */
-/* kumonGlobalStyle.css */
-/* Shared layout + typography + sidebar */
+/* 🌍 kumonGlobalStyle.css */
+/* This file should only contain global resets, typography, and shared utilities. */
+/* Page-specific styling (sidebar, forms, buttons) should live in their own CSS files. */
 
+/* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Work+Sans:wght@400;600&family=Montserrat:wght@400;600&display=swap');
 
-body {
+/* RESET + BASE TYPOGRAPHY */
+* {
   margin: 0;
-  font-family: 'Instrument Sans', 'Work Sans', 'Montserrat', Arial, sans-serif;
-  background-color: #f4f7fb;
-  color: #333;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 220px;
-  background: #6CCFF6; /* Kumon Blue */
-  color: white;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 20px;
-}
-
-.sidebar .logo h1 a {
-  color: white;
-  font-size: 24px;
-  text-decoration: none;
-}
-
-.sidebar p {
-  font-size: 14px;
-  color: white;
-  margin-bottom: 30px;
-}
-
-/* Nav Menu */
-.nav-menu {
-  list-style: none;
   padding: 0;
-  margin: 0;
+  box-sizing: border-box;
 }
 
-.nav-menu li {
-  margin-bottom: 12px;
+body {
+  font-family: 'Instrument Sans', 'Work Sans', 'Montserrat', Arial, sans-serif;
+  background-color: #f4f7fb; /* Neutral background */
+  color: #333; /* Default text color */
+  line-height: 1.6;
 }
 
-.nav-menu a {
-  color: white;
+/* HEADINGS */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+/* LINKS */
+a {
+  color: #007BFF;
   text-decoration: none;
-  font-size: 1rem;
-  padding: 8px 12px;
-  border-radius: 6px;
-  display: block;
-  transition: background 0.2s;
 }
 
-.nav-menu a:hover,
-.nav-menu a.active {
-  background: #4FB7B3; /* Teal hover */
+a:hover {
+  text-decoration: underline;
 }
 
-/* Main content container */
-.main-content {
-  margin-left: 240px;
-  padding: 30px;
-}
-
-/* Buttons */
-.btn {
-  padding: 8px 14px;
-  font-size: 1rem;
-  border-radius: 6px;
+/* BUTTON UTILITIES (generic, override in page CSS if needed) */
+button, .btn {
+  font-family: inherit;
   cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-primary {
-  background: #4FB7B3;
-  color: white;
   border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
-  background: #3a9491;
-}
-
-.btn-danger {
-  background: #E74C3C;
-  color: white;
-  border: none;
-}
-
-.btn-danger:hover {
-  background: #c0392b;
-}
-
-/* Alerts (success / error) */
+/* ALERTS (shared) */
 .alert {
   padding: 12px 15px;
   margin: 15px 0;
@@ -117,175 +74,26 @@ body {
   border: 1px solid #f5c2c7;
 }
 
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
-}
-
-/* Header */
-h1 {
-  text-align: center;
-  background: linear-gradient(90deg, #007BFF, #0056b3);
-  color: #fff;
-  padding: 20px;
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  border-bottom: 4px solid #57dbff; /* yellow accent */
-}
-
-/* User Profile Top Bar */
-.user-profile {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 15px 25px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-}
-
-.user-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #007BFF;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-right: 15px;
-  font-size: 18px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-.user-details .username {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.user-details .user-role {
-  font-size: 13px;
-  color: #666;
-  margin-top: 2px;
-}
-
-/* Form Layout */
-main {
-  width: 80%;
-  max-width: 700px;
-  margin: auto;
-  background: #fff;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-form h3 {
-  margin-top: 20px;
-  font-size: 18px;
-  color: #007BFF;
-  border-left: 4px solid #57d8ff;
-  padding-left: 8px;
-}
-
-/* Labels and Inputs */
+/* FORM BASICS */
 label {
-  display: inline-block;
-  margin: 8px 0 4px;
   font-size: 14px;
   font-weight: 500;
-  color: #444;
+  display: block;
+  margin: 8px 0 4px;
 }
 
-input[type="text"],
-input[type="radio"] {
-  margin-top: 6px;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 10px 12px;
+input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 14px;
+  width: 100%;
   transition: border 0.3s, box-shadow 0.3s;
 }
 
-input[type="text"]:focus {
+input:focus, select:focus, textarea:focus {
   border-color: #007BFF;
   box-shadow: 0 0 6px rgba(0,123,255,0.3);
   outline: none;
-}
-
-/* Radio buttons grouped */
-#accountType label,
-#subject label,
-#student-plan label {
-  margin-right: 10px;
-  font-weight: 500;
-}
-
-/* Button */
-button {
-  margin-top: 20px;
-  padding: 10px 18px;
-  background: #007BFF;
-  color: #fff;
-  border: none;
-  border-radius: 25px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background: #0056b3;
-  transform: scale(1.05);
-}
-
-/* Alerts (Reusable across all pages) */
-.alert {
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
-}
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-/* -------------------------
-   Cancel Button (Red)
-------------------------- */
-.btn-cancel, .cancel-btn {
-  background: #dc3545;  /* red */
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-cancel:hover, .cancel-btn:hover {
-  background: #a71d2a;  /* darker red */
-  transform: scale(1.05);
 }

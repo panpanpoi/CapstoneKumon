@@ -11,6 +11,7 @@ $currentPage = basename($_SERVER['PHP_SELF']); // get current filename
   <link rel="stylesheet" href="../styles/kumonTeacher.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 <div class="sidebar">
     <div class="logo">
@@ -21,6 +22,7 @@ $currentPage = basename($_SERVER['PHP_SELF']); // get current filename
         <p>Practice Makes Possibilities</p>
     </div>
     
+
     <div class="user-profile"> 
         <div class="user-avatar">
             <?= strtoupper(substr($user['Name'],0,1)) . strtoupper(substr($user['Surname'],0,1)) ?>

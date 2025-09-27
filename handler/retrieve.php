@@ -4,10 +4,14 @@ header('Content-Type: application/json');
 
 try {
   $search   = isset($_GET['search']) ? trim($_GET['search']) : "";
-  $archived = isset($_GET['archived']) ? (int) $_GET['archived'] : 0;
+  $archived = $_GET['archived'] ?? 0;
 
-  // Decide status filter
-  $status = $archived ? 'archived' : 'active';
+  // ✅ Normalize status input
+  if ($archived === "1" || strtolower($archived) === "archived") {
+    $status = 'archived';
+  } else {
+    $status = 'active';
+  }
 
   if ($search !== "") {
     $stmt = $pdo->prepare("

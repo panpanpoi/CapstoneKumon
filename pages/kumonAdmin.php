@@ -3,11 +3,11 @@ require_once "../handler/auth.php";
 
 // ✅ Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
-    header("Location: ../login.php");
+    header("Location: loginform.php");
     exit;
 }
 
-$username   = $_SESSION['user_id'];   
+$username   = $_SESSION['username'];   
 $userRole   = ucfirst($_SESSION['account_type']); // Admin
 $initials   = $_SESSION['initials'];   // LR
 ?>
@@ -26,7 +26,7 @@ $initials   = $_SESSION['initials'];   // LR
     <div class="sidebar">
         <div class="logo">
             <h1>
-            <a href="kumonTeacher.php">
+            <a href="kumonAdmin.php">
                     <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:80px; vertical-align:middle; margin-right:6px;">
                 </a>
             </h1>
@@ -44,7 +44,7 @@ $initials   = $_SESSION['initials'];   // LR
 
         <!-- Navigation -->
             <ul class="nav-menu">
-            <li><a href="kumonAdmin.php"><i class="fa fa-home"></i> Home</a></li>
+            <li><a href="kumonAdmin.php" class="active"><i class="fa fa-home"></i> Home</a></li>
 
             <li class="subnav">
                 <button class="subnavbtn">
@@ -53,7 +53,6 @@ $initials   = $_SESSION['initials'];   // LR
                 </button>
                 <ul class="subnav-content">
                     <li><a href="accountList.php"><i class="fa fa-users"></i> Account List</a></li>
-                    <li><a href="archivedAccounts.php"><i class="fa fa-archive"></i> Archived Accounts</a></li>
                     <li><a href="createAccount.php"><i class="fa fa-user-plus"></i> Create Account</a></li>
                 </ul>
             </li>

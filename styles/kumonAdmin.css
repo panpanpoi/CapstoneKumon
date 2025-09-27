@@ -1,55 +1,56 @@
-/* Reset & Global */
+/* ========== GLOBAL LAYOUT ========== */
 body {
   margin: 0;
   padding: 0;
-  background-color: #f4f6f9;
-  color: #333;
+  background-color: #1e1e1e; /* 🌑 Dark page background */
+  color: #e0e0e0; /* 🌈 Light text for contrast */
   display: flex;
   height: 100vh;
 }
 
-/* Sidebar */
+/* ========== SIDEBAR ========== */
 .sidebar {
-  width: 250px;
-  background: linear-gradient(180deg, #6DCFF6, #3f97f5);
+  width: 250px; /* 📏 Sidebar width */
+  background: #121212; /* 🌑 Flat dark sidebar */
   color: #fff;
   padding: 20px 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.5); /* 🔲 Stronger shadow for contrast */
   position: fixed;
   height: 100%;
 }
 
-/* Logo */
+/* LOGO */
 .sidebar .logo {
+  background: none; /* 🚫 No blue square */
   text-align: center;
   padding: 15px;
 }
 
 .sidebar .logo h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 22px; /* 📏 Logo font size */
   font-weight: 700;
 }
 
 .sidebar .logo h1 a {
   text-decoration: none;
-  color: #fff;
+  color: #00aaff; /* 🌈 Kumon blue logo text */
 }
 
 .sidebar .logo p {
   font-size: 12px;
   margin-top: 4px;
-  color: #e0e0e0;
+  color: #aaa; /* 🌑 Muted subtitle */
 }
 
-/* User Profile */
+/* ========== USER PROFILE (inside sidebar) ========== */
 .sidebar .user-profile {
   display: flex;
   align-items: center;
   padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05); /* 🌑 Subtle transparent box */
   margin: 15px 10px;
   border-radius: 8px;
 }
@@ -58,8 +59,8 @@ body {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: #fff;
-  color: #007BFF;
+  background: #00aaff; /* 🌈 Avatar background (Kumon blue) */
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,14 +72,15 @@ body {
 .sidebar .username {
   font-size: 15px;
   font-weight: 600;
+  color: #fff;
 }
 
 .sidebar .user-role {
   font-size: 12px;
-  color: #dcdcdc;
+  color: #bbb;
 }
 
-/* Navigation Menu */
+/* ========== NAVIGATION MENU ========== */
 .nav-menu {
   list-style: none;
   padding: 0;
@@ -97,7 +99,7 @@ body {
   padding: 12px 20px;
   text-decoration: none;
   font-size: 14px;
-  color: #fff;
+  color: #ddd; /* 🌑 Light gray nav links */
   transition: all 0.3s ease;
   cursor: pointer;
   border: none;
@@ -108,23 +110,22 @@ body {
 
 .nav-menu li a:hover,
 .subnavbtn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #2a2a2a; /* 🌑 Dark hover */
+  color: #00aaff; /* 🌈 Highlight with Kumon blue */
   transform: translateX(5px);
 }
 
-/* Subnav Dropdown */
-.subnav {
-  position: relative;
+.nav-menu a.active {
+  background-color: #00aaff; /* 🌈 Active highlight */
+  color: #fff !important;
 }
 
+/* ========== SUBNAV DROPDOWN ========== */
 .subnav-content {
   display: none;
   flex-direction: column;
-  background: #3f97f5;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  border-left: 3px solid rgba(255, 255, 255, 0.3);
+  background: #1a1a1a; /* 🌑 Dark dropdown */
+  border-left: 3px solid #00aaff; /* 🌈 Blue highlight */
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.3s ease, opacity 0.3s ease;
@@ -133,24 +134,19 @@ body {
 
 .subnav-content.show {
   display: flex;
-  max-height: 500px; /* enough height for smooth expand */
+  max-height: 500px;
   opacity: 1;
 }
 
 .subnav-content li a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   padding: 10px 40px;
   font-size: 13px;
-  transition: all 0.3s ease;
-  color: #fff;
-  text-decoration: none;
+  color: #ccc;
 }
 
 .subnav-content li a:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateX(5px);
+  background: #2a2a2a;
+  color: #00aaff;
 }
 
 /* Caret Icon Rotation */
@@ -163,29 +159,22 @@ body {
   transform: rotate(180deg);
 }
 
-/* Caret Icon Rotation */
-.caret-icon {
-  margin-left: auto;
-  transition: transform 0.3s ease;
-}
-
-.caret-icon.rotate {
-  transform: rotate(180deg);
-}
-
-/* Main Content */
+/* ========== MAIN CONTENT ========== */
 .main-content {
   margin-left: 250px;
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: #1e1e1e; /* 🌑 Matches page background */
+  color: #eee;
+  padding: 20px;
 }
 
-/* Header */
+/* ========== HEADER ========== */
 .header {
-  background: #fff;
+  background: #121212; /* 🌑 Dark header */
   padding: 12px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -197,12 +186,12 @@ body {
   gap: 20px;
 }
 
-/* Notifications */
+/* ========== NOTIFICATIONS ========== */
 .notifications {
   position: relative;
   font-size: 18px;
   cursor: pointer;
-  color: #333;
+  color: #ddd;
 }
 
 .notifications .badge {
@@ -217,7 +206,7 @@ body {
   font-weight: 600;
 }
 
-/* User Info */
+/* ========== USER INFO IN HEADER ========== */
 .header .user-info {
   display: flex;
   align-items: center;
@@ -228,7 +217,7 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #007BFF;
+  background: #00aaff; /* 🌈 Blue avatar */
   color: #fff;
   display: flex;
   align-items: center;
@@ -240,5 +229,5 @@ body {
 .header .user-info .user-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #fff; /* 🌑 White text */
 }

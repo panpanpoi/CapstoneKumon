@@ -7,9 +7,9 @@ if ($_SESSION['account_type'] !== 'admin') {
     exit;
 }
 
-$username   = $_SESSION['user_id'];
-$userRole   = ucfirst($_SESSION['account_type']);
-$initials   = $_SESSION['initials'];
+$username   = $_SESSION['username'];   // Full name (from auth.php)
+$userRole   = ucfirst($_SESSION['account_type']); // Admin
+$initials   = $_SESSION['initials'];   // LR
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -96,16 +96,11 @@ $initials   = $_SESSION['initials'];
         <button id="showArchived" class="btn-filter">Archived Accounts</button>
       </div>
 
-      <!-- Search + Filter -->
+      <!-- Search -->
       <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
         <input type="text" id="searchInput" placeholder="Search users...">
-        <select id="statusFilter">
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="archived">Archived</option>
-        </select>
       </div>
-
+  
       <!-- User table -->
       <table id="userTable">
         <thead>
@@ -126,6 +121,6 @@ $initials   = $_SESSION['initials'];
   </div>
 
   <!-- External JS -->
-  <script src="../scripts/accountList.js"></script>
+  <script src="../scr/accountList.js"></script>
 </body>
 </html>
