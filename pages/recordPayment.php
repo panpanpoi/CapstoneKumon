@@ -75,7 +75,8 @@ $initials = $_SESSION['initials'];
 
     <!-- ================= MAIN CONTENT ================= -->
     <div class="main-content">
-      <div class="header">
+        <!-- Header -->
+        <div class="header">
             <div class="header-right">
                 <div class="notifications">
                     <i class="fas fa-bell"></i>
@@ -86,39 +87,43 @@ $initials = $_SESSION['initials'];
                     <div class="user-name"><?= htmlspecialchars($username) ?></div>
                 </div>
             </div>
-            <div class="dashboard-content" style="padding: 20px;"></div>
-        <h2>Record a Payment</h2>
+        </div>
 
-        <form id="paymentForm" action="../handler/addPayment.php" method="POST">
-            <!-- Student Selection -->
-            <input type="hidden" id="student_id" name="student_id" required>
-            <input type="text" id="student_search" placeholder="Search student..." required>
-            <div id="results" class="search-results"></div>
-            <div id="selectedStudent" class="selected-student"></div>
-            <button type="button" id="changeStudentBtn" class="change-btn">Change Student</button>
+        <!-- Dashboard / Page Content -->
+        <div class="dashboard-content" style="padding: 20px;">
+            <h2>Record a Payment</h2>
 
-            <!-- Payment Details -->
-            <label>Amount:</label>
-            <input type="number" step="0.01" name="amount" required>
+            <form id="paymentForm" action="../handler/addPayment.php" method="POST">
+                <!-- Student Selection -->
+                <input type="hidden" id="student_id" name="student_id" required>
+                <input type="text" id="student_search" placeholder="Search student..." required>
+                <div id="results" class="search-results"></div>
+                <div id="selectedStudent" class="selected-student"></div>
+                <button type="button" id="changeStudentBtn" class="change-btn">Change Student</button>
 
-            <label>Date:</label>
-            <input type="date" name="payment_date" required>
+                <!-- Payment Details -->
+                <label>Amount:</label>
+                <input type="number" step="0.01" name="amount" required>
 
-            <label>Payment Method:</label>
-            <select name="payment_method" required>
-                <option value="Cash">Cash</option>
-                <option value="GCash">GCash</option>
-                <option value="Bank">Bank</option>
-            </select>
+                <label>Date:</label>
+                <input type="date" name="payment_date" required>
 
-            <label>Reference Number:</label>
-            <input type="text" name="reference_number">
+                <label>Payment Method:</label>
+                <select name="payment_method" required>
+                    <option value="Cash">Cash</option>
+                    <option value="GCash">GCash</option>
+                    <option value="Bank">Bank</option>
+                </select>
 
-            <label>Notes:</label>
-            <textarea name="remarks"></textarea>
+                <label>Reference Number:</label>
+                <input type="text" name="reference_number">
 
-            <button type="submit" id="submitBtn" disabled>Save Payment</button>
-        </form>
+                <label>Notes:</label>
+                <textarea name="remarks"></textarea>
+
+                <button type="submit" id="submitBtn" disabled>Save Payment</button>
+            </form>
+        </div>
     </div>
 
     <!-- ================= SCRIPTS ================= -->
