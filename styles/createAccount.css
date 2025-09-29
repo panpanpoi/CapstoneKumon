@@ -1,0 +1,107 @@
+/* === Main Form Layout === */
+.main-content {
+    padding: 30px;
+    background: #121212; /* Match sidebar dark tone */
+    min-height: 100vh;
+    color: #fff;
+}
+
+/* === Header === */
+.header h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* === Form Container === */
+main form {
+    background: #1e1e1e;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* === Section Titles === */
+main h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #4da6ff;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+/* === Labels === */
+form label {
+    display: block;
+    margin: 8px 0 4px;
+    font-weight: 600;
+    color: #ddd;
+}
+
+/* === Inputs === */
+form input[type="text"],
+form input[type="password"],
+form input[type="number"],
+form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+form input:focus {
+    border-color: #4da6ff;
+    outline: none;
+    box-shadow: 0 0 6px rgba(77,166,255,0.4);
+}
+
+/* === Radio Groups === */
+#accountType label,
+#subject label,
+#student-plan label {
+    display: inline-block;
+    margin-right: 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    margin-right: 8px;
+    accent-color: #4da6ff; /* Modern browsers */
+}
+
+/* === Submit Button === */
+form button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #4da6ff;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+form button:hover {
+    background: #3385cc;
+}
+
+/* === Responsive Layout === */
+@media (max-width: 768px) {
+    main form {
+        padding: 20px;
+    }
+}

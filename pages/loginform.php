@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>KUMON Login</title>
-  <link rel="stylesheet" href="../styles/login.css">
+  <title>Kumon Login</title>
+    <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
+
+    <link rel="stylesheet" href="../styles/login.css">
   <!-- Font Awesome for Eye Icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>

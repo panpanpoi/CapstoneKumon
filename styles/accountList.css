@@ -7,28 +7,38 @@ table {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-family: Verdana, Arial, sans-serif; /* Consistent font */
 }
 
-th, td {
-  padding: 12px 15px;
-  text-align: center;
-  font-size: 14px;
-}
-
-th {
+/* Table Head */
+#userTable th {
   background: #007BFF;
-  color: #fff;
+  color: #fff !important;   /* White text for contrast */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-size: 14px;
+  padding: 12px 15px;
+  text-align: center;
 }
 
-tr:nth-child(even) {
-  background: #f9f9f9;
+/* Table Body Cells */
+#userTable td {
+  padding: 12px 15px;
+  text-align: center;
+  font-size: 14px;
+  color: #000 !important;   /* ✅ Black text */
 }
 
-tr:hover {
+/* Zebra Stripes */
+#userTable tr:nth-child(even) {
+  background: #fafafa;
+}
+
+/* Hover Effect */
+#userTable tr:hover {
   background: #f1f7ff;
+  color: #000 !important;  /* Keep text black */
 }
 
 /* Flash Message */
@@ -52,7 +62,7 @@ tr:hover {
   border: 1px solid #ccc;
   border-radius: 6px;
   outline: none;
-  transition: border 0.3s;
+  transition: border 0.3s, box-shadow 0.3s;
 }
 
 #searchInput:focus {
@@ -60,7 +70,7 @@ tr:hover {
   box-shadow: 0 0 5px rgba(0,123,255,0.4);
 }
 
-/* Action Buttons */
+/* === Action Buttons (KEEP COLORS) === */
 .btn-edit {
   background: #ffc107;
   color: #000;
@@ -69,6 +79,7 @@ tr:hover {
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
+  font-weight: bold;
   transition: background 0.3s, transform 0.2s;
 }
 
@@ -85,10 +96,41 @@ tr:hover {
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
+  font-weight: bold;
   transition: background 0.3s, transform 0.2s;
 }
 
 .btn-delete:hover {
   background: #c82333;
+  transform: scale(1.05);
+}
+.btn-restore {
+  background: #28a745;
+  color: #fff;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn-restore:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+.btn-filter{
+  background: #17a2b8;
+  color: #fff;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn-filter:hover {
+  background: #138496;
   transform: scale(1.05);
 }

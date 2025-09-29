@@ -1,25 +1,29 @@
 <?php
+header('Content-Type: application/json');
+
 try {
-    require_once __DIR__ . '/../database.php'; // must define $pdo
+    require_once __DIR__ . '/../database.php';
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Database configuration error.']);
+    echo json_encode(['error' => 'Database connection error.']);
     exit();
 }
 
 try {
-    // ✅ Get POST data
-    $id       = $_POST['id'] ?? null;
-    $name     = $_POST['name'] ?? null;
-    $surname  = $_POST['surname'] ?? null;
-    $address  = $_POST['address'] ?? null;
-    $mobile   = $_POST['mobile'] ?? null;
+    // --- Get POST data from JS ---
+    $id       = $_POST['user_id'] ?? null;
+    $name     = $_POST['Name'] ?? null;
+    $surname  = $_POST['Surname'] ?? null;
+    $address  = $_POST['Address'] ?? null;
+    $mobile   = $_POST['mobileNumber'] ?? null;
     $account  = $_POST['account_type'] ?? null;
 
-    if (!$id) {
-        throw new Exception("User ID is required.");
-    }
+    // --- Validate ---
+    if (!$id) throw new Exception("User ID is required.");
+    if (!$name || !$surname) throw new Exception("Name and surname are required.");
+    if (!$account) throw new Exception("Account type is required.");
 
+    // --- Update query ---
     $stmt = $pdo->prepare("
         UPDATE users 
         SET Name = :name,
@@ -39,9 +43,15 @@ try {
         ':account' => $account
     ]);
 
-    echo json_encode(["success" => true, "message" => "User updated successfully."]);
+    echo json_encode([
+        'success' => true,
+        'message' => 'User updated successfully.'
+    ]);
 
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(["error" => $e->getMessage()]);
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error'   => $e->getMessage()
+    ]);
 }

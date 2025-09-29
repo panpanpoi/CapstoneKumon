@@ -1,162 +1,219 @@
 // accountList.js
-(function () {
+(() => {
   const API = '../handler/';
-  let currentArchived = 0; // 0 = active, 1 = archived
+  const ROWS_PER_PAGE = 10;
 
-  // Sidebar dropdown toggle (safe-guard if no elements present)
-  document.querySelectorAll('.subnavbtn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const content = this.nextElementSibling;
-      const caret = this.querySelector('.caret-icon');
-      if (content) content.classList.toggle('show');
-      if (caret) caret.classList.toggle('rotate');
-    });
-  });
+  let currentArchived = 0; // 0 = active, 1 = archived
+  let currentPage = 1;
 
   const flashEl = document.getElementById('flashMessage');
+  const searchInput = document.getElementById('searchInput');
+  const tbody = document.querySelector('#userTable tbody');
+  const editPanel = document.getElementById('editPanel');
+  const editForm = document.getElementById('editUserForm');
+  const closeBtn = document.querySelector('.close-btn');
 
+  // --- Flash messaging ---
   function flash(msg) {
     if (!flashEl) return;
     flashEl.textContent = msg;
     flashEl.style.display = 'block';
     setTimeout(() => {
-      flashEl.textContent = '';
       flashEl.style.display = 'none';
     }, 2500);
   }
 
-  async function loadData(filter = '', archived = 0) {
-    currentArchived = archived ? 1 : 0;
+  // --- Sidebar dropdown toggle ---
+  document.querySelectorAll('.subnavbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.nextElementSibling?.classList.toggle('show');
+      btn.querySelector('.caret-icon')?.classList.toggle('rotate');
+    });
+  });
+
+  // --- Floating Edit Panel ---
+  function openPanel() {
+    editPanel?.classList.add('show');
+  }
+  function closePanel() {
+    editPanel?.classList.remove('show');
+  }
+  closeBtn?.addEventListener('click', closePanel);
+
+  // --- Load users ---
+  async function loadData(search = '', archived = 0, page = 1) {
+    currentArchived = archived;
+    currentPage = page;
+
     try {
-      const resp = await fetch(`${API}retrieve.php?search=${encodeURIComponent(filter)}&archived=${currentArchived}`);
-      if (!resp.ok) throw new Error('Network response not OK');
-      const data = await resp.json();
+      const resp = await fetch(`${API}retrieve.php?search=${encodeURIComponent(search)}&archived=${archived}&page=${page}&limit=${ROWS_PER_PAGE}`);
+      if (!resp.ok) throw new Error('Network error');
 
-      const tbody = document.querySelector('#userTable tbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
+      const json = await resp.json();
+      if (!json.success) throw new Error(json.error || 'Failed to load data');
 
-      if (!Array.isArray(data) || data.length === 0) {
-        tbody.insertAdjacentHTML('beforeend', '<tr><td colspan="8">No users found.</td></tr>');
-        return;
-      }
-
-      data.forEach(user => {
-        const status = user.status ?? (currentArchived ? 'archived' : 'active');
-        const actions = status === 'archived'
-          ? `<button class="btn-restore" data-id="${user.user_id}">Restore</button>`
-          : `<button class="btn-edit" data-id="${user.user_id}">Edit</button>
-             <button class="btn-delete" data-id="${user.user_id}">Archive</button>`;
-
-        const row = `
-          <tr>
-            <td>${escapeHtml(user.user_id)}</td>
-            <td>${escapeHtml(user.Name)}</td>
-            <td>${escapeHtml(user.Surname)}</td>
-            <td>${escapeHtml(user.Address)}</td>
-            <td>${escapeHtml(user.mobileNumber)}</td>
-            <td>${escapeHtml(user.account_type)}</td>
-            <td>${escapeHtml(status)}</td>
-            <td>${actions}</td>
-          </tr>
-        `;
-        tbody.insertAdjacentHTML('beforeend', row);
-      });
-    } catch (e) {
-      console.error(e);
+      renderTable(json.data);
+      renderPagination(json.meta?.pagination);
+    } catch (err) {
+      console.error(err);
       flash('Failed to load users.');
     }
   }
 
-  // event delegation for action buttons
-  const tableBody = document.querySelector('#userTable tbody');
-  if (tableBody) {
-    tableBody.addEventListener('click', async (evt) => {
-      const el = evt.target;
-      if (el.matches('.btn-delete')) {
-        const id = el.dataset.id;
-        if (!confirm('Archive this user?')) return;
-        await archiveUser(id);
-      } else if (el.matches('.btn-restore')) {
-        const id = el.dataset.id;
-        if (!confirm('Restore this user?')) return;
-        await restoreUser(id);
-      } else if (el.matches('.btn-edit')) {
-        const id = el.dataset.id;
-        editUser(id);
-      }
+  // --- Render user table ---
+  function renderTable(users) {
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!Array.isArray(users) || users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8">No users found.</td></tr>';
+      return;
+    }
+
+    users.forEach(user => {
+      const status = user.status || (currentArchived ? 'archived' : 'active');
+      const actions = status === 'archived'
+        ? `<button class="btn-restore" data-id="${user.user_id}">Restore</button>`
+        : `<button class="btn-edit" data-id="${user.user_id}">Edit</button>
+           <button class="btn-delete" data-id="${user.user_id}">Archive</button>`;
+
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${escapeHtml(user.user_id)}</td>
+          <td>${escapeHtml(user.Name)}</td>
+          <td>${escapeHtml(user.Surname)}</td>
+          <td>${escapeHtml(user.Address)}</td>
+          <td>${escapeHtml(user.mobileNumber)}</td>
+          <td>${escapeHtml(user.account_type)}</td>
+          <td>${escapeHtml(status)}</td>
+          <td>${actions}</td>
+        </tr>
+      `);
     });
   }
 
-  function editUser(id) {
-    window.location.href = `editUser.php?id=${id}`;
+  // --- Table actions ---
+  tbody?.addEventListener('click', e => {
+    const el = e.target;
+    if (el.matches('.btn-delete')) {
+      if (confirm('Archive this user?')) updateStatus(el.dataset.id, 'archived', 'User archived.');
+    } else if (el.matches('.btn-restore')) {
+      if (confirm('Restore this user?')) updateStatus(el.dataset.id, 'active', 'User restored.');
+    } else if (el.matches('.btn-edit')) {
+      openEditPanel(el.dataset.id);
+    }
+  });
+
+  // --- Open edit panel ---
+  async function openEditPanel(id) {
+    try {
+      const resp = await fetch(`${API}getUser.php?id=${encodeURIComponent(id)}`);
+      if (!resp.ok) throw new Error('Network error');
+      const json = await resp.json();
+      if (!json.success || !json.data) throw new Error(json.error || 'User not found');
+
+      const user = json.data;
+
+      editForm.user_id.value = user.user_id;
+      editForm.Name.value = user.Name;
+      editForm.Surname.value = user.Surname;
+      editForm.Address.value = user.Address;
+      editForm.mobileNumber.value = user.mobileNumber;
+      editForm.account_type.value = user.account_type;
+
+      openPanel();
+    } catch (err) {
+      console.error(err);
+      flash('Failed to load user.');
+    }
   }
 
-  async function archiveUser(id) {
+  // --- Submit edit form ---
+  editForm?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const formData = new FormData(editForm);
+
+    try {
+      const resp = await fetch(`${API}updateUser.php`, {
+        method: 'POST',
+        body: formData
+      });
+      const result = await resp.json();
+      if (!resp.ok || result.error) throw new Error(result.error || 'Update failed');
+
+      flash('User updated successfully.');
+      closePanel();
+      loadData(searchInput.value || '', currentArchived, currentPage);
+    } catch (err) {
+      console.error(err);
+      flash('Failed to update user.');
+    }
+  });
+
+  // --- Archive / Restore ---
+  async function updateStatus(id, status, successMsg) {
     try {
       const resp = await fetch(`${API}updateUserStatus.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id=${encodeURIComponent(id)}&status=archived`
+        body: `id=${encodeURIComponent(id)}&status=${encodeURIComponent(status)}`
       });
       const result = await resp.json();
       if (!resp.ok || result.error) throw new Error(result.error || 'Request failed');
-      flash('User archived.');
-      loadData(document.getElementById('searchInput')?.value || '', currentArchived);
-    } catch (e) {
-      console.error(e);
-      flash('Failed to archive user.');
+
+      flash(successMsg);
+      loadData(searchInput.value || '', currentArchived, currentPage);
+    } catch (err) {
+      console.error(err);
+      flash('Failed to update user status.');
     }
   }
 
-  async function restoreUser(id) {
-    try {
-      const resp = await fetch(`${API}updateUserStatus.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id=${encodeURIComponent(id)}&status=active`
-      });
-      const result = await resp.json();
-      if (!resp.ok || result.error) throw new Error(result.error || 'Request failed');
-      flash('User restored.');
-      loadData(document.getElementById('searchInput')?.value || '', currentArchived);
-    } catch (e) {
-      console.error(e);
-      flash('Failed to restore user.');
-    }
-  }
-
-  // UI: filter buttons
-  const btnActive = document.getElementById('showActive');
-  const btnArchived = document.getElementById('showArchived');
-  function setActiveFilterButton(activeId) {
+  // --- Filters ---
+  function setActiveFilterButton(id) {
     document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-    const el = document.getElementById(activeId);
-    if (el) el.classList.add('active');
+    document.getElementById(id)?.classList.add('active');
   }
 
-  if (btnActive) {
-    btnActive.addEventListener('click', () => {
-      setActiveFilterButton('showActive');
-      loadData(document.getElementById('searchInput')?.value || '', 0);
-    });
-  }
-  if (btnArchived) {
-    btnArchived.addEventListener('click', () => {
-      setActiveFilterButton('showArchived');
-      loadData(document.getElementById('searchInput')?.value || '', 1);
-    });
+  document.getElementById('showActive')?.addEventListener('click', () => {
+    setActiveFilterButton('showActive');
+    loadData(searchInput.value || '', 0, 1);
+  });
+  document.getElementById('showArchived')?.addEventListener('click', () => {
+    setActiveFilterButton('showArchived');
+    loadData(searchInput.value || '', 1, 1);
+  });
+
+  // --- Search input ---
+  searchInput?.addEventListener('input', debounce(() => {
+    loadData(searchInput.value || '', currentArchived, 1);
+  }, 250));
+
+  // --- Pagination ---
+  function renderPagination(pagination) {
+    const container = document.getElementById('pagination');
+    if (!container || !pagination) return;
+
+    const { page, totalPages } = pagination;
+    container.innerHTML = '';
+
+    if (totalPages <= 1) return;
+
+    if (page > 1) container.insertAdjacentHTML('beforeend', `<button class="page-btn" data-page="${page - 1}">Prev</button>`);
+    for (let p = 1; p <= totalPages; p++) {
+      container.insertAdjacentHTML('beforeend', `<button class="page-btn ${p === page ? 'active' : ''}" data-page="${p}">${p}</button>`);
+    }
+    if (page < totalPages) container.insertAdjacentHTML('beforeend', `<button class="page-btn" data-page="${page + 1}">Next</button>`);
   }
 
-  // Search input (debounced)
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('input', debounce(() => {
-      loadData(searchInput.value || '', currentArchived);
-    }, 250));
-  }
+  document.addEventListener('click', e => {
+    if (e.target.classList.contains('page-btn')) {
+      const newPage = parseInt(e.target.dataset.page, 10);
+      loadData(searchInput.value || '', currentArchived, newPage);
+    }
+  });
 
-  // Utility: simple debounce
+  // --- Utils ---
   function debounce(fn, wait = 200) {
     let t;
     return (...args) => {
@@ -165,7 +222,6 @@
     };
   }
 
-  // Utility: escape HTML to avoid injection in table
   function escapeHtml(str) {
     if (str == null) return '';
     return String(str)
@@ -176,6 +232,7 @@
       .replace(/'/g, '&#039;');
   }
 
-  // initial load: active users
-  loadData('', 0);
+  // --- Initial load ---
+  loadData('', 0, 1);
+
 })();

@@ -12,7 +12,13 @@ try {
     $status = $_POST['status'] ?? null; // expected values: "active" or "archived"
 
     if (!$id || !$status) {
+        http_response_code(400);
         throw new Exception("User ID and status are required.");
+    }
+
+    if (!in_array($status, ['active', 'archived'])) {
+        http_response_code(400);
+        throw new Exception("Invalid status value.");
     }
 
     $stmt = $pdo->prepare("
@@ -26,9 +32,12 @@ try {
         ':status' => $status
     ]);
 
-    echo json_encode(["success" => true, "message" => "User status updated to $status"]);
+    echo json_encode([
+        "success" => true,
+        "message" => "User status updated to $status"
+    ]);
 
 } catch (Exception $e) {
-    http_response_code(500);
+    http_response_code($http_response_code ?? 500);
     echo json_encode(["error" => $e->getMessage()]);
 }

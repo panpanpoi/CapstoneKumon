@@ -15,6 +15,7 @@ $initials   = $_SESSION['initials'];   // LR
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonAdmin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,7 +28,7 @@ $initials   = $_SESSION['initials'];   // LR
         <div class="logo">
             <h1>
             <a href="kumonAdmin.php">
-                    <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:80px; vertical-align:middle; margin-right:6px;">
+                    <img src="../styles/kumonLogoBlue.png" alt="KUMON Logo" style="height:55px; vertical-align:middle; margin-right:6px;">
                 </a>
             </h1>
             <p>Practice Makes Possibilities</p>
