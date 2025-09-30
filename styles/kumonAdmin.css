@@ -18,7 +18,10 @@ body {
   flex-direction: column;
   box-shadow: 2px 0 8px rgba(0,0,0,0.5); /* 🔲 Stronger shadow for contrast */
   position: fixed;
-  height: 100%;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 /* LOGO */

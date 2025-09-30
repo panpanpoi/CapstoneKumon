@@ -86,7 +86,8 @@ $initials = $_SESSION['initials'];
                     <div class="user-name"><?= htmlspecialchars($username) ?></div>
                 </div>
             </div>
-            <div class="dashboard-content" style="padding: 20px;"></div>
+        </div>
+        <div class="dashboard-content" style="padding: 20px;"></div>
         <h2>Record a Payment</h2>
 
         <form id="paymentForm" action="../handler/addPayment.php" method="POST">
