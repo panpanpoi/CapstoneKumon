@@ -1,225 +1,166 @@
-/* === Reset === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* =========================================================
+   📌 VIEW PAYMENTS PAGE
+   ========================================================= */
 
-/* === Sidebar / Header === */
-.sidebar {
-  background: linear-gradient(90deg, #6DCFF6, #3f97f5);
-  color: white;
-  padding: 25px 60px;
-  text-align: left;
-  width: 100%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  border-radius: 0 0 12px 12px;
-  margin-bottom: 25px;
-}
-
-.sidebar .logo h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.sidebar .logo a {
-  color: white;
-  text-decoration: none;
-}
-
-.sidebar p {
-  margin: 4px 0 0;
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-/* === Page Heading === */
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 22px;
-  color: #333;
-}
-
-/* === Success / Message Boxes === */
-.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-  padding: 12px 18px;
-  border-radius: 6px;
-  margin: 15px auto;
-  width: 60%;
-  text-align: center;
-  font-size: 14px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-/* === Filters Section === */
-.filters {
+/* ---------- FILTER BAR ---------- */
+.filter-bar {
+  margin: 15px 0;
   display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin: 25px auto;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
-.filters div {
-  text-align: left;
+.filter-bar label {
+  font-weight: 600;
+  color: #ddd;
 }
 
-.filters label {
-  font-size: 14px;
-  color: #333;
-}
-
-.filters input {
-  padding: 8px 12px;
+.filter-bar select {
+  padding: 6px 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 5px;
-  font-size: 14px;
-  width: 220px;
-  transition: all 0.2s ease;
+  border: 1px solid #333;
+  background: #121212;
+  color: #eee;
 }
 
-.filters input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0,123,255,0.3);
-}
-
-/* === Student Filter === */
-.student-filter {
-  text-align: center;
-  margin: 25px auto;
-}
-
-.student-filter label {
-  font-size: 14px;
-  color: #333;
-}
-
-.student-filter input {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 5px;
-  font-size: 14px;
-  width: 280px;
-  transition: all 0.2s ease;
-}
-
-.student-filter input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0,123,255,0.3);
-}
-
-.search-results {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin: 5px auto;
-  max-height: 200px;
-  overflow-y: auto;
-  width: 280px;
-  font-size: 14px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
-
-.search-results div {
-  padding: 8px;
-  cursor: pointer;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.search-results div:hover {
-  background: #f0f8ff;
-}
-
-#selectedStudent {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #333;
-}
-
-.change-btn {
-  display: none;
-  margin-top: 10px;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  background: #007bff;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.change-btn:hover {
-  background: #0056b3;
-}
-
-/* === Payments Table === */
-table {
-  width: 90%;
-  margin: 25px auto;
+/* ---------- TABLE ---------- */
+#paymentsTable {
+  width: 100%;
   border-collapse: collapse;
-  background: white;
+  margin-top: 15px;
+  background: #1e1e1e;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-thead {
-  background: #007bff;
-  color: white;
-  font-size: 14px;
-}
-
-thead th {
+#paymentsTable th,
+#paymentsTable td {
   padding: 12px;
-  text-align: center;
+  border-bottom: 1px solid #2a2a2a;
+  text-align: left;
 }
 
-tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #eee;
+#paymentsTable th {
+  background: #121212;
+  color: #00aaff;
   font-size: 14px;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-tbody tr:hover {
-  background: #f9f9f9;
+#paymentsTable tr:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* === Action Buttons in Table === */
-.action-btn {
-  padding: 6px 10px;
-  font-size: 13px;
+#paymentsTable td {
+  color: #ddd;
+  font-size: 14px;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  margin: 2px;
+  font-size: 13px;
   transition: 0.2s;
 }
 
-.action-btn.archive {
-  background: #dc3545;
-  color: white;
+.btn-primary {
+  background: #00aaff;
+  color: #fff;
 }
 
-.action-btn.archive:hover {
-  background: #a71d2a;
+.btn-primary:hover {
+  background: #008ecc;
 }
 
-.action-btn.restore {
-  background: #28a745;
-  color: white;
+.btn-danger {
+  background: #ff3b3b;
+  color: #fff;
 }
 
-.action-btn.restore:hover {
-  background: #1e7e34;
+.btn-danger:hover {
+  background: #cc2e2e;
+}
+
+/* ---------- FLASH MESSAGE ---------- */
+.alert {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  display: none;
+}
+
+.alert-success {
+  background: #00a86b;
+  color: #fff;
+}
+
+.alert-error {
+  background: #ff3b3b;
+  color: #fff;
+}
+
+/* ---------- MODAL ---------- */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+  background: #1e1e1e;
+  margin: 8% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 420px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  color: #eee;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #00aaff;
+}
+
+.close-btn {
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+/* ---------- FORM ---------- */
+.form-group {
+  margin: 12px 0;
+}
+
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #121212;
+  color: #eee;
 }

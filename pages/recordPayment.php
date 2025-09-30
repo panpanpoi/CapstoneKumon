@@ -96,14 +96,14 @@ $initials = $_SESSION['initials'];
             <form id="paymentForm" action="../handler/addPayment.php" method="POST">
                 <!-- Student Selection -->
                 <input type="hidden" id="student_id" name="student_id" required>
-                <input type="text" id="student_search" placeholder="Search student..." required>
+                <input type="text" id="student_search" placeholder="Search student ID (EX:KSTU2025000)" required>
                 <div id="results" class="search-results"></div>
                 <div id="selectedStudent" class="selected-student"></div>
                 <button type="button" id="changeStudentBtn" class="change-btn">Change Student</button>
 
                 <!-- Payment Details -->
                 <label>Amount:</label>
-                <input type="number" step="0.01" name="amount" required>
+                <input type="number" step="0.01" name="amount" placeholder="Enter amount" required>
 
                 <label>Date:</label>
                 <input type="date" name="payment_date" required>
@@ -126,7 +126,7 @@ $initials = $_SESSION['initials'];
         </div>
     </div>
 
-    <!-- ================= SCRIPTS ================= -->
+    
     <script src="../scr/recordPayment.js"></script>
     <script src="../scr/adminSidebar.js"></script>
 </body>
