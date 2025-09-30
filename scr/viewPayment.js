@@ -37,15 +37,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 html += `<tr><td colspan="6">No payments found.</td></tr>`;
             } else {
                 data.forEach(p => {
+                    let receiptHTML = "-";
+                    if (p.receipt_path) {
+                        const ext = p.receipt_path.split('.').pop().toLowerCase();
+                        if (["jpg","jpeg","png","gif"].includes(ext)) {
+                            receiptHTML = `<img src="../${p.receipt_path}" class="receipt-thumbnail" style="width:50px;height:50px;object-fit:cover;border-radius:4px;">`;
+                        } else {
+                            receiptHTML = `<a href="../${p.receipt_path}" target="_blank">View File</a>`;
+                        }
+                        receiptHTML += ` <button class="btn-download" onclick="downloadReceipt('../${p.receipt_path}')">Download</button>`;
+                    }
+
                     html += `
                         <tr id="payment-${p.payment_id}">
                             <td>${p.student_name}</td>
                             <td>${p.amount}</td>
                             <td>${p.payment_date}</td>
                             <td class="remarks-cell">${p.remarks || "-"}</td>
-                            <td class="receipt-cell">
-                                ${p.receipt_path ? `<a href="../${p.receipt_path}" target="_blank">View</a>` : "-"}
-                            </td>
+                            <td class="receipt-cell">${receiptHTML}</td>
                             ${currentFilter === 0 ? `
                                 <td>
                                     <button class="btn-verify" data-id="${p.payment_id}">Verify</button>
@@ -81,16 +90,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         const result = await res.json();
 
                         if (result.success) {
-                            flashMessage.textContent = result.message;
-                            flashMessage.className = "alert success";
+                            showFlash(result.message, "success");
                             loadPayments();
                         } else {
-                            flashMessage.textContent = result.error || "Failed to archive.";
-                            flashMessage.className = "alert error";
+                            showFlash(result.error || "Failed to archive.", "error");
                         }
                     } catch (err) {
-                        flashMessage.textContent = "Error archiving payment.";
-                        flashMessage.className = "alert error";
+                        showFlash("Error archiving payment.", "error");
                     }
                 });
             });
@@ -99,6 +105,24 @@ document.addEventListener("DOMContentLoaded", () => {
             paymentsContainer.innerHTML = `<p class="error">Failed to load payments.</p>`;
             console.error(err);
         }
+    }
+
+    // Download receipt
+    window.downloadReceipt = function(url) {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = url.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Show flash message
+    function showFlash(message, type = "success") {
+        flashMessage.textContent = message;
+        flashMessage.className = `alert alert-${type}`;
+        flashMessage.style.display = "block";
+        setTimeout(() => flashMessage.style.display = "none", 3000);
     }
 
     // Close modal
@@ -119,18 +143,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await res.json();
 
             if (result.success) {
-                flashMessage.textContent = result.message;
-                flashMessage.className = "alert success";
+                showFlash(result.message, "success");
                 verifyModal.style.display = "none";
                 verifyForm.reset();
-                loadPayments(); // reload table
+                loadPayments();
             } else {
-                flashMessage.textContent = result.error || "Failed to verify.";
-                flashMessage.className = "alert error";
+                showFlash(result.error || "Failed to verify.", "error");
             }
         } catch (err) {
-            flashMessage.textContent = "Error verifying payment.";
-            flashMessage.className = "alert error";
+            showFlash("Error verifying payment.", "error");
         }
     });
 

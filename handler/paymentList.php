@@ -2,12 +2,12 @@
 require_once "../database.php";
 
 // ✅ Filter payments (default: active)
-$status = isset($_GET['status']) && $_GET['status'] === 'archived' ? 'archived' : 'active';
+$status = ($_GET['status'] ?? 'active') === 'archived' ? 'archived' : 'active';
 
-// fetch payments + join students
+// ✅ Fetch payments + join students
 $stmt = $pdo->prepare("
     SELECT p.payment_id, p.amount, p.payment_date, p.payment_method, 
-           p.reference_number, p.remarks, p.status,
+           p.reference_number, p.remarks, p.status, p.receipt_path,
            s.studentCode, s.Firstname, s.Lastname
     FROM payments p
     JOIN students s ON p.student_id = s.student_id
@@ -27,27 +27,53 @@ echo "<thead>
           <th>Method</th>
           <th>Reference</th>
           <th>Notes</th>
+          <th>Receipt</th>
           <th>Actions</th>
         </tr>
-      </thead><tbody>";
+      </thead>
+      <tbody>";
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $studentName = htmlspecialchars($row['Firstname'] . " " . $row['Lastname']);
-    $studentCode = htmlspecialchars($row['studentCode']);
     $paymentId   = (int)$row['payment_id'];
+    $studentCode = htmlspecialchars($row['studentCode']);
+    $studentName = htmlspecialchars($row['Firstname'] . " " . $row['Lastname']);
+    $amount      = htmlspecialchars($row['amount']);
+    $date        = htmlspecialchars($row['payment_date']);
+    $method      = htmlspecialchars($row['payment_method']);
+    $reference   = htmlspecialchars($row['reference_number']);
+    $remarks     = htmlspecialchars($row['remarks']);
+    $receiptPath = $row['receipt_path'] ?? '';
 
     echo "<tr id='row-{$paymentId}'>
             <td>{$paymentId}</td>
             <td>{$studentCode}</td>
             <td>{$studentName}</td>
-            <td>{$row['amount']}</td>
-            <td>{$row['payment_date']}</td>
-            <td>{$row['payment_method']}</td>
-            <td>{$row['reference_number']}</td>
-            <td>{$row['remarks']}</td>
+            <td>{$amount}</td>
+            <td>{$date}</td>
+            <td>{$method}</td>
+            <td>{$reference}</td>
+            <td>{$remarks}</td>
             <td>";
 
-    // ✅ Action buttons
+    // ✅ Show receipt if exists
+    if (!empty($receiptPath)) {
+        $safePath = htmlspecialchars("../" . $receiptPath);
+        $ext = strtolower(pathinfo($receiptPath, PATHINFO_EXTENSION));
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+            echo "<a href='{$safePath}' target='_blank'>
+                    <img src='{$safePath}' alt='Receipt' class='receipt-thumb'>
+                  </a>";
+        } else {
+            echo "<a href='{$safePath}' target='_blank'>View Receipt</a>";
+        }
+    } else {
+        echo "No receipt";
+    }
+
+    echo "</td>
+          <td>";
+
+    // ✅ Actions
     if ($status === 'active') {
         echo "<button class='btn-verify' onclick=\"openVerifyModal({$paymentId})\">Verify</button>
               <button class='btn-archive' onclick=\"archivePayment({$paymentId})\">Archive</button>";

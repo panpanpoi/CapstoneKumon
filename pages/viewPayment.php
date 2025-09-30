@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php"; 
+require_once "../handler/auth.php";
 
 // ✅ Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
@@ -7,9 +7,9 @@ if ($_SESSION['account_type'] !== 'admin') {
     exit;
 }
 
-$username   = $_SESSION['username'];   
-$userRole   = ucfirst($_SESSION['account_type']);
-$initials   = $_SESSION['initials'];
+$username = $_SESSION['username'];
+$userRole = ucfirst($_SESSION['account_type']);
+$initials = $_SESSION['initials'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,12 +19,12 @@ $initials   = $_SESSION['initials'];
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonAdmin.css">
-    <link rel="stylesheet" href="../styles/viewPayments.css">
+    <link rel="stylesheet" href="../styles/viewPayment.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
+    <aside class="sidebar">
         <div class="logo">
             <h1>
                 <a href="kumonAdmin.php">
@@ -35,7 +35,7 @@ $initials   = $_SESSION['initials'];
         </div>
 
         <!-- User Profile -->
-        <div class="user-profile"> 
+        <div class="user-profile">
             <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
             <div class="user-details">
                 <div class="username"><?= htmlspecialchars($username) ?></div>
@@ -58,7 +58,7 @@ $initials   = $_SESSION['initials'];
             </li>
             <li class="subnav">
                 <button class="subnavbtn active">
-                    <i class="fa fa-credit-card"></i> Payment Management 
+                    <i class="fa fa-credit-card"></i> Payment Management
                     <i class="fa fa-caret-down caret-icon"></i>
                 </button>
                 <ul class="subnav-content">
@@ -68,10 +68,11 @@ $initials   = $_SESSION['initials'];
             </li>
             <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
         </ul>
-    </div>
+    </aside>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <main class="main-content">
+        <!-- Header -->
         <div class="header">
             <div class="header-right">
                 <div class="notifications">
@@ -85,23 +86,25 @@ $initials   = $_SESSION['initials'];
             </div>
         </div>
 
-        <!-- Page Content -->
-        <h2>Payments List</h2>
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <h2>Payments List</h2>
 
-        <!-- Filter -->
-        <div class="filter-buttons">
-            <button id="showActive" class="btn-filter active">Active Payments</button>
-            <button id="showArchived" class="btn-filter">Archived Payments</button>
+            <!-- Filter Buttons -->
+            <div class="filter-bar">
+                <button id="showActive" class="btn-filter active">Active Payments</button>
+                <button id="showArchived" class="btn-filter">Archived Payments</button>
+            </div>
+
+            <!-- Payments Table Container -->
+            <div id="paymentsContainer"></div>
+
+            <!-- Flash Message -->
+            <div id="flashMessage" class="alert"></div>
         </div>
+    </main>
 
-        <!-- Container where payments table will be injected -->
-        <div id="paymentsContainer"></div>
-
-        <!-- Flash Message -->
-        <div id="flashMessage" class="alert"></div>
-    </div>
-
-    <!-- 📌 Verify Modal -->
+    <!-- Verify Modal -->
     <div id="verifyModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="closeModal">&times;</span>

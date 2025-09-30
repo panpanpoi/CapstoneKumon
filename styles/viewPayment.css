@@ -2,165 +2,209 @@
    📌 VIEW PAYMENTS PAGE
    ========================================================= */
 
+/* ---------- DASHBOARD CONTENT ---------- */
+.dashboard-content {
+    padding: 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 /* ---------- FILTER BAR ---------- */
 .filter-bar {
-  margin: 15px 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
 }
 
-.filter-bar label {
-  font-weight: 600;
-  color: #ddd;
+.btn-filter {
+    background: #17a2b8;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
 }
 
-.filter-bar select {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #333;
-  background: #121212;
-  color: #eee;
+.btn-filter.active {
+    background: #138496;
 }
 
-/* ---------- TABLE ---------- */
+.btn-filter:hover {
+    transform: scale(1.05);
+}
+
+/* ---------- PAYMENTS TABLE ---------- */
 #paymentsTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-  background: #1e1e1e;
-  border-radius: 8px;
-  overflow: hidden;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1e1e1e;
 }
 
 #paymentsTable th,
 #paymentsTable td {
-  padding: 12px;
-  border-bottom: 1px solid #2a2a2a;
-  text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #2a2a2a;
+    text-align: left;
+    font-size: 14px;
 }
 
 #paymentsTable th {
-  background: #121212;
-  color: #00aaff;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    background: #121212;
+    color: #00aaff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 #paymentsTable tr:hover {
-  background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 #paymentsTable td {
-  color: #ddd;
-  font-size: 14px;
+    color: #ddd;
 }
 
-/* ---------- BUTTONS ---------- */
-.btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: 0.2s;
+.receipt-thumbnail {
+    max-width: 60px;
+    max-height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    cursor: pointer;
 }
 
-.btn-primary {
-  background: #00aaff;
-  color: #fff;
+.receipt-link {
+    color: #00aaff;
+    text-decoration: underline;
+    font-size: 13px;
 }
 
-.btn-primary:hover {
-  background: #008ecc;
+/* Download button next to receipt */
+.btn-download {
+    background: #00aaff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-left: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.btn-danger {
-  background: #ff3b3b;
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background: #cc2e2e;
+.btn-download:hover {
+    background: #008ecc;
 }
 
 /* ---------- FLASH MESSAGE ---------- */
 .alert {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: none;
 }
 
 .alert-success {
-  background: #00a86b;
-  color: #fff;
+    background: #00a86b;
+    color: #fff;
 }
 
 .alert-error {
-  background: #ff3b3b;
-  color: #fff;
+    background: #ff3b3b;
+    color: #fff;
 }
 
 /* ---------- MODAL ---------- */
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background: rgba(0, 0, 0, 0.7);
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.7);
 }
 
 .modal-content {
-  background: #1e1e1e;
-  margin: 8% auto;
-  padding: 20px;
-  border-radius: 10px;
-  width: 420px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
-  color: #eee;
+    background: #1e1e1e;
+    margin: 8% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 420px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    color: #eee;
 }
 
 .modal-content h3 {
-  margin-top: 0;
-  color: #00aaff;
+    margin-top: 0;
+    color: #00aaff;
 }
 
 .close-btn {
-  float: right;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #aaa;
+    float: right;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
 }
 
 .close-btn:hover {
-  color: #fff;
+    color: #fff;
 }
 
 /* ---------- FORM ---------- */
 .form-group {
-  margin: 12px 0;
+    margin: 12px 0;
 }
 
 .form-group label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 6px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
 }
 
 .form-group input,
 .form-group textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #333;
-  border-radius: 6px;
-  background: #121212;
-  color: #eee;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #121212;
+    color: #eee;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: #00aaff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #008ecc;
+}
+
+.btn-danger {
+    background: #ff3b3b;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #cc2e2e;
 }
