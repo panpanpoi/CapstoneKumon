@@ -1,5 +1,5 @@
 /* =========================================================
-   📌 VIEW PAYMENTS PAGE
+   📌 VIEW PAYMENTS PAGE - CLEAN WHITE TABLE STYLE
    ========================================================= */
 
 /* ---------- DASHBOARD CONTENT ---------- */
@@ -8,6 +8,7 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* ---------- FILTER BAR ---------- */
@@ -18,7 +19,7 @@
 }
 
 .btn-filter {
-    background: #17a2b8;
+    background-color: #007bff; /* Blue filter buttons */
     color: #fff;
     padding: 6px 12px;
     border: none;
@@ -30,7 +31,7 @@
 }
 
 .btn-filter.active {
-    background: #138496;
+    background-color: #0056b3;
 }
 
 .btn-filter:hover {
@@ -44,64 +45,76 @@
     margin-top: 15px;
     border-radius: 8px;
     overflow: hidden;
-    background: #1e1e1e;
+    background-color: #ffffff; /* White table background */
+    color: #000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 #paymentsTable th,
 #paymentsTable td {
     padding: 12px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #ddd;
     text-align: left;
     font-size: 14px;
 }
 
 #paymentsTable th {
-    background: #121212;
-    color: #00aaff;
+    background-color: #007bff; /* Blue headers */
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 #paymentsTable tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background-color: #f1f1f1;
 }
 
 #paymentsTable td {
-    color: #ddd;
+    color: #000;
 }
 
-.receipt-thumbnail {
-    max-width: 60px;
-    max-height: 40px;
-    border-radius: 4px;
-    object-fit: cover;
-    cursor: pointer;
+/* Optional: make table scrollable if too tall */
+#paymentsContainer {
+    max-height: 500px;
+    overflow-y: auto;
 }
 
-.receipt-link {
-    color: #00aaff;
-    text-decoration: underline;
-    font-size: 13px;
-}
-
-/* Download button next to receipt */
-.btn-download {
-    background: #00aaff;
+/* ---------- BUTTONS ---------- */
+.btn-primary {
+    background-color: #28a745; /* Green for Verify / Restore */
     color: #fff;
+    padding: 6px 12px;
     border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    margin-left: 6px;
-    font-size: 12px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
 }
 
-.btn-download:hover {
-    background: #008ecc;
+.btn-primary:hover {
+    background-color: #218838;
+    transform: scale(1.05);
 }
 
-/* ---------- FLASH MESSAGE ---------- */
+.btn-danger {
+    background-color: #dc3545; /* Red for Archive */
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+/* ---------- FLASH MESSAGES ---------- */
 .alert {
     margin-top: 10px;
     padding: 10px;
@@ -111,12 +124,12 @@
 }
 
 .alert-success {
-    background: #00a86b;
+    background-color: #28a745;
     color: #fff;
 }
 
 .alert-error {
-    background: #ff3b3b;
+    background-color: #dc3545;
     color: #fff;
 }
 
@@ -130,22 +143,23 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.6);
 }
 
 .modal-content {
-    background: #1e1e1e;
+    background-color: #fff;
     margin: 8% auto;
     padding: 20px;
     border-radius: 10px;
     width: 420px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    color: #eee;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    color: #000;
 }
 
 .modal-content h3 {
     margin-top: 0;
-    color: #00aaff;
+    color: #007bff;
+    font-size: 18px;
 }
 
 .close-btn {
@@ -153,11 +167,11 @@
     font-size: 22px;
     font-weight: bold;
     cursor: pointer;
-    color: #aaa;
+    color: #555;
 }
 
 .close-btn:hover {
-    color: #fff;
+    color: #000;
 }
 
 /* ---------- FORM ---------- */
@@ -175,36 +189,14 @@
 .form-group textarea {
     width: 100%;
     padding: 8px;
-    border: 1px solid #333;
+    border: 1px solid #ccc;
     border-radius: 6px;
-    background: #121212;
-    color: #eee;
+    background-color: #f9f9f9;
+    color: #000;
+    font-size: 14px;
 }
 
-/* ---------- BUTTONS ---------- */
-.btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
+/* ---------- FILE INPUT ---------- */
+input[type="file"] {
     cursor: pointer;
-    font-size: 13px;
-    transition: 0.2s;
-}
-
-.btn-primary {
-    background: #00aaff;
-    color: #fff;
-}
-
-.btn-primary:hover {
-    background: #008ecc;
-}
-
-.btn-danger {
-    background: #ff3b3b;
-    color: #fff;
-}
-
-.btn-danger:hover {
-    background: #cc2e2e;
 }

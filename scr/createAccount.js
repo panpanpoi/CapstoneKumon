@@ -1,64 +1,117 @@
 // createAccount.js
-(function () {
-  document.addEventListener('DOMContentLoaded', () => {
+(() => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
     const radios = document.querySelectorAll('input[name="account_type"]');
-    const form = document.querySelector('form');
-    const studentPlan = document.getElementById('student-plan');
-    const subject = document.getElementById('subject');
-    const fnameEl = document.getElementById('fname');
-    const lnameEl = document.getElementById('lname');
-    const usernameEl = document.getElementById('username');
-    const passwordEl = document.getElementById('password');
 
-    // ✅ 1. Uncheck account type radios on page load
-    radios.forEach(radio => radio.checked = false);
+    const fields = {
+      studentPlan: document.getElementById("student-plan"),
+      subject: document.getElementById("subject"),
+      studentCodeField: document.getElementById("student-code-field"),
+      teacherCodeField: document.getElementById("teacher-code-field"),
+      fname: document.getElementById("fname"),
+      lname: document.getElementById("lname"),
+      username: document.getElementById("username"),
+      password: document.getElementById("password"),
+      studentCode: document.getElementById("studentCode"),
+      teacherCode: document.getElementById("teacherCode"),
+    };
 
-    // ✅ 2. Allow unchecking a radio by clicking again
+    // Reset radios on load
+    radios.forEach(r => (r.checked = false));
+
+    // Allow radios to be unselected
     radios.forEach(radio => {
-      radio.addEventListener('mousedown', function () {
-        this.wasChecked = this.checked;
-      });
-      radio.addEventListener('click', function (e) {
-        if (this.wasChecked) {
-          this.checked = false;
+      radio.addEventListener("mousedown", () => (radio.wasChecked = radio.checked));
+      radio.addEventListener("click", e => {
+        if (radio.wasChecked) {
+          radio.checked = false;
           e.preventDefault();
+          toggleFields(null); // hide all if none selected
         }
       });
     });
 
-    // ✅ 3. Toggle student-only fields
-    radios.forEach(radio => {
-      radio.addEventListener('change', function () {
-        const isStudent = this.value === 'student';
-        if (studentPlan) studentPlan.style.display = isStudent ? 'block' : 'none';
-        if (subject) subject.style.display = isStudent ? 'block' : 'none';
-      });
-    });
+    // Toggle fields depending on account type
+    const toggleFields = type => {
+      const isStudent = type === "student";
+      const isTeacher = type === "teacher";
 
-    // ✅ 4. Auto-generate username/password
-    if (form) {
-      form.addEventListener('input', () => {
-        const fname = fnameEl?.value.trim().toLowerCase() || '';
-        const lname = lnameEl?.value.trim().toLowerCase() || '';
-        if (usernameEl) usernameEl.value = fname + lname + 'kumon-ortigas';
-        if (passwordEl) passwordEl.value = fname + lname + 'kumon';
-      });
+      [fields.studentPlan, fields.subject, fields.studentCodeField].forEach(
+        el => el && (el.style.display = isStudent ? "block" : "none")
+      );
 
-      // ✅ 5. Unlock fields before submit
-      form.addEventListener('submit', () => {
-        if (usernameEl) usernameEl.readOnly = false;
-        if (passwordEl) passwordEl.readOnly = false;
-      });
-    }
+      if (fields.teacherCodeField) {
+        fields.teacherCodeField.style.display = isTeacher ? "block" : "none";
+      }
+    };
 
-    // ✅ 6. Sidebar Dropdown toggle
-    document.querySelectorAll('.subnavbtn').forEach(btn => {
-      btn.addEventListener('click', function () {
-        const content = this.nextElementSibling;
-        const caret = this.querySelector('.caret-icon');
-        if (content) content.classList.toggle('show');
-        if (caret) caret.classList.toggle('rotate');
-      });
-    });
+    radios.forEach(radio =>
+      radio.addEventListener("change", () => toggleFields(radio.value))
+    );
+
+        // --- Preview generator ---
+      const updatePreview = () => {
+      const lname = fields.lname?.value.trim().toLowerCase() || "";
+      const year = new Date().getFullYear();
+      const selected = document.querySelector('input[name="account_type"]:checked')?.value;
+
+      // numeric code placeholder for preview (backend generates real)
+      const counter = "001";
+      const numericCode = `${year}${counter}`;
+
+      switch (selected) {
+        case "student":
+          if (fields.studentCode)
+            fields.studentCode.value = `KSTU${numericCode}`;
+          if (fields.username)
+            fields.username.value = `${lname}${numericCode}kumon`; // username = lname + numericCode + kumon
+          if (fields.password)
+            fields.password.value = `${lname}kumon${numericCode}`; // password = lname + kumon + numericCode
+          if (fields.teacherCode) fields.teacherCode.value = "";
+          break;
+
+        case "teacher":
+          if (fields.teacherCode)
+            fields.teacherCode.value = `KTEA${numericCode}`;
+          if (fields.username)
+            fields.username.value = `${lname}${numericCode}kumon`;
+          if (fields.password)
+            fields.password.value = `${lname}kumon${numericCode}`;
+          if (fields.studentCode) fields.studentCode.value = "";
+          break;
+
+        case "admin":
+          if (fields.username) fields.username.value = `${lname}admin`;
+          if (fields.password) fields.password.value = `${lname}kumon`;
+          if (fields.studentCode) fields.studentCode.value = "";
+          if (fields.teacherCode) fields.teacherCode.value = "";
+          break;
+
+        default:
+          if (fields.username) fields.username.value = "";
+          if (fields.password) fields.password.value = "";
+          if (fields.studentCode) fields.studentCode.value = "";
+          if (fields.teacherCode) fields.teacherCode.value = "";
+      }
+    };
+
+
+    if (form) form.addEventListener("input", updatePreview);
+
+    // Lock preview fields
+    [fields.username, fields.password, fields.studentCode, fields.teacherCode].forEach(
+      el => el && (el.readOnly = true)
+    );
+
+    // Sidebar toggle
+    document.querySelectorAll(".subnavbtn").forEach(btn =>
+      btn.addEventListener("click", () => {
+        const content = btn.nextElementSibling;
+        const caret = btn.querySelector(".caret-icon");
+        content?.classList.toggle("show");
+        caret?.classList.toggle("rotate");
+      })
+    );
   });
 })();

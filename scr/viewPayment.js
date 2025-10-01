@@ -1,136 +1,140 @@
+// ================= VIEW PAYMENTS JS =================
 document.addEventListener("DOMContentLoaded", () => {
     const paymentsContainer = document.getElementById("paymentsContainer");
     const flashMessage = document.getElementById("flashMessage");
-    const verifyModal = document.getElementById("verifyModal");
-    const closeModal = document.getElementById("closeModal");
-    const verifyForm = document.getElementById("verifyForm");
+    const showActiveBtn = document.getElementById("showActive");
+    const showArchivedBtn = document.getElementById("showArchived");
 
-    let currentFilter = 0; // 0 = active, 1 = archived
+    let currentStatus = "active"; // default filter
 
-    // Fetch and display payments
-    async function loadPayments() {
-        paymentsContainer.innerHTML = "<p>Loading...</p>";
-
+    // Fetch payments from server
+    async function fetchPayments(status = "active") {
         try {
-            const res = await fetch(`../handler/fetchPayments.php?archived=${currentFilter}`);
-            const data = await res.json();
-
-            if (data.error) {
-                paymentsContainer.innerHTML = `<p class="error">${data.error}</p>`;
-                return;
-            }
-
-            let html = `<table class="payments-table">
-                <thead>
-                    <tr>
-                        <th>Student</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Remarks</th>
-                        <th>Receipt</th>
-                        ${currentFilter === 0 ? "<th>Action</th>" : ""}
-                    </tr>
-                </thead>
-                <tbody>`;
-
-            if (data.length === 0) {
-                html += `<tr><td colspan="6">No payments found.</td></tr>`;
-            } else {
-                data.forEach(p => {
-                    let receiptHTML = "-";
-                    if (p.receipt_path) {
-                        const ext = p.receipt_path.split('.').pop().toLowerCase();
-                        if (["jpg","jpeg","png","gif"].includes(ext)) {
-                            receiptHTML = `<img src="../${p.receipt_path}" class="receipt-thumbnail" style="width:50px;height:50px;object-fit:cover;border-radius:4px;">`;
-                        } else {
-                            receiptHTML = `<a href="../${p.receipt_path}" target="_blank">View File</a>`;
-                        }
-                        receiptHTML += ` <button class="btn-download" onclick="downloadReceipt('../${p.receipt_path}')">Download</button>`;
-                    }
-
-                    html += `
-                        <tr id="payment-${p.payment_id}">
-                            <td>${p.student_name}</td>
-                            <td>${p.amount}</td>
-                            <td>${p.payment_date}</td>
-                            <td class="remarks-cell">${p.remarks || "-"}</td>
-                            <td class="receipt-cell">${receiptHTML}</td>
-                            ${currentFilter === 0 ? `
-                                <td>
-                                    <button class="btn-verify" data-id="${p.payment_id}">Verify</button>
-                                    <button class="btn-archive" data-id="${p.payment_id}">Archive</button>
-                                </td>` : ""}
-                        </tr>`;
-                });
-            }
-
-            html += `</tbody></table>`;
-            paymentsContainer.innerHTML = html;
-
-            // Attach verify button events
-            document.querySelectorAll(".btn-verify").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    document.getElementById("paymentId").value = btn.dataset.id;
-                    verifyModal.style.display = "block";
-                });
-            });
-
-            // Attach archive button events
-            document.querySelectorAll(".btn-archive").forEach(btn => {
-                btn.addEventListener("click", async () => {
-                    const paymentId = btn.dataset.id;
-                    if (!confirm("Are you sure you want to archive this payment?")) return;
-
-                    try {
-                        const res = await fetch("../handler/archivePayment.php", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                            body: "payment_id=" + encodeURIComponent(paymentId)
-                        });
-                        const result = await res.json();
-
-                        if (result.success) {
-                            showFlash(result.message, "success");
-                            loadPayments();
-                        } else {
-                            showFlash(result.error || "Failed to archive.", "error");
-                        }
-                    } catch (err) {
-                        showFlash("Error archiving payment.", "error");
-                    }
-                });
-            });
-
-        } catch (err) {
-            paymentsContainer.innerHTML = `<p class="error">Failed to load payments.</p>`;
-            console.error(err);
+            const res = await fetch(`../handler/fetchPayments.php?status=${status}`);
+            if (!res.ok) throw new Error("Failed to fetch payments");
+            const payments = await res.json();
+            renderTable(payments);
+        } catch (error) {
+            paymentsContainer.innerHTML = `<p style="color:red;">Failed to load payments: ${error.message}</p>`;
         }
     }
 
-    // Download receipt
-    window.downloadReceipt = function(url) {
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = url.split("/").pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    // Render payments table
+    function renderTable(payments) {
+        if (!payments || payments.length === 0) {
+            paymentsContainer.innerHTML = "<p>No payments found.</p>";
+            return;
+        }
+
+        let tableHTML = `
+            <table id="paymentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Amount</th>
+                        <th>Payment Date</th>
+                        <th>Method</th>
+                        <th>Reference</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        payments.forEach(p => {
+            tableHTML += `
+                <tr>
+                    <td>${p.payment_id}</td>
+                    <td>${p.student_name}</td>
+                    <td>${parseFloat(p.amount).toFixed(2)}</td>
+                    <td>${p.payment_date}</td>
+                    <td>${p.payment_method ?? "-"}</td>
+                    <td>${p.reference_number ?? "-"}</td>
+                    <td>${p.remarks ?? "-"}</td>
+                    <td>
+                        ${currentStatus === "active"
+                            ? `<button class="btn-primary verify-btn" data-id="${p.payment_id}">Verify</button>
+                               <button class="btn-danger archive-btn" data-id="${p.payment_id}">Archive</button>`
+                            : `<button class="btn-primary restore-btn" data-id="${p.payment_id}">Restore</button>`
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+
+        tableHTML += `</tbody></table>`;
+        paymentsContainer.innerHTML = tableHTML;
+
+        attachButtonEvents();
     }
 
-    // Show flash message
+    // Attach button events
+    function attachButtonEvents() {
+        // Verify modal
+        document.querySelectorAll(".verify-btn").forEach(btn => btn.addEventListener("click", openVerifyModal));
+
+        // Archive payments
+        document.querySelectorAll(".archive-btn").forEach(btn =>
+            btn.addEventListener("click", () => toggleStatus(btn.dataset.id, "archived"))
+        );
+
+        // Restore payments
+        document.querySelectorAll(".restore-btn").forEach(btn =>
+            btn.addEventListener("click", () => toggleStatus(btn.dataset.id, "active"))
+        );
+    }
+
+    // Toggle archive/restore status
+    async function toggleStatus(paymentId, status) {
+        try {
+            const formData = new FormData();
+            formData.append("payment_id", paymentId);
+            formData.append("status", status);
+
+            const res = await fetch("../handler/updatePaymentStatus.php", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showFlash(data.message, "success");
+                fetchPayments(currentStatus);
+            } else {
+                showFlash(data.error || "Failed to update status", "error");
+            }
+        } catch (error) {
+            showFlash(error.message, "error");
+        }
+    }
+
+    // Flash message helper
     function showFlash(message, type = "success") {
         flashMessage.textContent = message;
         flashMessage.className = `alert alert-${type}`;
         flashMessage.style.display = "block";
-        setTimeout(() => flashMessage.style.display = "none", 3000);
+        setTimeout(() => flashMessage.style.display = "none", 4000);
     }
 
-    // Close modal
-    closeModal.addEventListener("click", () => {
-        verifyModal.style.display = "none";
-    });
+    // ================= VERIFY MODAL =================
+    const verifyModal = document.getElementById("verifyModal");
+    const closeModal = document.getElementById("closeModal");
+    const verifyForm = document.getElementById("verifyForm");
+    const paymentIdInput = document.getElementById("paymentId");
 
-    // Submit verify form
+    function openVerifyModal(e) {
+        const paymentId = e.target.dataset.id;
+        paymentIdInput.value = paymentId;
+        verifyModal.style.display = "block";
+    }
+
+    closeModal.onclick = () => (verifyModal.style.display = "none");
+    window.onclick = (e) => {
+        if (e.target === verifyModal) verifyModal.style.display = "none";
+    };
+
     verifyForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(verifyForm);
@@ -140,36 +144,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "POST",
                 body: formData
             });
-            const result = await res.json();
+            const data = await res.json();
 
-            if (result.success) {
-                showFlash(result.message, "success");
+            if (data.success) {
+                showFlash(data.message, "success");
                 verifyModal.style.display = "none";
-                verifyForm.reset();
-                loadPayments();
+                fetchPayments(currentStatus);
             } else {
-                showFlash(result.error || "Failed to verify.", "error");
+                showFlash(data.error || "Verification failed", "error");
             }
-        } catch (err) {
-            showFlash("Error verifying payment.", "error");
+        } catch (error) {
+            showFlash(error.message, "error");
         }
     });
 
-    // Filter buttons
-    document.getElementById("showActive").addEventListener("click", () => {
-        currentFilter = 0;
-        document.getElementById("showActive").classList.add("active");
-        document.getElementById("showArchived").classList.remove("active");
-        loadPayments();
+    // ================= FILTER BUTTONS =================
+    showActiveBtn.addEventListener("click", () => {
+        currentStatus = "active";
+        showActiveBtn.classList.add("active");
+        showArchivedBtn.classList.remove("active");
+        fetchPayments("active");
     });
 
-    document.getElementById("showArchived").addEventListener("click", () => {
-        currentFilter = 1;
-        document.getElementById("showArchived").classList.add("active");
-        document.getElementById("showActive").classList.remove("active");
-        loadPayments();
+    showArchivedBtn.addEventListener("click", () => {
+        currentStatus = "archived";
+        showArchivedBtn.classList.add("active");
+        showActiveBtn.classList.remove("active");
+        fetchPayments("archived");
     });
 
     // Initial load
-    loadPayments();
+    fetchPayments(currentStatus);
 });

@@ -41,7 +41,7 @@ $today_schedule = $today_schedule ?? [];
         <div class="logo">
             <h1>
                 <a href="kumonStudent.php">
-                    <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:75px; vertical-align:middle; margin-right:6px;">
+                    <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px; vertical-align:middle; margin-right:6px;">
                 </a>
             </h1>
             <p>Practice Makes Possibilities</p>
