@@ -19,7 +19,7 @@ $initials   = $_SESSION['initials'];   // LR
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonAdmin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <title>Kumon Admin Dashboard</title>
+    <title>Kumon Admin - Dashboard</title>
 </head>
 
 <body>

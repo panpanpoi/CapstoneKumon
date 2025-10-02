@@ -15,7 +15,7 @@ $initials = $_SESSION['initials'];   // Initials
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Account List</title>
+    <title>Kumon Admin - Account List</title>
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonAdmin.css">

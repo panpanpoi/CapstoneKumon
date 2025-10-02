@@ -15,7 +15,7 @@ $initials = $_SESSION['initials'];
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Record Payment</title>
+    <title>Kumon Admin - Record Payment</title>
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 
     <!-- Global & Page Styles -->

@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
      // Store flash message in session
         $_SESSION['success'] = "Payment recorded successfully!";
-        header("Location: ../pages/viewPayment.html.php");
+        header("Location: ../pages/viewPayment.php");
         exit;
     } catch (PDOException $e) {
         die("Error saving payment: " . $e->getMessage());

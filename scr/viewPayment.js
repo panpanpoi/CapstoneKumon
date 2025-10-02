@@ -7,7 +7,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let currentStatus = "active"; // default filter
 
-    // Fetch payments from server
+    // ------------------- HELPERS -------------------
+    function getFileName(path) {
+        return path.split("/").pop();
+    }
+
+    function truncateFileName(name, max = 20) {
+        return name.length > max ? name.substring(0, max) + "..." : name;
+    }
+
+    function buildFileCell(path) {
+        if (!path) return "No file";
+
+        const ext = path.split(".").pop().toLowerCase();
+        const safePath = "../" + path;
+        const fileName = truncateFileName(getFileName(path));
+
+        if (["jpg", "jpeg", "png"].includes(ext)) {
+            return `<a href="${safePath}" target="_blank">${fileName}</a>`;
+        }
+        return `<span style="color:red;">Wrong file, only JPG/PNG allowed</span>`;
+    }
+
+    function showFlash(message, type = "success") {
+        flashMessage.textContent = message;
+        flashMessage.className = `alert alert-${type}`;
+        flashMessage.style.display = "block";
+        setTimeout(() => (flashMessage.style.display = "none"), 4000);
+    }
+
+    // ------------------- FETCH & RENDER -------------------
     async function fetchPayments(status = "active") {
         try {
             const res = await fetch(`../handler/fetchPayments.php?status=${status}`);
@@ -19,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Render payments table
     function renderTable(payments) {
         if (!payments || payments.length === 0) {
             paymentsContainer.innerHTML = "<p>No payments found.</p>";
@@ -31,12 +59,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Student</th>
+                        <th>Student Code</th>
+                        <th>Student Name</th>
                         <th>Amount</th>
                         <th>Payment Date</th>
                         <th>Method</th>
-                        <th>Reference</th>
+                        <th>Reference #</th>
                         <th>Remarks</th>
+                        <th>Receipt</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -44,15 +74,19 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         payments.forEach(p => {
+            const receiptCell = buildFileCell(p.receipt_path);
+
             tableHTML += `
                 <tr>
                     <td>${p.payment_id}</td>
+                    <td>${p.studentCode}</td>
                     <td>${p.student_name}</td>
                     <td>${parseFloat(p.amount).toFixed(2)}</td>
                     <td>${p.payment_date}</td>
                     <td>${p.payment_method ?? "-"}</td>
                     <td>${p.reference_number ?? "-"}</td>
                     <td>${p.remarks ?? "-"}</td>
+                    <td>${receiptCell}</td>
                     <td>
                         ${currentStatus === "active"
                             ? `<button class="btn-primary verify-btn" data-id="${p.payment_id}">Verify</button>
@@ -70,30 +104,28 @@ document.addEventListener("DOMContentLoaded", () => {
         attachButtonEvents();
     }
 
-    // Attach button events
+    // ------------------- BUTTON EVENTS -------------------
     function attachButtonEvents() {
-        // Verify modal
-        document.querySelectorAll(".verify-btn").forEach(btn => btn.addEventListener("click", openVerifyModal));
+        document.querySelectorAll(".verify-btn").forEach(btn =>
+            btn.addEventListener("click", openVerifyModal)
+        );
 
-        // Archive payments
         document.querySelectorAll(".archive-btn").forEach(btn =>
             btn.addEventListener("click", () => toggleStatus(btn.dataset.id, "archived"))
         );
 
-        // Restore payments
         document.querySelectorAll(".restore-btn").forEach(btn =>
             btn.addEventListener("click", () => toggleStatus(btn.dataset.id, "active"))
         );
     }
 
-    // Toggle archive/restore status
     async function toggleStatus(paymentId, status) {
         try {
             const formData = new FormData();
             formData.append("payment_id", paymentId);
             formData.append("status", status);
 
-            const res = await fetch("../handler/updatePaymentStatus.php", {
+            const res = await fetch("../handler/togglePaymentStatus.php", {
                 method: "POST",
                 body: formData
             });
@@ -110,28 +142,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Flash message helper
-    function showFlash(message, type = "success") {
-        flashMessage.textContent = message;
-        flashMessage.className = `alert alert-${type}`;
-        flashMessage.style.display = "block";
-        setTimeout(() => flashMessage.style.display = "none", 4000);
-    }
-
-    // ================= VERIFY MODAL =================
+    // ------------------- VERIFY MODAL -------------------
     const verifyModal = document.getElementById("verifyModal");
     const closeModal = document.getElementById("closeModal");
     const verifyForm = document.getElementById("verifyForm");
     const paymentIdInput = document.getElementById("paymentId");
 
     function openVerifyModal(e) {
-        const paymentId = e.target.dataset.id;
-        paymentIdInput.value = paymentId;
+        paymentIdInput.value = e.target.dataset.id;
         verifyModal.style.display = "block";
     }
 
     closeModal.onclick = () => (verifyModal.style.display = "none");
-    window.onclick = (e) => {
+    window.onclick = e => {
         if (e.target === verifyModal) verifyModal.style.display = "none";
     };
 
@@ -158,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ================= FILTER BUTTONS =================
+    // ------------------- FILTER BUTTONS -------------------
     showActiveBtn.addEventListener("click", () => {
         currentStatus = "active";
         showActiveBtn.classList.add("active");

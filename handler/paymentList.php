@@ -59,12 +59,12 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     if (!empty($receiptPath)) {
         $safePath = htmlspecialchars("../" . $receiptPath);
         $ext = strtolower(pathinfo($receiptPath, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+        if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
             echo "<a href='{$safePath}' target='_blank'>
                     <img src='{$safePath}' alt='Receipt' class='receipt-thumb'>
                   </a>";
         } else {
-            echo "<a href='{$safePath}' target='_blank'>View Receipt</a>";
+            echo "<span style='color:red;'>Invalid file type (Only JPG/PNG allowed)</span>";
         }
     } else {
         echo "No receipt";
