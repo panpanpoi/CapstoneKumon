@@ -1,8 +1,8 @@
-<?php
+<?php //final version
 if (!isset($_SESSION)) session_start();
 
 require_once "../database.php";
-require_once "../handler/auth.php"; // ensures logged-in student
+require_once "../handler/auth.php"; // ensures valid student session
 
 $student_id = $_SESSION['student_id'] ?? null;
 
@@ -12,28 +12,25 @@ if (!$student_id) {
     exit;
 }
 
-// 1️⃣ Fetch student info for full name & avatar
+// 1️⃣ Fetch student info
 $stmt = $pdo->prepare("SELECT Firstname, Lastname FROM students WHERE student_id = ?");
 $stmt->execute([$student_id]);
 $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// 2️⃣ Full name & avatar initials
 function sentence_case($string) {
     return ucfirst(strtolower($string));
 }
-
 $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student['Lastname']);
 $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($student['Lastname'], 0, 1));
 
-// 2️⃣ Load payment data for current month
+// 3️⃣ Load current month payment data
 $paymentData = include "../handler/studentPaymentData.php";
-
 $payments = $paymentData['payments'] ?? [];
 $total_paid = $paymentData['total_paid'] ?? 0;
 $remaining_balance = $paymentData['remaining_balance'] ?? 0;
-$fully_paid = $paymentData['fully_paid'] ?? false;
 $next_due = $paymentData['next_due'] ?? date('F j, Y');
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +45,6 @@ $next_due = $paymentData['next_due'] ?? date('F j, Y');
 <link rel="stylesheet" href="../styles/kumonStudent.css">
 <link rel="stylesheet" href="../styles/studentPaymentStyle.css">
 </head>
-
 <body>
 <div class="dashboard">
     <!-- Sidebar -->
@@ -80,9 +76,7 @@ $next_due = $paymentData['next_due'] ?? date('F j, Y');
             <div class="header-right">
                 <div class="balance-panel">
                     <div class="label">Remaining Balance:</div>
-                    <div class="amount">
-                        <?= $fully_paid ? "₱0.00" : "₱" . number_format($remaining_balance, 2) ?>
-                    </div>
+                    <div class="amount">₱<?= number_format($remaining_balance, 2) ?></div>
                     <div class="label">Next Due:</div>
                     <div class="amount"><?= htmlspecialchars($next_due) ?></div>
                 </div>
@@ -95,7 +89,8 @@ $next_due = $paymentData['next_due'] ?? date('F j, Y');
                     <?php foreach ($payments as $pay): ?>
                         <div class="payment-card">
                             <div class="payment-card-row">
-                                <strong>Amount:</strong> <span>₱<?= number_format($pay['amount'], 2) ?></span>
+                                <strong>Amount:</strong> 
+                                <span>₱<?= number_format($pay['amount'], 2) ?></span>
                                 <?php
                                     $status = strtolower($pay['payment_status'] ?? 'unverified');
                                     $badge_class = $status === 'verified' ? 'verified-badge' : 'unverified-badge';

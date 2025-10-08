@@ -19,58 +19,68 @@ try {
     $student = $stmt->fetch(PDO::FETCH_ASSOC);
     $monthlyFee = floatval($student['monthlyFee'] ?? 0);
 
-    // 2️⃣ Fetch payments for the current month only
-    $startOfMonth = date('Y-m-01');
-    $endOfMonth   = date('Y-m-t');
-
+    // 2️⃣ Fetch all active payments up to today
     $stmt = $pdo->prepare("
-        SELECT payment_id, payment_date, amount, payment_method, payment_status, remarks, receipt_path, status
+        SELECT payment_date, amount, payment_status, 
+               COALESCE(payment_method, 'N/A') AS payment_method,
+               COALESCE(remarks, '') AS remarks,
+               COALESCE(receipt_path, '') AS receipt_path
         FROM payments
-        WHERE student_id = ?
-          AND status = 'active'
-          AND payment_date BETWEEN ? AND ?
+        WHERE student_id = ? AND status = 'active'
         ORDER BY payment_date ASC
     ");
-    $stmt->execute([$student_id, $startOfMonth, $endOfMonth]);
-    $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->execute([$student_id]);
+    $all_payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3️⃣ Calculate total verified payments for this month
-    $total_paid_this_month = 0;
-    foreach ($payments as $p) {
-        if (strtolower($p['payment_status']) === 'verified') {
-            $total_paid_this_month += floatval($p['amount']);
+    // 3️⃣ Filter payments for current month & track balances
+    $currentMonth = date('m');
+    $currentYear = date('Y');
+
+    $payments_this_month = [];
+    $total_this_month = 0;
+    $overpayment = 0;
+
+    foreach ($all_payments as $p) {
+        $pay_month = date('m', strtotime($p['payment_date']));
+        $pay_year = date('Y', strtotime($p['payment_date']));
+        $amount = floatval($p['amount']);
+
+        // Add overpayment from previous months
+        $amount += $overpayment;
+
+        // Handle full month payments
+        if ($amount >= $monthlyFee) {
+            $overpayment = $amount - $monthlyFee;
+            if ($pay_month == $currentMonth && $pay_year == $currentYear) {
+                $payments_this_month[] = $p;
+                $total_this_month += $monthlyFee; // only count monthly fee
+            }
+        } else {
+            // Partial payment
+            $overpayment = 0;
+            if ($pay_month == $currentMonth && $pay_year == $currentYear) {
+                $payments_this_month[] = $p;
+                $total_this_month += $amount;
+            }
         }
     }
 
-    // 4️⃣ Calculate remaining balance and fully_paid flag
-    $remaining_balance = max($monthlyFee - $total_paid_this_month, 0);
+    // 4️⃣ Compute remaining balance
+    $remaining_balance = max($monthlyFee - $total_this_month, 0);
+
+    // 5️⃣ Fully paid flag
     $fully_paid = ($remaining_balance == 0);
 
-    // 5️⃣ Compute next due date (next month from last verified payment)
-    $last_verified_payment = null;
-    foreach (array_reverse($payments) as $p) {
-        if (strtolower($p['payment_status']) === 'verified') {
-            $last_verified_payment = $p;
-            break;
-        }
-    }
+    // 6️⃣ Next due date = first day of next month
+    $next_due = date('F j, Y', strtotime("first day of next month"));
 
-    if ($last_verified_payment) {
-        $base_date = strtotime($last_verified_payment['payment_date']);
-        $next_due_raw = strtotime('+1 month', $base_date);
-    } else {
-        $next_due_raw = strtotime('first day of next month');
-    }
-    $next_due = date('F j, Y', $next_due_raw);
+    // 7️⃣ Payment reminder logic
+    $shouldNotify = (date('j') >= 24 && !$fully_paid);
 
-    // 6️⃣ Payment reminder logic
-    $dayOfMonth = date('j');
-    $shouldNotify = ($dayOfMonth >= 24 && !$fully_paid);
-
-    // 7️⃣ Return structured data
+    // 8️⃣ Return structured data
     return [
-        'payments' => $payments,
-        'total_paid' => $total_paid_this_month,
+        'payments' => $payments_this_month,
+        'total_paid' => $total_this_month,
         'remaining_balance' => $remaining_balance,
         'fully_paid' => $fully_paid,
         'next_due' => $next_due,
@@ -84,7 +94,7 @@ try {
         'total_paid' => 0,
         'remaining_balance' => 0,
         'fully_paid' => false,
-        'next_due' => date('F j, Y', strtotime('first day of next month')),
+        'next_due' => date('F j, Y', strtotime("first day of next month")),
         'shouldNotify' => false
     ];
 }

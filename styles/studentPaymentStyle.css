@@ -45,15 +45,15 @@ body {
    ------------------------------ */
 .balance-panel {
   background-color: var(--surface-color);
-  padding: 4px 8px;            /* tight padding */
+  padding: 4px 8px;            
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 2px;                     /* minimal gap between items */
-  margin-bottom: 0;             /* remove bottom margin */
+  gap: 2px;                    
+  margin-bottom: 0;             
 }
 
 .balance-panel .label {
@@ -74,7 +74,7 @@ body {
 .payments-history-panel {
   display: flex;
   flex-direction: column;
-  gap: 6px;                     /* less gap between cards */
+  gap: 6px;                     
 }
 
 /* ------------------------------
@@ -83,13 +83,13 @@ body {
 .payment-card {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
-  padding: 8px 12px;           /* compressed padding */
+  padding: 8px 12px;           
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
-  gap: 4px;                     /* less space between rows */
+  gap: 4px;                     
 }
 
 .payment-card:hover {
@@ -102,13 +102,13 @@ body {
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  gap: 2px;                     /* smaller gap */
+  gap: 2px;                     
 }
 
 .payment-card-row strong {
   font-weight: 500;
   color: var(--text-light);
-  margin-right: 4px;             /* smaller spacing */
+  margin-right: 4px;             
 }
 
 .payment-card-row span {
