@@ -1,202 +1,318 @@
 /* =========================================================
-   📌 VIEW PAYMENTS PAGE - CLEAN WHITE TABLE STYLE
+   💼 VIEW PAYMENTS PAGE - MODERN WHITE + BLUE ADMIN THEME
    ========================================================= */
 
-/* ---------- DASHBOARD CONTENT ---------- */
-.dashboard-content {
-    padding: 20px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+/* ================== BASE ================== */
+body {
+  background-color: #f4f6f9;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 0;
 }
 
-/* ---------- FILTER BAR ---------- */
+.dashboard-content {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* ================== TITLE ================== */
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0056b3;
+  margin-bottom: 20px;
+}
+
+/* ================== FILTER BAR ================== */
 .filter-bar {
-    display: flex;
-    gap: 10px;
-    margin: 15px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .btn-filter {
-    background-color: #17a2b8; /* Blue filter buttons */
-    color: #fff;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: bold;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.btn-filter.active {
-    background-color: #0056b3;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .btn-filter:hover {
-    transform: scale(1.05);
+  background-color: #006ee0;
+  transform: translateY(-1px);
 }
 
-/* ---------- PAYMENTS TABLE ---------- */
-#paymentsTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #ffffff; /* White table background */
-    color: #000;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.btn-filter.active {
+  background-color: #0056b3;
 }
 
-#paymentsTable th,
-#paymentsTable td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    font-size: 14px;
+#paymentsContainer p {
+    color: #333 !important; /* dark gray text */
+    font-size: 16px;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
 }
 
-#paymentsTable th {
-    background-color: #007bff; /* Blue headers */
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
 
-#paymentsTable tr:hover {
-    background-color: #f1f1f1;
-}
+/* =========================================================
+   💼 PAYMENTS TABLE
+   ========================================================= */
 
-#paymentsTable td {
-    color: #000;
-}
-
-/* Optional: make table scrollable if too tall */
+/* Table Wrapper */
 #paymentsContainer {
-    max-height: 500px;
-    overflow-y: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #cfd8dc;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  padding: 10px;
 }
 
-/* ---------- BUTTONS ---------- */
-.btn-primary {
-    background-color: #28a745; /* Green for Verify / Restore */
-    color: #fff;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.3s, transform 0.2s;
+/* Payments Table */
+table.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: left;
 }
 
-.btn-primary:hover {
-    background-color: #218838;
-    transform: scale(1.05);
+/* Table Header */
+table.payments-table thead th {
+  background-color: #007bff;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 14px 16px;
+  border: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
-.btn-danger {
-    background-color: #dc3545; /* Red for Archive */
-    color: #fff;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.3s, transform 0.2s;
+/* Table Body */
+table.payments-table td {
+  padding: 12px 16px;
+  border: 1px solid #d6d6d6;
+  color: #333;
+  font-weight: 500;
+  background-color: #fff;
 }
 
-.btn-danger:hover {
-    background-color: #c82333;
-    transform: scale(1.05);
+table.payments-table tr:nth-child(even) td {
+  background-color: #f9fbfc;
 }
 
-/* ---------- FLASH MESSAGES ---------- */
-.alert {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 14px;
-    display: none;
+table.payments-table tr:hover td {
+  background-color: #eef5ff;
+  transition: background-color 0.2s ease;
 }
 
-.alert-success {
-    background-color: #28a745;
-    color: #fff;
+/* ================== STATUS CELLS ================== */
+td.status-cell {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #fff;
+  text-align: center;      /* center the text */
+  border-radius: 6px;      /* optional: rounded corners */
 }
 
-.alert-error {
-    background-color: #dc3545;
-    color: #fff;
+/* Verified - green */
+td.status-cell.verified {
+  background-color: #28a745;
 }
 
-/* ---------- MODAL ---------- */
+/* Unverified - yellow */
+td.status-cell.unverified {
+  background-color: #ffc107;
+  color: #000; /* black text for contrast */
+}
+
+/* Optional: add hover effect */
+td.status-cell:hover {
+  opacity: 0.9;
+}
+
+
+/* ================== ACTION BUTTONS ================== */
+.btn-verify,
+.btn-archive,
+.btn-restore {
+  display: inline-block;
+  padding: 5px 9px;        /* larger buttons */
+  font-size: 12px;            /* larger text */
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin: 2px;
+}
+
+.btn-verify {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.btn-verify:hover {
+  background-color: #218838;
+}
+
+.btn-archive {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-archive:hover {
+  background-color: #c82333;
+}
+
+.btn-restore {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-restore:hover {
+  background-color: #0056b3;
+}
+
+/* ================== MODAL ================== */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 8% auto;
-    padding: 20px;
-    border-radius: 10px;
-    width: 420px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    color: #000;
+  background-color: #fff;
+  width: 500px;
+  max-width: 90%;
+  margin: 8% auto;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+  color: #333;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal-content h3 {
-    margin-top: 0;
-    color: #007bff;
-    font-size: 18px;
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
 }
 
+/* Close Button */
 .close-btn {
-    float: right;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #555;
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
 }
 
 .close-btn:hover {
-    color: #000;
+  color: #333;
 }
 
-/* ---------- FORM ---------- */
+/* ================== FORM ================== */
 .form-group {
-    margin: 12px 0;
+  margin: 14px 0;
 }
 
 .form-group label {
-    font-weight: 600;
-    display: block;
-    margin-bottom: 6px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+  color: #0056b3;
 }
 
 .form-group input,
 .form-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #f9f9f9;
-    color: #000;
-    font-size: 14px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 14px;
+  resize: vertical;
 }
 
-/* ---------- FILE INPUT ---------- */
-input[type="file"] {
-    cursor: pointer;
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #fff;
+}
+
+/* ================== ALERTS ================== */
+.alert {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  display: none;
+}
+
+.alert-success {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.alert-error {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* ================== ANIMATIONS ================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 600px) {
+  table.payments-table th,
+  table.payments-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .btn-verify,
+  .btn-archive,
+  .btn-restore {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .modal-content {
+    width: 90%;
+    padding: 18px;
+  }
 }

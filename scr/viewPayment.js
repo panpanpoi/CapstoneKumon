@@ -1,201 +1,194 @@
-// ================= VIEW PAYMENTS JS =================
+// ==========================
+// viewPayment.js (Admin Payments)
+// ==========================
+
 document.addEventListener("DOMContentLoaded", () => {
-    const paymentsContainer = document.getElementById("paymentsContainer");
-    const flashMessage = document.getElementById("flashMessage");
-    const showActiveBtn = document.getElementById("showActive");
-    const showArchivedBtn = document.getElementById("showArchived");
+  const paymentsContainer = document.getElementById("paymentsContainer");
+  const flashMessage = document.getElementById("flashMessage");
+  const verifyModal = document.getElementById("verifyModal");
+  const closeModal = document.getElementById("closeModal");
+  const verifyForm = document.getElementById("verifyForm");
+  const showActive = document.getElementById("showActive");
+  const showArchived = document.getElementById("showArchived");
 
-    let currentStatus = "active"; // default filter
+  let currentStatus = "active";
 
-    // ------------------- HELPERS -------------------
-    function getFileName(path) {
-        return path.split("/").pop();
+  // ========================== INIT =========================
+  loadPayments(currentStatus);
+
+  showActive.addEventListener("click", () => {
+    currentStatus = "active";
+    toggleFilterButton(showActive, showArchived);
+    loadPayments(currentStatus);
+  });
+
+  showArchived.addEventListener("click", () => {
+    currentStatus = "archived";
+    toggleFilterButton(showArchived, showActive);
+    loadPayments(currentStatus);
+  });
+
+  closeModal.addEventListener("click", () => {
+    verifyModal.style.display = "none";
+    verifyForm.reset();
+  });
+
+  // ========================== LOAD PAYMENTS =========================
+  async function loadPayments(status) {
+    paymentsContainer.innerHTML = `<p class="loading-text">Loading payments...</p>`;
+
+    try {
+      const res = await fetch(`../handler/fetchPayments.php?status=${status}`);
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.error || "Failed to load payments");
+      if (!data.payments || data.payments.length === 0) {
+        paymentsContainer.innerHTML = `<p class="empty-text">No ${status} payments found.</p>`;
+        return;
+      }
+
+      renderPaymentsTable(data.payments, status);
+    } catch (err) {
+      paymentsContainer.innerHTML = `<p class="error-text">Error: ${err.message}</p>`;
+    }
+  }
+
+  // ========================== RENDER TABLE =========================
+  function renderPaymentsTable(payments, status) {
+    const table = document.createElement("table");
+    table.className = "payments-table";
+
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Student Code</th>
+          <th>Student Name</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th>Method</th>
+          <th>Reference</th>
+          <th>Status</th>
+          <th>Receipt</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${payments.map(payment => {
+          const statusClass = (payment.payment_status || "unverified").toLowerCase();
+
+          let rawAmount = payment.amount?.toString().replace(/,/g, '') || "0";
+          let amount = parseFloat(rawAmount);
+          if (isNaN(amount)) amount = 0;
+          const formattedAmount = amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+          const date = payment.payment_date || "-";
+          return `
+            <tr>
+              <td>${payment.payment_id}</td>
+              <td>${escapeHTML(payment.studentCode)}</td>
+              <td>${escapeHTML(payment.student_name)}</td>
+              <td>₱${formattedAmount}</td>
+              <td>${escapeHTML(date)}</td>
+              <td>${escapeHTML(payment.payment_method || "-")}</td>
+              <td>${escapeHTML(payment.reference_number || "-")}</td>
+              <td class="status-cell ${statusClass}">${escapeHTML(payment.payment_status || "Unverified")}</td>
+              <td>${renderReceipt(payment)}</td>
+              <td>${renderActions(payment, status)}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    `;
+
+    paymentsContainer.innerHTML = "";
+    paymentsContainer.appendChild(table);
+  }
+
+  // ========================== HELPERS =========================
+  function renderReceipt(payment) {
+    if (!payment.receipt_path) return "No receipt";
+    if (payment.receipt_path === "invalid") return `<span style="color:red;">Invalid file</span>`;
+    const path = `../${payment.receipt_path}`;
+    const filename = payment.receipt_path.split('/').pop();
+    return `<a href="${path}" target="_blank">${filename}</a>`;
+  }
+
+  function renderActions(payment, status) {
+    const isVerified = (payment.payment_status || "").toLowerCase() === "verified";
+
+    if (status === "archived") {
+      return `<button class="btn-restore" onclick="updatePaymentStatus(${payment.payment_id}, 'active')">Restore</button>`;
     }
 
-    function truncateFileName(name, max = 20) {
-        return name.length > max ? name.substring(0, max) + "..." : name;
+    return `
+      <button class="btn-verify ${isVerified ? "verified" : ""}" onclick="openVerifyModal(${payment.payment_id})">
+        ${isVerified ? "Reverify" : "Verify"}
+      </button>
+      <button class="btn-archive" onclick="updatePaymentStatus(${payment.payment_id}, 'archived')">Archive</button>
+    `;
+  }
+
+  function toggleFilterButton(activeBtn, inactiveBtn) {
+    activeBtn.classList.add("active");
+    inactiveBtn.classList.remove("active");
+  }
+
+  function escapeHTML(str) {
+    return str?.replace(/[&<>"']/g, m => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]
+    )) || "";
+  }
+
+  function showFlash(message, type = "success") {
+    flashMessage.textContent = message;
+    flashMessage.className = `alert alert-${type}`;
+    flashMessage.style.display = "block";
+    setTimeout(() => flashMessage.style.display = "none", 3000);
+  }
+
+  // ========================== VERIFY PAYMENT =========================
+  window.openVerifyModal = function(paymentId) {
+    document.getElementById("paymentId").value = paymentId;
+    verifyModal.style.display = "flex";
+  };
+
+  verifyForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const formData = new FormData(verifyForm);
+
+    try {
+      const res = await fetch("../handler/verifyPayment.php", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Verification failed");
+
+      verifyModal.style.display = "none";
+      verifyForm.reset();
+      showFlash("Payment verified successfully!", "success");
+      loadPayments(currentStatus);
+    } catch (err) {
+      showFlash(err.message, "error");
     }
+  });
 
-    function buildFileCell(path) {
-        if (!path) return "No file";
+  // ========================== ARCHIVE / RESTORE =========================
+  window.updatePaymentStatus = async function(paymentId, newStatus) {
+    const action = newStatus === "archived" ? "archive" : "restore";
+    if (!confirm(`Are you sure you want to ${action} this payment?`)) return;
 
-        const ext = path.split(".").pop().toLowerCase();
-        const safePath = "../" + path;
-        const fileName = truncateFileName(getFileName(path));
+    try {
+      const res = await fetch("../handler/updatePaymentStatus.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payment_id: paymentId, status: newStatus })
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || `Failed to ${action}`);
 
-        if (["jpg", "jpeg", "png"].includes(ext)) {
-            return `<a href="${safePath}" target="_blank">${fileName}</a>`;
-        }
-        return `<span style="color:red;">Wrong file, only JPG/PNG allowed</span>`;
+      showFlash(`Payment ${action}d successfully!`, "success");
+      loadPayments(currentStatus);
+    } catch (err) {
+      showFlash(err.message, "error");
     }
-
-    function showFlash(message, type = "success") {
-        flashMessage.textContent = message;
-        flashMessage.className = `alert alert-${type}`;
-        flashMessage.style.display = "block";
-        setTimeout(() => (flashMessage.style.display = "none"), 4000);
-    }
-
-    // ------------------- FETCH & RENDER -------------------
-    async function fetchPayments(status = "active") {
-        try {
-            const res = await fetch(`../handler/fetchPayments.php?status=${status}`);
-            if (!res.ok) throw new Error("Failed to fetch payments");
-            const payments = await res.json();
-            renderTable(payments);
-        } catch (error) {
-            paymentsContainer.innerHTML = `<p style="color:red;">Failed to load payments: ${error.message}</p>`;
-        }
-    }
-
-    function renderTable(payments) {
-        if (!payments || payments.length === 0) {
-            paymentsContainer.innerHTML = "<p>No payments found.</p>";
-            return;
-        }
-
-        let tableHTML = `
-            <table id="paymentsTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Student Code</th>
-                        <th>Student Name</th>
-                        <th>Amount</th>
-                        <th>Payment Date</th>
-                        <th>Method</th>
-                        <th>Reference #</th>
-                        <th>Remarks</th>
-                        <th>Receipt</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        payments.forEach(p => {
-            const receiptCell = buildFileCell(p.receipt_path);
-
-            tableHTML += `
-                <tr>
-                    <td>${p.payment_id}</td>
-                    <td>${p.studentCode}</td>
-                    <td>${p.student_name}</td>
-                    <td>${parseFloat(p.amount).toFixed(2)}</td>
-                    <td>${p.payment_date}</td>
-                    <td>${p.payment_method ?? "-"}</td>
-                    <td>${p.reference_number ?? "-"}</td>
-                    <td>${p.remarks ?? "-"}</td>
-                    <td>${receiptCell}</td>
-                    <td>
-                        ${currentStatus === "active"
-                            ? `<button class="btn-primary verify-btn" data-id="${p.payment_id}">Verify</button>
-                               <button class="btn-danger archive-btn" data-id="${p.payment_id}">Archive</button>`
-                            : `<button class="btn-primary restore-btn" data-id="${p.payment_id}">Restore</button>`
-                        }
-                    </td>
-                </tr>
-            `;
-        });
-
-        tableHTML += `</tbody></table>`;
-        paymentsContainer.innerHTML = tableHTML;
-
-        attachButtonEvents();
-    }
-
-    // ------------------- BUTTON EVENTS -------------------
-    function attachButtonEvents() {
-        document.querySelectorAll(".verify-btn").forEach(btn =>
-            btn.addEventListener("click", openVerifyModal)
-        );
-
-        document.querySelectorAll(".archive-btn").forEach(btn =>
-            btn.addEventListener("click", () => toggleStatus(btn.dataset.id, "archived"))
-        );
-
-        document.querySelectorAll(".restore-btn").forEach(btn =>
-            btn.addEventListener("click", () => toggleStatus(btn.dataset.id, "active"))
-        );
-    }
-
-    async function toggleStatus(paymentId, status) {
-        try {
-            const formData = new FormData();
-            formData.append("payment_id", paymentId);
-            formData.append("status", status);
-
-            const res = await fetch("../handler/togglePaymentStatus.php", {
-                method: "POST",
-                body: formData
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showFlash(data.message, "success");
-                fetchPayments(currentStatus);
-            } else {
-                showFlash(data.error || "Failed to update status", "error");
-            }
-        } catch (error) {
-            showFlash(error.message, "error");
-        }
-    }
-
-    // ------------------- VERIFY MODAL -------------------
-    const verifyModal = document.getElementById("verifyModal");
-    const closeModal = document.getElementById("closeModal");
-    const verifyForm = document.getElementById("verifyForm");
-    const paymentIdInput = document.getElementById("paymentId");
-
-    function openVerifyModal(e) {
-        paymentIdInput.value = e.target.dataset.id;
-        verifyModal.style.display = "block";
-    }
-
-    closeModal.onclick = () => (verifyModal.style.display = "none");
-    window.onclick = e => {
-        if (e.target === verifyModal) verifyModal.style.display = "none";
-    };
-
-    verifyForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(verifyForm);
-
-        try {
-            const res = await fetch("../handler/verifyPayment.php", {
-                method: "POST",
-                body: formData
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                showFlash(data.message, "success");
-                verifyModal.style.display = "none";
-                fetchPayments(currentStatus);
-            } else {
-                showFlash(data.error || "Verification failed", "error");
-            }
-        } catch (error) {
-            showFlash(error.message, "error");
-        }
-    });
-
-    // ------------------- FILTER BUTTONS -------------------
-    showActiveBtn.addEventListener("click", () => {
-        currentStatus = "active";
-        showActiveBtn.classList.add("active");
-        showArchivedBtn.classList.remove("active");
-        fetchPayments("active");
-    });
-
-    showArchivedBtn.addEventListener("click", () => {
-        currentStatus = "archived";
-        showArchivedBtn.classList.add("active");
-        showActiveBtn.classList.remove("active");
-        fetchPayments("archived");
-    });
-
-    // Initial load
-    fetchPayments(currentStatus);
+  };
 });

@@ -23,6 +23,7 @@ $avatarInitials = strtoupper(substr($student_name, 0, 1));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Schedule - KUMON</title>
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
+    <link rel="stylesheet" href="../styles/kumonStudent.css">
     <link rel="stylesheet" href="../styles/studentSchedule.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>

@@ -1,84 +1,79 @@
 <?php
 require_once "../database.php";
-session_start();
+require_once "auth.php";
 
-// Only allow admins
-if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
-    http_response_code(403);
-    echo json_encode(["error" => "Unauthorized"]);
+header('Content-Type: application/json');
+
+// Only admins
+if ($_SESSION['account_type'] !== 'admin') {
+    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
     exit;
 }
 
-// Ensure POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(["error" => "Method not allowed"]);
+    echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
     exit;
 }
 
-// Get data
-$payment_id = isset($_POST['payment_id']) ? (int)$_POST['payment_id'] : 0;
-$remarks = isset($_POST['remarks']) ? trim($_POST['remarks']) : null;
+// Get POST data
+$payment_id = $_POST['payment_id'] ?? null;
+$remarks    = trim($_POST['remarks'] ?? '');
 
 if (!$payment_id) {
-    echo json_encode(["error" => "Payment ID is required"]);
+    echo json_encode(['success' => false, 'error' => 'Payment ID is required.']);
     exit;
-}
-
-$receipt_path = null;
-
-// Handle optional receipt upload
-if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === UPLOAD_ERR_OK) {
-    $uploadDir = '../uploads/receipts/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    $fileTmp = $_FILES['receipt']['tmp_name'];
-    $fileName = basename($_FILES['receipt']['name']);
-    $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
-    $newFileName = 'receipt_' . $payment_id . '_' . time() . '.' . $fileExt;
-    $destination = $uploadDir . $newFileName;
-
-    if (move_uploaded_file($fileTmp, $destination)) {
-        $receipt_path = 'uploads/receipts/' . $newFileName;
-    } else {
-        echo json_encode(["error" => "Failed to upload receipt."]);
-        exit;
-    }
 }
 
 try {
-    // Build query
-    $fields = ["status = 'active'"];
-    $params = [":payment_id" => $payment_id];
+    // Fetch existing payment
+    $stmt = $pdo->prepare("SELECT payment_status, receipt_path FROM payments WHERE payment_id = :id");
+    $stmt->execute([':id' => $payment_id]);
+    $payment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Update remarks if provided
-    if ($remarks !== null) {
-        $fields[] = "remarks = :remarks";
-        $params[":remarks"] = $remarks;
+    if (!$payment) {
+        echo json_encode(['success' => false, 'error' => 'Payment not found.']);
+        exit;
     }
 
-    // Update receipt_path if uploaded
-    if ($receipt_path !== null) {
-        $fields[] = "receipt_path = :receipt_path";
-        $params[":receipt_path"] = $receipt_path;
+    $receipt_path = $payment['receipt_path'];
+
+    // Handle receipt upload if present
+    if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === 0) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!in_array($_FILES['receipt']['type'], $allowedTypes)) {
+            echo json_encode(['success' => false, 'error' => 'Invalid file type. Only JPG/PNG allowed.']);
+            exit;
+        }
+
+        $uploadsDir = "../uploads/";
+        if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
+
+        $filename = uniqid() . "-" . basename($_FILES['receipt']['name']);
+        $targetFile = $uploadsDir . $filename;
+
+        if (!move_uploaded_file($_FILES['receipt']['tmp_name'], $targetFile)) {
+            echo json_encode(['success' => false, 'error' => 'Failed to upload file.']);
+            exit;
+        }
+
+        $receipt_path = "uploads/" . $filename;
     }
 
-    // Update status to active (verified)
-    $fields[] = "status = 'active'";
+    // Update payment: mark as verified
+    $stmt = $pdo->prepare("UPDATE payments SET payment_status = 'verified', remarks = :remarks, receipt_path = :receipt WHERE payment_id = :id");
+    $stmt->execute([
+        ':remarks' => $remarks,
+        ':receipt' => $receipt_path,
+        ':id' => $payment_id
+    ]);
 
-    $sql = "UPDATE payments SET " . implode(", ", $fields) . " WHERE payment_id = :payment_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-
-    if ($stmt->rowCount()) {
-        echo json_encode(["success" => true, "message" => "Payment verified successfully."]);
-    } else {
-        echo json_encode(["error" => "Payment not found or already verified."]);
-    }
+    echo json_encode([
+        'success' => true,
+        'message' => 'Payment verified successfully.',
+        'payment_status' => 'verified',
+        'receipt_path' => $receipt_path
+    ]);
 
 } catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["error" => "Failed to verify payment: " . $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Database error: '.$e->getMessage()]);
 }

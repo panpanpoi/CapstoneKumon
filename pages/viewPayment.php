@@ -18,7 +18,7 @@ $initials = $_SESSION['initials'];
     <title>Kumon Admin - Payments List</title>
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 
-    <!-- Styles -->
+    <!-- Global + Admin Styles -->
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonAdmin.css">
     <link rel="stylesheet" href="../styles/viewPayment.css">
@@ -47,20 +47,28 @@ $initials = $_SESSION['initials'];
         <nav>
             <ul class="nav-menu">
                 <li><a href="kumonAdmin.php"><i class="fa fa-home"></i> Home</a></li>
+
                 <li class="subnav">
-                    <button class="subnavbtn"><i class="fa fa-users"></i> User Management <i class="fa fa-caret-down caret-icon"></i></button>
+                    <button class="subnavbtn"><i class="fa fa-users"></i> User Management
+                        <i class="fa fa-caret-down caret-icon"></i>
+                    </button>
                     <ul class="subnav-content">
                         <li><a href="accountList.php"><i class="fa fa-users"></i> Account List</a></li>
                         <li><a href="createAccount.php"><i class="fa fa-user-plus"></i> Create Account</a></li>
                     </ul>
                 </li>
+
                 <li class="subnav">
-                    <button class="subnavbtn active"><i class="fa fa-credit-card"></i> Payment Management <i class="fa fa-caret-down caret-icon"></i></button>
+                    <button class="subnavbtn active">
+                        <i class="fa fa-credit-card"></i> Payment Management
+                        <i class="fa fa-caret-down caret-icon"></i>
+                    </button>
                     <ul class="subnav-content show">
                         <li><a href="recordPayment.php"><i class="fa fa-edit"></i> Record Payment</a></li>
                         <li><a href="viewPayment.php" class="active"><i class="fa fa-list"></i> Payments List</a></li>
                     </ul>
                 </li>
+
                 <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </nav>
@@ -68,21 +76,18 @@ $initials = $_SESSION['initials'];
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="main-content">
+        <!-- Header -->
         <header class="header">
             <div class="header-right">
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                </div>
                 <div class="user-info">
                     <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
-                    <div class="user-name"><?= htmlspecialchars($username) ?></div>
                 </div>
             </div>
         </header>
 
+        <!-- Dashboard Content -->
         <section class="dashboard-content">
-            <h2>Payments List</h2>
+            <h2>💳 Payments List</h2>
 
             <!-- Filter Buttons -->
             <div class="filter-bar">
@@ -91,9 +96,29 @@ $initials = $_SESSION['initials'];
             </div>
 
             <!-- Payments Table -->
-            <div id="paymentsContainer"></div>
+            <div id="paymentsContainer" class="table-container">
+                <table id="paymentsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Code</th>
+                            <th>Amount</th>
+                            <th>Payment Date</th>
+                            <th>Method</th>
+                            <th>Reference #</th>
+                            <th>Receipt</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsBody">
+                        <!-- Populated dynamically by viewPayment.js -->
+                    </tbody>
+                </table>
+            </div>
 
-            <!-- Flash Message -->
+            <!-- Flash Messages -->
             <div id="flashMessage" class="alert"></div>
         </section>
     </main>
@@ -105,14 +130,17 @@ $initials = $_SESSION['initials'];
             <h3>Verify Payment</h3>
             <form id="verifyForm" enctype="multipart/form-data">
                 <input type="hidden" name="payment_id" id="paymentId">
+
                 <div class="form-group">
-                    <label for="receipt">Upload Receipt (optional):</label>
+                    <label for="receipt">Upload Receipt:</label>
                     <input type="file" name="receipt" id="receipt" accept="image/*">
                 </div>
+
                 <div class="form-group">
                     <label for="remarks">Remarks:</label>
                     <textarea name="remarks" id="remarks" rows="3"></textarea>
                 </div>
+
                 <button type="submit" class="btn-primary">Verify</button>
             </form>
         </div>

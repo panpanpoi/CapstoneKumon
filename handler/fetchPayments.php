@@ -1,75 +1,101 @@
 <?php
-header('Content-Type: application/json');
 require_once "../database.php";
 session_start();
 
-// 🔒 Only allow admins
-if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
+header('Content-Type: application/json');
+
+// 🔒 Admin-only access
+if (empty($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
     http_response_code(403);
-    echo json_encode(["error" => "Unauthorized"]);
+    echo json_encode([
+        "success" => false,
+        "error" => "Unauthorized access."
+    ]);
     exit;
 }
 
-// ✅ Get filter status from query string
-$status = (isset($_GET['status']) && in_array($_GET['status'], ['active', 'archived']))
-          ? $_GET['status']
-          : 'active';
+// ✅ Get filter: 'active' or 'archived'
+$status = $_GET['status'] ?? 'active';
+if (!in_array($status, ['active', 'archived'])) {
+    $status = 'active';
+}
 
 try {
+    // 🧾 Fetch payments with student details
     $stmt = $pdo->prepare("
         SELECT 
             p.payment_id,
+            p.student_id,
             p.amount,
             p.payment_date,
             p.payment_method,
             p.reference_number,
             p.remarks,
             p.status,
+            p.payment_status,
             p.receipt_path,
             s.studentCode,
-            s.firstname AS first_name,
-            s.lastname AS last_name
+            s.firstname,
+            s.lastname
         FROM payments p
-        JOIN students s ON p.student_id = s.student_id
+        LEFT JOIN students s ON p.student_id = s.student_id
         WHERE p.status = :status
         ORDER BY p.payment_date DESC, s.lastname ASC, s.firstname ASC
     ");
-    $stmt->bindParam(":status", $status, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':status' => $status]);
+    $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $payments = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    // 🧠 Transform data for frontend & auto-verify cash payments
+    $result = array_map(function ($row) use ($pdo) {
         $receiptPath = $row['receipt_path'] ?? null;
-        $isValidImage = false;
+        $validReceipt = false;
 
-        if ($receiptPath) {
+        if (!empty($receiptPath)) {
             $ext = strtolower(pathinfo($receiptPath, PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
-                $isValidImage = true;
-            } else {
-                // ❌ Invalid file type
-                $receiptPath = "invalid"; 
+            $validReceipt = in_array($ext, ['jpg', 'jpeg', 'png']);
+            if (!$validReceipt) {
+                $receiptPath = 'invalid';
             }
         }
 
-        $payments[] = [
-            "payment_id"       => (int)$row['payment_id'],
-            "studentCode"      => $row['studentCode'],
-            "student_name"     => trim($row['first_name'] . " " . $row['last_name']),
-            "amount"           => $row['amount'],
-            "payment_date"     => $row['payment_date'],
-            "payment_method"   => $row['payment_method'],
-            "reference_number" => $row['reference_number'],
-            "remarks"          => $row['remarks'],
-            "status"           => $row['status'],
-            "receipt_path"     => $receiptPath,
-            "valid_receipt"    => $isValidImage
-        ];
-    }
+        // 🔹 Auto-verify cash payments if not already verified
+        if (strtolower($row['payment_method']) === 'cash' && strtolower($row['payment_status']) !== 'verified') {
+            $updateStmt = $pdo->prepare("UPDATE payments SET payment_status = 'Verified' WHERE payment_id = :payment_id");
+            $updateStmt->execute([':payment_id' => $row['payment_id']]);
+            $paymentStatus = 'Verified';
+        } else {
+            $paymentStatus = ucfirst($row['payment_status'] ?? 'Unverified');
+        }
 
-    echo json_encode($payments);
+        return [
+            "payment_id"       => (int)$row['payment_id'],
+            "student_id"       => $row['student_id'] ? (int)$row['student_id'] : null,
+            "studentCode"      => $row['studentCode'] ?? "-",
+            "student_name"     => trim(($row['firstname'] ?? '') . ' ' . ($row['lastname'] ?? '')),
+            "amount"           => number_format((float)$row['amount'], 2),
+            "payment_date"     => !empty($row['payment_date']) ? date('d/m/Y', strtotime($row['payment_date'])) : "",
+            "payment_method"   => $row['payment_method'] ?: "-",
+            "reference_number" => $row['reference_number'] ?: "-",
+            "remarks"          => $row['remarks'] ?: "",
+            "status"           => $row['status'] ?? "active",
+            "payment_status"   => $paymentStatus,
+            "receipt_path"     => $receiptPath,
+            "valid_receipt"    => $validReceipt
+        ];
+
+    }, $payments);
+
+    echo json_encode([
+        "success" => true,
+        "count" => count($result),
+        "payments" => $result
+    ]);
 
 } catch (PDOException $e) {
     http_response_code(500);
-    echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+    echo json_encode([
+        "success" => false,
+        "error" => "Database query failed.",
+        "details" => $e->getMessage()
+    ]);
 }
