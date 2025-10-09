@@ -1,14 +1,25 @@
 <?php 
 require_once "../handler/auth.php"; 
-$currentPage = basename($_SERVER['PHP_SELF']); // get current filename
+// ✅ Only allow admins
+if ($_SESSION['account_type'] !== 'teacher') {
+    header("Location: loginform.php");
+    exit;
+}
+
+$username   = $_SESSION['username'];   
+$userRole   = ucfirst($_SESSION['account_type']); // Admin
+$initials   = $_SESSION['initials'];   // LR
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>KUMON Teacher Account</title>
   <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
-  <link rel="stylesheet" href="../styles/kumonGlobalStyle1.css">
+  <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
   <link rel="stylesheet" href="../styles/kumonTeacher.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>

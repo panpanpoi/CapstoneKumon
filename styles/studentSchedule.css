@@ -1,0 +1,219 @@
+/* ===================== STUDENT SCHEDULE (LIGHT MODE – POLISHED) ===================== */
+
+/* ----- Header Section (Title + Filters) ----- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid #e1e1e1;
+  background-color: #ffffff;
+}
+
+.header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ----- Filter Buttons ----- */
+.filter-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-btn {
+  background: #f9f9f9;
+  color: #444;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #e8f7fb;
+  border-color: #00acc1;
+  color: #008fa1;
+}
+
+.filter-btn.active {
+  background: #00acc1;
+  color: #fff;
+  border-color: #00acc1;
+}
+
+/* ----- Schedule Container Layout ----- */
+.schedule-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  padding: 20px;
+  background-color: #fafafa;
+}
+
+/* ----- Day Card ----- */
+.day-card {
+  background: #ffffff;
+  color: #333;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.day-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #00acc1;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+/* ----- Inner-Day (Used in Entire Week Panel) ----- */
+.inner-day {
+  background: #fdfdfd;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.inner-day h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #00acc1;
+  margin-bottom: 6px;
+}
+
+/* ----- Schedule List Items ----- */
+.day-card ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.day-card li {
+  background: #eaf9fc;
+  border-radius: 6px;
+  padding: 7px 9px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-left: 3px solid #00acc1;
+}
+
+.day-card li strong {
+  color: #008fa1;
+}
+
+/* ----- No Schedule Message ----- */
+.no-class-msg {
+  color: #777;
+  font-size: 13.5px;
+  font-style: italic;
+  text-align: center;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 10px;
+  border: 1px dashed #ccc;
+}
+
+.entire-week-card {
+  background: #ffffff;
+  color: #222;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.entire-week-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #1a1a1a;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.day-section {
+  background: #f7f7f7;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.day-section h4 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.day-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.day-section li {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 8px;
+}
+  
+.no-class-msg {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+
+/* ----- Responsive Design ----- */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-align: left;
+  }
+
+  .filter-buttons {
+    justify-content: flex-start;
+    margin-top: 6px;
+  }
+
+  .schedule-container {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .day-card {
+    padding: 14px;
+  }
+
+  .day-card h3 {
+    font-size: 14px;
+  }
+
+  .day-card li {
+    font-size: 12.5px;
+  }
+}
