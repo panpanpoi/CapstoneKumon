@@ -11,11 +11,10 @@ if (!$teacher_id) {
     exit;
 }
 
-// Get optional day filter
+// Optional day filter
 $filter_day = $_GET['day'] ?? null;
 
 try {
-    // Fetch assigned students
     $stmt = $pdo->prepare("
         SELECT cs.class_id, s.student_id, s.studentCode, s.Firstname, s.Lastname, cs.level
         FROM class_students cs
@@ -29,7 +28,7 @@ try {
     $assigned = [];
 
     foreach ($students as $st) {
-        // Fetch schedules for this class
+        // Fetch schedules
         $schedStmt = $pdo->prepare("
             SELECT schedule_day, start_time, end_time 
             FROM class_schedules 
@@ -49,9 +48,8 @@ try {
             $days[] = $sch['schedule_day'];
         }
 
-        // Apply day filter if specified
         if ($filter_day && $filter_day !== "all" && !in_array($filter_day, $days)) {
-            continue; // Skip this student if no matching day
+            continue;
         }
 
         $assigned[] = [

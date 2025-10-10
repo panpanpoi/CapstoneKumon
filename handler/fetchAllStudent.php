@@ -4,8 +4,14 @@ if (!isset($_SESSION)) session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
+// ✅ Only allow teachers
+$teacher_id = $_SESSION['teacher_id'] ?? null;
+if (!$teacher_id) {
+    echo json_encode(["success" => false, "message" => "Unauthorized access."]);
+    exit;
+}
+
 try {
-    // Fetch all students
     $stmt = $pdo->query("
         SELECT student_id, studentCode, Firstname, Lastname 
         FROM students 
@@ -16,9 +22,9 @@ try {
     $all = [];
     foreach ($students as $st) {
         $all[] = [
-            "student_id"  => $st['student_id'],
-            "studentCode" => $st['studentCode'],
-            "full_name"   => $st['Firstname'] . ' ' . $st['Lastname']
+            "student_id"   => $st['student_id'],
+            "studentCode"  => $st['studentCode'],
+            "full_name"    => $st['Firstname'] . ' ' . $st['Lastname']
         ];
     }
 
@@ -26,10 +32,7 @@ try {
     exit;
 
 } catch (PDOException $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Database error: " . $e->getMessage()
-    ]);
+    echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
     exit;
 }
 ?>

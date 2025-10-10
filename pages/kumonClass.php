@@ -139,5 +139,6 @@ $currentPage = basename(__FILE__);
   </div>
 
   <script src="../scr/kumonClass.js"></script>
+  <script>window.initKumonClass();</script>
 </body>
 </html>

@@ -33,27 +33,26 @@ window.initKumonClass = () => {
   closeModalBtn.addEventListener("click", closeModal);
 
   // =========================================================
-  // 🔹 FETCH ASSIGNED & AVAILABLE STUDENTS
+  // 🔹 FETCH ASSIGNED STUDENTS
   // =========================================================
-  async function fetchStudents(day = "all") {
+  async function fetchAssignedStudents(filterDay = "all") {
     try {
-      // ✅ Fetch assigned students
-      const assignedRes = await fetch(`../handler/fetchAssignedStudent.php?ajax=1&day=${day}`);
-      const assignedText = await assignedRes.text();
-
-      // Remove any extra characters to prevent JSON.parse errors
-      const assignedData = JSON.parse(assignedText.trim());
+      const res = await fetch(`../handler/fetchAssignedStudent.php?day=${filterDay}`, {
+        credentials: "include" // ✅ send session cookie
+      });
+      const data = await res.json();
 
       assignedStudentsBody.innerHTML = "";
-      if (assignedData.success && assignedData.data.length) {
-        assignedData.data.forEach(st => {
+
+      if (data.success && data.data.length) {
+        data.data.forEach(st => {
           const tr = document.createElement("tr");
           const firstScheduleDay = st.schedules ? st.schedules.split(",")[0].split(" ")[0] : "—";
 
           tr.setAttribute("data-day", firstScheduleDay);
           tr.innerHTML = `
             <td>${st.studentCode}</td>
-            <td>${st.full_name || st.Firstname + " " + st.Lastname}</td>
+            <td>${st.full_name}</td>
             <td>${st.level}</td>
             <td>${firstScheduleDay}</td>
             <td>${st.schedules || "—"}</td>
@@ -61,7 +60,8 @@ window.initKumonClass = () => {
               <button class="btn-remove" data-id="${st.student_id}">
                 <i class="fa-solid fa-trash"></i>
               </button>
-            </td>`;
+            </td>
+          `;
           assignedStudentsBody.appendChild(tr);
         });
       } else {
@@ -73,31 +73,44 @@ window.initKumonClass = () => {
         btn.addEventListener("click", () => removeStudent(btn.dataset.id));
       });
 
-      // ✅ Fetch available students for modal dropdown
-      const availableRes = await fetch(`../handler/fetchAllStudent.php?ajax=1`);
-      const availableText = await availableRes.text();
-      const availableData = JSON.parse(availableText.trim());
-
-      studentSelect.innerHTML = `<option value="">-- Select Student --</option>`;
-      if (availableData.success && availableData.data.length) {
-        availableData.data.forEach(st => {
-          const opt = document.createElement("option");
-          opt.value = st.student_id;
-          opt.textContent = `${st.studentCode} - ${st.full_name || st.Firstname + " " + st.Lastname}`;
-          studentSelect.appendChild(opt);
-        });
-      }
     } catch (err) {
-      console.error("Error fetching students:", err);
+      console.error("Error fetching assigned students:", err);
       assignedStudentsBody.innerHTML = `<tr><td colspan="6" class="no-data">Failed to load data.</td></tr>`;
     }
   }
 
-  // Initial fetch
-  fetchStudents();
+  // =========================================================
+  // 🔹 FETCH AVAILABLE STUDENTS
+  // =========================================================
+  async function fetchAvailableStudents() {
+    try {
+      const res = await fetch("../handler/fetchAllStudent.php", {
+        credentials: "include"
+      });
+      const data = await res.json();
+
+      studentSelect.innerHTML = `<option value="">-- Select Student --</option>`;
+      if (data.success && data.data.length) {
+        data.data.forEach(st => {
+          const opt = document.createElement("option");
+          opt.value = st.student_id;
+          opt.textContent = `${st.studentCode} - ${st.full_name}`;
+          studentSelect.appendChild(opt);
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching available students:", err);
+    }
+  }
 
   // =========================================================
-  // 🔹 ADD STUDENT (with 2 schedules)
+  // 🔹 INITIAL FETCH
+  // =========================================================
+  fetchAssignedStudents();
+  fetchAvailableStudents();
+
+  // =========================================================
+  // 🔹 ADD STUDENT
   // =========================================================
   addStudentBtn.addEventListener("click", async () => {
     const studentId = studentSelect.value;
@@ -123,14 +136,18 @@ window.initKumonClass = () => {
     }
 
     try {
-      const res = await fetch("../handler/classStudentHandler.php", { method: "POST", body: formData });
-      const dataText = await res.text();
-      const data = JSON.parse(dataText.trim());
+      const res = await fetch("../handler/classStudentHandler.php", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+      const data = await res.json();
 
       if (data.success) {
-        alert("✅ Student added successfully!");
-        fetchStudents(dayFilter.value);
+        alert(data.message);
         closeModal();
+        fetchAssignedStudents(dayFilter.value);
+        fetchAvailableStudents();
       } else {
         alert("❌ " + (data.message || "Failed to add student."));
       }
@@ -151,13 +168,17 @@ window.initKumonClass = () => {
     formData.append("student_id", studentId);
 
     try {
-      const res = await fetch("../handler/classStudentHandler.php", { method: "POST", body: formData });
-      const dataText = await res.text();
-      const data = JSON.parse(dataText.trim());
+      const res = await fetch("../handler/classStudentHandler.php", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      });
+      const data = await res.json();
 
       if (data.success) {
         alert(data.message);
-        fetchStudents(dayFilter.value);
+        fetchAssignedStudents(dayFilter.value);
+        fetchAvailableStudents();
       } else {
         alert("❌ " + (data.message || "Failed to remove student."));
       }
@@ -170,5 +191,7 @@ window.initKumonClass = () => {
   // =========================================================
   // 🔹 FILTER BY DAY
   // =========================================================
-  dayFilter.addEventListener("change", () => fetchStudents(dayFilter.value));
+  dayFilter.addEventListener("change", () => {
+    fetchAssignedStudents(dayFilter.value);
+  });
 };
