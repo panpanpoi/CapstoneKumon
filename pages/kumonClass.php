@@ -1,168 +1,143 @@
 <?php
-require_once "../database.php"; 
 require_once "../handler/auth.php";
-require_once "../handler/fetchAssignedStudent.php"; 
-require_once "../handler/fetchAllStudent.php"; 
+require_once "../database.php";
 
-if (!isset($_SESSION)) session_start();
+// ✅ Only allow teachers
+if ($_SESSION['account_type'] !== 'teacher') {
+  header("Location: loginform.php");
+  exit;
+}
 
-// Define levels once
-$levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H',
-           'I','J','K','L','M','N','O'];
-
-// Current class ID (replace with dynamic value if needed)
-$currentClassId = 1; 
+$username    = $_SESSION['username'];
+$userRole    = ucfirst($_SESSION['account_type']);
+$initials    = $_SESSION['initials'];
+$teacher_id  = $_SESSION['teacher_id'];
+$currentPage = basename(__FILE__);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Class - KUMON</title>
-  <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
-  <link rel="stylesheet" href="../styles/kumonClassStyle.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kumon Classes</title>
+  <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
+  <link rel="stylesheet" href="../styles/kumonTeacher.css">
+  <link rel="stylesheet" href="../styles/kumonClass.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- Sidebar --> 
   <div class="sidebar">
     <div class="logo">
-      <h1><a href="kumonTeacher.php">KUMON</a></h1>
+      <h1><a href="kumonTeacher.php"><img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px;"></a></h1>
       <p>Practice Makes Possibilities</p>
     </div>
-    <ul class="nav--menu">
-      <li><a href="kumonTeacher.php">Home</a></li>
-      <li><a href="kumonClass.php" class="active">My Class</a></li>
-      <li><a href="teacherPtcScheduler.php">PTC Schedule</a></li>
-      <li><a href="logout.php">Logout</a></li>
+
+    <div class="user-profile">
+      <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
+      <div class="user-details">
+        <div class="username"><?= htmlspecialchars($username) ?></div>
+        <div class="user-role"><?= htmlspecialchars($userRole) ?></div>
+      </div>
+    </div>
+
+    <ul class="nav-menu">
+      <li><a href="kumonTeacher.php" class="<?= $currentPage == 'kumonTeacher.php' ? 'active' : '' ?>"><i class="fa fa-home"></i> Home</a></li>
+      <li><a href="kumonClass.php" class="active"><i class="fa fa-users"></i> My Class</a></li>
+      <li><a href="teacherPtcScheduler.php"><i class="fa fa-calendar"></i> PTC Schedule</a></li>
+      <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
     </ul>
   </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <h2>📚 My Class</h2>
+  <header class="topbar">
+    <div class="topbar-left"><h1 class="page-title">My Classes</h1></div>
+    <div class="topbar-right">
+      <div class="user-profile">
+        <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
+        <div class="user-info">
+          <div class="user-name"><?= htmlspecialchars($username) ?></div>
+          <div class="user-role"><?= htmlspecialchars($userRole) ?></div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <!-- Flash Messages -->
-    <?php if (isset($_SESSION['success'])): ?>
-      <p class="success-msg"><?= htmlspecialchars($_SESSION['success']); ?></p>
-      <?php unset($_SESSION['success']); ?>
-    <?php elseif (isset($_SESSION['error'])): ?>
-      <p class="error-msg"><?= htmlspecialchars($_SESSION['error']); ?></p>
-      <?php unset($_SESSION['error']); ?>
-    <?php endif; ?>
+  <main class="main-content">
+    <section class="class-section">
+      <div class="section-header">
+        <h2><i class="fa-solid fa-users"></i> Assigned Students</h2>
+        <div class="filter-actions">
+          <select id="dayFilter" class="day-filter">
+            <option value="all">All Days</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+          <button id="openAddModal" class="btn btn-primary"><i class="fa fa-plus"></i> Add Student</button>
+        </div>
+      </div>
 
-    <!-- Assigned Students Table -->
-    <table class="class-table">
-      <thead>
-        <tr>
-          <th>Student Code</th>
-          <th>Student Name</th>
-          <th>Schedule</th>
-          <th>Level</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php if (!empty($assignedStudents)): ?>
-          <?php foreach ($assignedStudents as $student): ?>
+      <div class="assigned-table-container">
+        <table class="assigned-table">
+          <thead>
             <tr>
-              <td><?= htmlspecialchars($student['studentCode']) ?></td>
-              <td><?= htmlspecialchars($student['Firstname'] . " " . $student['Lastname']) ?></td>
-              <td><?= $student['schedules'] ? htmlspecialchars($student['schedules']) : 'Not set'; ?></td>
-              <td>
-                <form action="../handler/classStudentHandler.php" method="POST" style="display:inline;">
-                  <input type="hidden" name="action" value="update_level">
-                  <input type="hidden" name="student_id" value="<?= $student['student_id'] ?>">
-                  <select name="level" onchange="this.form.submit()">
-                    <?php foreach ($levels as $lvl): ?>
-                      <option value="<?= $lvl ?>" <?= ($student['level'] === $lvl) ? "selected" : "" ?>>
-                        <?= $lvl ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </form>
-              </td>
-              <td>
-                <form action="../handler/classStudentHandler.php" method="POST" style="display:inline;"
-                      onsubmit="return confirm('Remove this student?');">
-                  <input type="hidden" name="action" value="remove">
-                  <input type="hidden" name="class_id" value="<?= $student['class_id'] ?>">
-                  <input type="hidden" name="student_id" value="<?= $student['student_id'] ?>">
-                  <button type="submit" class="btn btn-danger">❌ Remove</button>
-                </form>
-              </td>
+              <th>Student Code</th>
+              <th>Name</th>
+              <th>Level</th>
+              <th>Schedule</th>
+              <th>Action</th>
             </tr>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <tr><td colspan="5">No students in your class yet.</td></tr>
-        <?php endif; ?>
-      </tbody>
-    </table>
+          </thead>
+          <tbody id="assignedStudentsBody">
+            <tr><td colspan="5" class="no-data">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-    <!-- Add Student Form -->
-    <div class="form-container">
-      <h3>Add Student to Class</h3>
-      <form action="../handler/classStudentHandler.php" method="POST">
-        <input type="hidden" name="action" value="add">
-        <input type="hidden" name="class_id" value="<?= $currentClassId ?>">
+  <!-- Add Student Modal -->
+  <div id="addStudentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Student to Class</h3>
+        <button class="close-btn" id="closeAddModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="studentSelect">Select Student</label>
+        <select id="studentSelect"><option value="">-- Select Student --</option></select>
 
-        <label for="student_id">Select Student:</label>
-        <select name="student_id" id="student_id" required>
-          <option value="">-- Choose a Student --</option>
-          <?php foreach ($allStudents as $student): ?>
-            <option value="<?= $student['student_id'] ?>" data-level="<?= $student['level'] ?>">
-              <?= htmlspecialchars($student['Firstname'] . " " . $student['Lastname']) ?>
-            </option>
-          <?php endforeach; ?>
+        <label for="levelSelect">Level</label>
+        <select id="levelSelect">
+          <?php $levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
+          foreach ($levels as $lvl) echo "<option value='$lvl'>$lvl</option>"; ?>
         </select>
 
-        <label for="level">Set Level:</label>
-        <select name="level" id="level" required>
-          <option value="">-- Choose Level --</option>
-          <?php foreach ($levels as $lvl): ?>
-            <option value="<?= $lvl ?>"><?= $lvl ?></option>
-          <?php endforeach; ?>
+        <!-- Schedule 1 -->
+        <label>Schedule 1</label>
+        <select id="schedule1_day"><option value="">-- Select Day --</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
         </select>
+        <input type="time" id="schedule1_start">
+        <input type="time" id="schedule1_end">
 
-        <div class="schedule-group">
-          <label>Schedule 1:</label>
-          <select name="schedule_day1" required>
-            <option value="">Day</option>
-            <option>Monday</option><option>Tuesday</option>
-            <option>Wednesday</option><option>Thursday</option>
-            <option>Friday</option><option>Saturday</option>
-          </select>
-          <label for="start_time1">Start Time:</label>
-          <input type="time" name="start_time1" required>
-          <label for="end_time1">End Time:</label>
-          <input type="time" name="end_time1" required>
-        </div>
-
-        <div class="schedule-group">
-          <label>Schedule 2:</label>
-          <select name="schedule_day2" required>
-            <option value="">Day</option>
-            <option>Monday</option><option>Tuesday</option>
-            <option>Wednesday</option><option>Thursday</option>
-            <option>Friday</option><option>Saturday</option>
-          </select>
-          <label for="start_time2">Start Time:</label>
-          <input type="time" name="start_time2" required>
-          <label for="end_time2">End Time:</label>
-          <input type="time" name="end_time2" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">➕ Add Student</button>
-      </form>
+        <!-- Schedule 2 -->
+        <label>Schedule 2 (Optional)</label>
+        <select id="schedule2_day"><option value="">-- Select Day --</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
+        </select>
+        <input type="time" id="schedule2_start">
+        <input type="time" id="schedule2_end">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closeModalBtn">Cancel</button>
+        <button class="btn btn-primary" id="addStudentBtn"><i class="fa fa-check"></i> Add</button>
+      </div>
     </div>
   </div>
 
-  <script>
-    // Auto-fill level when selecting student
-    const studentSelect = document.getElementById('student_id');
-    const levelSelect = document.getElementById('level');
-    studentSelect.addEventListener('change', function() {
-      const selectedOption = this.selectedOptions[0];
-      levelSelect.value = selectedOption.dataset.level || '';
-    });
-  </script>
+  <script src="../scr/kumonClass.js"></script>
 </body>
 </html>

@@ -2,23 +2,34 @@
 require_once "../database.php";
 if (!isset($_SESSION)) session_start();
 
-$teacher_id = $_SESSION['teacher_id'] ?? null;
-$allStudents = [];
+header('Content-Type: application/json; charset=utf-8');
 
-if ($teacher_id) {
-    try {
-        $stmt = $pdo->prepare("
-            SELECT s.student_id, s.studentCode, s.Firstname, s.Lastname, s.level
-            FROM students s
-            WHERE s.student_id NOT IN (
-                SELECT student_id FROM class_students WHERE teacher_id = ?
-            )
-            ORDER BY s.Firstname, s.Lastname
-        ");
-        $stmt->execute([$teacher_id]);
-        $allStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        $allStudents = [];
+try {
+    // Fetch all students
+    $stmt = $pdo->query("
+        SELECT student_id, studentCode, Firstname, Lastname 
+        FROM students 
+        ORDER BY Firstname ASC
+    ");
+    $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $all = [];
+    foreach ($students as $st) {
+        $all[] = [
+            "student_id"  => $st['student_id'],
+            "studentCode" => $st['studentCode'],
+            "full_name"   => $st['Firstname'] . ' ' . $st['Lastname']
+        ];
     }
+
+    echo json_encode(["success" => true, "data" => $all], JSON_UNESCAPED_UNICODE);
+    exit;
+
+} catch (PDOException $e) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Database error: " . $e->getMessage()
+    ]);
+    exit;
 }
 ?>

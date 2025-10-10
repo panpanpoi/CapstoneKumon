@@ -2,36 +2,73 @@
 require_once "../database.php";
 if (!isset($_SESSION)) session_start();
 
-$teacher_id = $_SESSION['teacher_id'] ?? null;
-$assignedStudents = [];
+header('Content-Type: application/json; charset=utf-8');
 
-if ($teacher_id) {
-    try {
-        $stmt = $pdo->prepare("
-            SELECT 
-                cs.student_id,
-                s.studentCode,
-                s.Firstname,
-                s.Lastname,
-                cs.level,
-                cs.class_id,
-                GROUP_CONCAT(
-                    CONCAT(csch.schedule_day, ' ', 
-                           TIME_FORMAT(csch.start_time, '%H:%i'), '-', 
-                           TIME_FORMAT(csch.end_time, '%H:%i')
-                    ) SEPARATOR ', '
-                ) AS schedules
-            FROM class_students cs
-            JOIN students s ON cs.student_id = s.student_id
-            LEFT JOIN class_schedules csch ON cs.class_id = csch.class_id
-            WHERE cs.teacher_id = ?
-            GROUP BY cs.student_id, cs.class_id, cs.level, s.studentCode, s.Firstname, s.Lastname
-            ORDER BY s.Firstname, s.Lastname
+// ✅ Only allow teachers
+$teacher_id = $_SESSION['teacher_id'] ?? null;
+if (!$teacher_id) {
+    echo json_encode(["success" => false, "message" => "Unauthorized access."]);
+    exit;
+}
+
+// Get optional day filter
+$filter_day = $_GET['day'] ?? null;
+
+try {
+    // Fetch assigned students
+    $stmt = $pdo->prepare("
+        SELECT cs.class_id, s.student_id, s.studentCode, s.Firstname, s.Lastname, cs.level
+        FROM class_students cs
+        JOIN students s ON s.student_id = cs.student_id
+        WHERE cs.teacher_id = ?
+        ORDER BY s.Firstname ASC
+    ");
+    $stmt->execute([$teacher_id]);
+    $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $assigned = [];
+
+    foreach ($students as $st) {
+        // Fetch schedules for this class
+        $schedStmt = $pdo->prepare("
+            SELECT schedule_day, start_time, end_time 
+            FROM class_schedules 
+            WHERE class_id = ? 
+            ORDER BY schedule_id ASC
         ");
-        $stmt->execute([$teacher_id]);
-        $assignedStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        die("Database error: " . $e->getMessage());
+        $schedStmt->execute([$st['class_id']]);
+        $schedules = $schedStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $schedFormatted = [];
+        $days = [];
+
+        foreach ($schedules as $sch) {
+            $start = date("h:i A", strtotime($sch['start_time']));
+            $end   = date("h:i A", strtotime($sch['end_time']));
+            $schedFormatted[] = "{$sch['schedule_day']} {$start}-{$end}";
+            $days[] = $sch['schedule_day'];
+        }
+
+        // Apply day filter if specified
+        if ($filter_day && $filter_day !== "all" && !in_array($filter_day, $days)) {
+            continue; // Skip this student if no matching day
+        }
+
+        $assigned[] = [
+            "class_id"   => $st['class_id'],
+            "student_id" => $st['student_id'],
+            "studentCode"=> $st['studentCode'],
+            "full_name"  => $st['Firstname'] . ' ' . $st['Lastname'],
+            "level"      => $st['level'],
+            "schedules"  => implode(", ", $schedFormatted)
+        ];
     }
+
+    echo json_encode(["success" => true, "data" => $assigned], JSON_UNESCAPED_UNICODE);
+    exit;
+
+} catch (PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+    exit;
 }
 ?>

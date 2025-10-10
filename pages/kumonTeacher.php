@@ -28,9 +28,10 @@ $initials   = $_SESSION['initials'];   // LR
 <div class="sidebar">
     <div class="logo">
         <h1>
-          <a href="kumonTeacher.php">
-            <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:100px; vertical-align:middle; margin-right:6px;"></a>
-        </h1>
+            <a href="kumonTeacher.php">
+                    <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px; vertical-align:middle; margin-right:6px;">
+                </a>
+            </h1>
         <p>Practice Makes Possibilities</p>
     </div>
     
