@@ -12,9 +12,10 @@ if (!$teacher_id) {
 }
 
 // Optional day filter
-$filter_day = $_GET['day'] ?? null;
+$filter_day = $_GET['day'] ?? 'all';
 
 try {
+    // 🎯 Fetch all assigned students for this teacher
     $stmt = $pdo->prepare("
         SELECT cs.class_id, s.student_id, s.studentCode, s.Firstname, s.Lastname, cs.level
         FROM class_students cs
@@ -28,27 +29,30 @@ try {
     $assigned = [];
 
     foreach ($students as $st) {
-        // Fetch schedules
+        // 📅 Fetch their schedules
         $schedStmt = $pdo->prepare("
             SELECT schedule_day, start_time, end_time 
             FROM class_schedules 
-            WHERE class_id = ? 
+            WHERE class_id = ?
             ORDER BY schedule_id ASC
         ");
         $schedStmt->execute([$st['class_id']]);
         $schedules = $schedStmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // 🕒 Format each schedule
         $schedFormatted = [];
         $days = [];
 
         foreach ($schedules as $sch) {
+            $day = $sch['schedule_day'];
             $start = date("h:i A", strtotime($sch['start_time']));
             $end   = date("h:i A", strtotime($sch['end_time']));
-            $schedFormatted[] = "{$sch['schedule_day']} {$start}-{$end}";
-            $days[] = $sch['schedule_day'];
+            $schedFormatted[] = "{$day} {$start}–{$end}";
+            $days[] = strtolower($day);
         }
 
-        if ($filter_day && $filter_day !== "all" && !in_array($filter_day, $days)) {
+        // 🧭 Apply filter if needed
+        if ($filter_day !== 'all' && !in_array(strtolower($filter_day), $days)) {
             continue;
         }
 
@@ -56,7 +60,7 @@ try {
             "class_id"   => $st['class_id'],
             "student_id" => $st['student_id'],
             "studentCode"=> $st['studentCode'],
-            "full_name"  => $st['Firstname'] . ' ' . $st['Lastname'],
+            "full_name"  => "{$st['Firstname']} {$st['Lastname']}",
             "level"      => $st['level'],
             "schedules"  => implode(", ", $schedFormatted)
         ];

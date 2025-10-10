@@ -21,11 +21,16 @@ $currentPage = basename(__FILE__);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kumon Classes</title>
   <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
+
+  <!-- ✅ Styles -->
   <link rel="stylesheet" href="../styles/kumonTeacher.css">
   <link rel="stylesheet" href="../styles/kumonClass.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 </head>
+
 <body>
+  <!-- ✅ Sidebar -->
   <div class="sidebar">
     <div class="logo">
       <h1><a href="kumonTeacher.php"><img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px;"></a></h1>
@@ -48,6 +53,7 @@ $currentPage = basename(__FILE__);
     </ul>
   </div>
 
+  <!-- ✅ Topbar -->
   <header class="topbar">
     <div class="topbar-left"><h1 class="page-title">My Classes</h1></div>
     <div class="topbar-right">
@@ -61,6 +67,7 @@ $currentPage = basename(__FILE__);
     </div>
   </header>
 
+  <!-- ✅ Main Content -->
   <main class="main-content">
     <section class="class-section">
       <div class="section-header">
@@ -75,7 +82,9 @@ $currentPage = basename(__FILE__);
             <option value="Friday">Friday</option>
             <option value="Saturday">Saturday</option>
           </select>
-          <button id="openAddModal" class="btn btn-primary"><i class="fa fa-plus"></i> Add Student</button>
+          <button id="openAddModal" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Add Student
+          </button>
         </div>
       </div>
 
@@ -98,47 +107,71 @@ $currentPage = basename(__FILE__);
     </section>
   </main>
 
-  <!-- Add Student Modal -->
+  <!-- ✅ Add Student Modal -->
   <div id="addStudentModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Add Student to Class</h3>
         <button class="close-btn" id="closeAddModal">&times;</button>
       </div>
+
       <div class="modal-body">
         <label for="studentSelect">Select Student</label>
         <select id="studentSelect"><option value="">-- Select Student --</option></select>
 
         <label for="levelSelect">Level</label>
         <select id="levelSelect">
-          <?php $levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
-          foreach ($levels as $lvl) echo "<option value='$lvl'>$lvl</option>"; ?>
+          <?php 
+          $levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
+          foreach ($levels as $lvl) echo "<option value='$lvl'>$lvl</option>"; 
+          ?>
         </select>
 
-        <!-- Schedule 1 -->
         <label>Schedule 1</label>
-        <select id="schedule1_day"><option value="">-- Select Day --</option>
-          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
+        <select id="schedule1_day">
+          <option value="">-- Select Day --</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option>
         </select>
+        <label for="schedule1_start">Start time</label>
         <input type="time" id="schedule1_start">
+        <label for="schedule1_end">End time</label>
         <input type="time" id="schedule1_end">
 
-        <!-- Schedule 2 -->
         <label>Schedule 2 (Optional)</label>
-        <select id="schedule2_day"><option value="">-- Select Day --</option>
-          <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
+        <select id="schedule2_day">
+          <option value="">-- Select Day --</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option>
         </select>
+        <label for="schedule2_start">Start time</label>
         <input type="time" id="schedule2_start">
+        <label for="schedule2_end">End time</label>
         <input type="time" id="schedule2_end">
       </div>
+
       <div class="modal-footer">
         <button class="btn btn-secondary" id="closeModalBtn">Cancel</button>
-        <button class="btn btn-primary" id="addStudentBtn"><i class="fa fa-check"></i> Add</button>
+        <button class="btn btn-primary" id="addStudentBtn">
+          <i class="fa fa-check"></i> Add student
+        </button>
       </div>
     </div>
   </div>
 
-  <script src="../scr/kumonClass.js"></script>
-  <script>window.initKumonClass();</script>
+  
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<script src="../scr/kumonClass.js"></script>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Initialize the main script
+    if (window.initKumonClass) {
+      window.initKumonClass();
+    } else {
+      console.error("❌ initKumonClass() not found. Check kumonClass.js path or export.");
+    }
+  });
+</script>
 </body>
 </html>
