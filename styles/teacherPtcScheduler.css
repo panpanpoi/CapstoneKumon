@@ -1,0 +1,432 @@
+/* =========================================================
+   🎓 TEACHER PTC SCHEDULER PAGE STYLES
+   Matches the theme of other teacher account pages
+   ========================================================= */
+
+/* ========== MAIN LAYOUT ========== */
+
+.main-content {
+  flex: 1;
+  background: #f7f8fa;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* ========== HEADER ========== */
+
+.header {
+  background: #fff;
+  border-bottom: 1px solid #e1e1e1;
+  padding: 14px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-left i {
+  color: #0078ff;
+}
+
+/* ========== PAGE CONTENT ========== */
+
+.content {
+  padding: 20px;
+  flex: 1;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ========== CREATE FORM ========== */
+
+.create-form {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+}
+
+.create-form h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input[type="date"],
+.form-group input[type="time"] {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input[type="date"]:focus,
+.form-group input[type="time"]:focus {
+  outline: none;
+  border-color: #0078ff;
+  box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+}
+
+.form-group input[type="date"]:focus"],
+.form-group input[type="time"]:focus {
+  outline: none;
+  border-color: #0078ff;
+  box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+}
+
+.btn-create {
+  background: #0078ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-create:hover {
+  background: #005ec4;
+  transform: translateY(-1px);
+}
+
+.btn-create:active {
+  transform: translateY(0);
+}
+
+/* ========== SCHEDULE TABLE ========== */
+
+.schedule-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+}
+
+.schedule-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-table thead {
+  background: #0078ff;
+  color: #fff;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.schedule-table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+}
+
+.schedule-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.schedule-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ========== STATUS STYLING ========== */
+
+.status-open {
+  color: #28a745;
+  font-weight: 600;
+  background: #d4edda;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-booked {
+  color: #dc3545;
+  font-weight: 600;
+  background: #f8d7da;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== ACTIONS ========== */
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-edit {
+  background: #28a745;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.locked-status {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+/* ========== INLINE EDIT FORM ========== */
+
+.inline-edit-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inline-edit-form input {
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  width: 120px;
+}
+
+.inline-edit-form input:focus {
+  outline: none;
+  border-color: #0078ff;
+  box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+}
+
+/* ========== ALERTS ========== */
+
+.alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+  animation: slideDown 0.3s ease;
+}
+
+.alert.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+
+/* Alert animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ========== EMPTY STATE ========== */
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+}
+
+.empty-state h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .form-group {
+    min-width: auto;
+  }
+  
+  .schedule-table {
+    font-size: 0.8rem;
+  }
+  
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px 10px;
+  }
+  
+  .actions-cell {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .inline-edit-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .inline-edit-form input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 15px;
+  }
+  
+  .create-form,
+  .schedule-section {
+    padding: 15px;
+  }
+  
+  .schedule-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

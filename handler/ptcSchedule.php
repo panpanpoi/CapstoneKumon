@@ -20,8 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create'])) {
     $end   = $_POST['end_time'] ?? null;
 
     if ($date && $start && $end) {
-        if ($date < date("Y-m-d")) {
-            $_SESSION['error'] = "⚠️ Cannot set schedules in the past.";
+        // Allow schedules for today and future dates
+        $today = date("Y-m-d");
+        if ($date < $today) {
+            $_SESSION['error'] = "⚠️ Cannot set schedules in the past. Today is {$today}, you selected {$date}.";
         } else {
             // ⛔ Prevent overlaps
             $stmt = $pdo->prepare("
@@ -57,8 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     $end   = $_POST['end_time'] ?? null;
 
     if ($id && $date && $start && $end) {
-        if ($date < date("Y-m-d")) {
-            $_SESSION['error'] = "⚠️ Cannot update schedules in the past.";
+        // Only prevent updates if the new date is in the past
+        $today = date("Y-m-d");
+        if ($date < $today) {
+            $_SESSION['error'] = "⚠️ Cannot update schedule to a past date. Today is {$today}, you selected {$date}.";
         } else {
             // ❌ Block if still booked
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_bookings WHERE schedule_id=? AND status='booked'");
