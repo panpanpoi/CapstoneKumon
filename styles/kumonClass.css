@@ -1,341 +1,382 @@
 /* =========================================================
-   💙 KUMON CLASS PAGE - CLEAN BLUE/WHITE THEME
+   🎓 KUMON CLASS PAGE STYLES
+   Used together with kumonTeacher.css
+   Adjust values below as needed — notes provided.
    ========================================================= */
 
-/* ====== BASE ====== */
-body {
-  background: #f7f9fc;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+/* ========== MAIN LAYOUT ========== */
+
+/* Main content area (the part beside sidebar) */
+.main-content {
+  flex: 1;
+  background: #f7f8fa; /* ✅ Adjust background color here */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0; /* Remove unwanted space */
+}
+
+/* ========== HEADER (Copied from studentSchedule) ========== */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid #e1e1e1;
+  background-color: #ffffff;
+}
+
+.header-left h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #222;
   margin: 0;
-  padding: 0;
-}
-
-/* ====== MAIN PANEL ====== */
-.main-panel {
-  background: linear-gradient(135deg, #ffffff 60%, #e9f2ff 100%);
-  color: #222;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  margin: 20px auto;
-  width: 95%;
-  max-width: 1100px;
-}
-
-/* ====== HEADER ====== */
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.panel-header h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a3767;
+  letter-spacing: 0.3px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.filter-bar {
+.header-left i {
+  color: #0078ff; /* Icon color */
+}
+
+.header-right .header-profile {
+  background: #0078ff;
+  color: white;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  font-weight: 600;
 }
 
-.filter-bar select {
-  padding: 6px 10px;
-  border: 1px solid #d4dce6;
-  border-radius: 6px;
+/* ========== MAIN PANEL ========== */
+
+.main_panel {
+  padding: 20px; /* ✅ Adjust space below header */
+  flex: 1;
+}
+
+/* Section container */
+.class-section {
   background: #fff;
-  font-size: 13px;
-  color: #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin-top: 10px; /* ✅ Space below header */
 }
 
-.filter-bar button {
-  background: #0b79e6;
-  color: #fff;
+/* ========== SECTION HEADER ========== */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h2 {
+  font-size: 1.1rem;
+  color: #222;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ========== FILTER + BUTTONS (Copied from studentSchedule) ========== */
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.day-filter {
+  background: #f9f9f9;
+  color: #444;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-filter:hover {
+  background: #e8f7fb;
+  border-color: #00acc1;
+  color: #008fa1;
+}
+
+.day-filter:focus {
+  background: #e8f7fb;
+  border-color: #00acc1;
+  color: #008fa1;
+  outline: none;
+}
+
+/* Primary button (Add Student) */
+.btn.btn-primary {
+  background: #0078ff;
+  border: none;
+  color: white;
+  padding: 6px 12px; /* More compact padding */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem; /* Slightly smaller font */
+  transition: background 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn.btn-primary:hover {
+  background: #005ec4;
+}
+
+
+/* Secondary button (Cancel) */
+.btn.btn-secondary {
+  background: #ff7c7c;
+  color: #333;
   border: none;
   padding: 7px 14px;
   border-radius: 6px;
-  font-size: 13px;
   cursor: pointer;
-  transition: background 0.2s ease;
-}
-.filter-bar button:hover {
-  background: #095ec0;
 }
 
-/* ====== TABLE CONTAINER ====== */
+.btn.btn-secondary:hover {
+  background: #ccc;
+}
+
+/* ========== TABLE ========== */
+
 .assigned-table-container {
-  background: #fff;
+  overflow-x: auto;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(18, 38, 63, 0.06);
-  overflow: hidden;
 }
 
 .assigned-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
-  color: #222;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-/* Header */
 .assigned-table thead {
-  background: #e9f2ff;
-}
-.assigned-table thead th {
-  text-align: left;
-  padding: 10px 12px;
-  font-weight: 600;
-  color: #1a3767;
-}
-
-/* Body */
-.assigned-table tbody td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #f1f3f6;
-  vertical-align: top;
-}
-
-/* Schedule cell */
-.schedule-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.schedule-item {
-  display: block;
-}
-
-.schedule-day {
-  font-weight: 600;
-  color: #1a3767;
-  font-size: 13px;
-  margin-bottom: 1px;
-}
-
-.schedule-time {
-  color: #444;
-  font-size: 13px;
-  line-height: 1.2;
-}
-
-/* Remove button */
-.btn-remove {
-  background: #e74c3c;
+  background: #0078ff;
   color: #fff;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.btn-remove:hover {
-  background: #c0392b;
 }
 
-/* =========================================================
-   🧾 ADD STUDENT MODAL
-   ========================================================= */
+.assigned-table th,
+.assigned-table td {
+  padding: 10px 12px; /* ✅ Adjust table cell padding */
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.assigned-table th {
+  font-weight: 600;
+}
+
+.assigned-table tbody tr:nth-child(even) {
+  background: #f5f8fc;
+}
+
+.no-data {
+  text-align: center;
+  color: #999;
+}
+
+/* ========== REMOVE BUTTON (Red Styling) ========== */
+
+.btn-remove {
+  background: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+.btn-remove:hover {
+  background: #c82333 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
+}
+
+.btn-remove:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* ========== MODAL ========== */
 
 .modal {
-  display: none;
+  display: none; /* Hidden by default */
   position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(3px);
+}
+
+.modal.active {
+  display: flex; /* Show modal when active class is added */
 }
 
 .modal-content {
-  background-color: #fff;
-  margin: 80px auto;
-  padding: 20px 24px;
-  border: none;
+  background: #fff;
+  width: 400px; /* Slightly smaller */
+  max-width: 90%;
   border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease;
+  max-height: 90vh; /* Prevent modal from being too tall */
+  overflow-y: auto; /* Allow scrolling if content is too long */
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Modal header */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e5e9f2;
-  margin-bottom: 15px;
-  padding-bottom: 8px;
-}
-
-.modal-header h3 {
-  color: #1a3767;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.close-modal {
-  cursor: pointer;
-  color: #999;
-  font-size: 22px;
-  font-weight: bold;
-  transition: color 0.2s;
-}
-.close-modal:hover {
-  color: #000;
-}
-
-/* Modal body */
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.modal-body label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a3767;
-}
-
-.modal-body select,
-.modal-body input {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccd5e0;
-  font-size: 13px;
-  width: 100%;
-}
-
-/* Schedule block */
-.schedule-block {
-  background: #f7faff;
-  border: 1px solid #d9e5f4;
-  padding: 10px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.schedule-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.schedule-row select,
-.schedule-row input[type="time"] {
-  flex: 1;
-  min-width: 100px;
-}
-
-.remove-schedule {
-  color: #e74c3c;
-  cursor: pointer;
-  font-size: 13px;
-  background: transparent;
-  border: none;
-  padding: 4px;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-.remove-schedule:hover {
-  color: #c0392b;
-}
-
-/* Add Schedule Button */
-.add-schedule-btn {
-  background: #0b79e6;
-  color: #fff;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  width: fit-content;
-  transition: background 0.2s ease;
-}
-.add-schedule-btn:hover {
-  background: #095ec0;
-}
-
-/* Modal footer */
+.modal-header,
 .modal-footer {
+  padding: 12px 20px;
+  background: #f7f7f7;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-footer {
+  border-top: none;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 10px;
 }
 
-.btn-cancel {
-  background: #ccc;
+.modal-header h3 {
+  margin: 0;
+  font-size: 1rem;
   color: #333;
-  padding: 7px 14px;
-  border-radius: 6px;
+}
+
+.close-btn {
+  background: none;
   border: none;
-  font-size: 13px;
+  font-size: 20px;
   cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-cancel:hover {
-  background: #bbb;
+  color: #888;
 }
 
-.btn-save {
-  background: #0b79e6;
-  color: #fff;
-  border: none;
-  padding: 7px 14px;
+.modal-body {
+  padding: 16px 20px; /* Slightly less padding */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Smaller gap between elements */
+}
+
+.modal-body label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.modal-body select,
+.modal-body input[type="time"] {
+  width: 100%;
+  padding: 5px 8px; /* Slightly less padding */
+  border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.btn-save:hover {
-  background: #095ec0;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* ====== RESPONSIVE ====== */
-@media (max-width: 768px) {
-  .panel-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+.modal-body select:focus,
+.modal-body input[type="time"]:focus {
+  border-color: #0078ff;
+  box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+  outline: none;
+}
 
-  .assigned-table th,
-  .assigned-table td {
-    font-size: 12px;
-    padding: 8px;
-  }
+.schedule-group {
+  display: flex;
+  gap: 8px;
+}
 
-  .modal-content {
-    width: 95%;
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== TOM SELECT STYLES ========== */
+
+/* Fix TomSelect dropdown transparency */
+.ts-dropdown {
+  background: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  z-index: 1001 !important;
+}
+
+.ts-dropdown .option {
+  background: #fff !important;
+  color: #333 !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.ts-dropdown .option:hover {
+  background: #f5f8fc !important;
+  color: #0078ff !important;
+}
+
+.ts-dropdown .option.active {
+  background: #0078ff !important;
+  color: #fff !important;
+}
+
+.ts-dropdown .option.selected {
+  background: #e3f2fd !important;
+  color: #0078ff !important;
+  font-weight: 600 !important;
+}
+
+/* TomSelect input styling */
+.ts-control {
+  background: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 6px !important;
+  padding: 6px 8px !important;
+  font-size: 0.9rem !important;
+}
+
+.ts-control.focus {
+  border-color: #0078ff !important;
+  box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2) !important;
+}
+
+/* TomSelect dropdown arrow */
+.ts-control .ts-control-single .ts-control-input::after {
+  border-color: #666 transparent transparent !important;
+}
+
+/* TomSelect clear button */
+.ts-control .ts-control-single .ts-control-clear {
+  color: #999 !important;
+}
+
+.ts-control .ts-control-single .ts-control-clear:hover {
+  color: #666 !important;
 }

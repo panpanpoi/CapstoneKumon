@@ -76,8 +76,8 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     </header>
 
     <section class="schedule-container" id="schedule-container">
-      <div class="day-card" data-day="week">
-        <h3>Entire Week</h3>
+      <div class="day-card" data-day="">
+        
 
         <?php foreach ($daysOfWeek as $day): ?>
           <div class="inner-day" data-day="<?= $day ?>">
