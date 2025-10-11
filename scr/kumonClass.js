@@ -31,6 +31,15 @@ window.initKumonClass = () => {
   const dayFilter = document.getElementById("dayFilter");
   const assignedStudentsBody = document.getElementById("assignedStudentsBody");
 
+  // Test form elements accessibility
+  console.log("🔍 Form elements check:", {
+    studentSelect: studentSelect ? "✅ Found" : "❌ Missing",
+    levelSelect: levelSelect ? "✅ Found" : "❌ Missing",
+    schedule1Day: schedule1Day ? "✅ Found" : "❌ Missing",
+    schedule1Start: schedule1Start ? "✅ Found" : "❌ Missing",
+    schedule1End: schedule1End ? "✅ Found" : "❌ Missing"
+  });
+
   let studentTomSelect = null; // 🔹 TomSelect instance
 
   // =========================================================
@@ -153,12 +162,20 @@ window.initKumonClass = () => {
       }
 
       if (studentTomSelect) studentTomSelect.destroy();
-      studentTomSelect = new TomSelect("#studentSelect", {
-        create: false,
-        sortField: { field: "text", direction: "asc" },
-        placeholder: "Search or select a student...",
-        maxOptions: 400
-      });
+      
+      // Initialize TomSelect with error handling
+      try {
+        studentTomSelect = new TomSelect("#studentSelect", {
+          create: false,
+          sortField: { field: "text", direction: "asc" },
+          placeholder: "Search or select a student...",
+          maxOptions: 400
+        });
+        console.log("✅ TomSelect initialized successfully");
+      } catch (tomSelectError) {
+        console.warn("⚠️ TomSelect initialization failed, using regular select:", tomSelectError);
+        studentTomSelect = null;
+      }
     } catch (err) {
       console.error("❌ Error fetching available students:", err);
     }
@@ -180,7 +197,8 @@ function setupAddStudentHandler() {
     e.preventDefault();
     console.log("🟢 Add Student button clicked");
 
-    const studentId = studentSelect.value;
+    // Get student ID from TomSelect or regular select
+    const studentId = studentTomSelect ? studentTomSelect.getValue() : studentSelect.value;
     const level = levelSelect.value;
 
     console.log("📦 Input values:", {
@@ -212,11 +230,20 @@ function setupAddStudentHandler() {
 
     try {
       console.log("🚀 Sending add student request...");
+      console.log("📤 FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}: ${value}`);
+      }
+      
       const res = await fetch("../handler/classStudentHandler.php", {
         method: "POST",
         body: formData,
         credentials: "include"
       });
+      
+      console.log("📡 Response status:", res.status);
+      console.log("📡 Response headers:", res.headers);
+      
       const data = await res.json();
       console.log("📬 add student response:", data);
 
@@ -229,8 +256,13 @@ function setupAddStudentHandler() {
         alert("❌ " + (data.message || "Failed to add student."));
       }
     } catch (err) {
-      console.error("Add student error:", err);
-      alert("🚫 Error adding student.");
+      console.error("❌ Add student error:", err);
+      console.error("❌ Error details:", {
+        name: err.name,
+        message: err.message,
+        stack: err.stack
+      });
+      alert("🚫 Error adding student: " + err.message);
     }
   });
 }
