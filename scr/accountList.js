@@ -121,6 +121,12 @@
       editForm.mobileNumber.value = user.mobileNumber;
       editForm.account_type.value = user.account_type;
 
+      // Reset password fields
+      editForm.change_password.checked = false;
+      editForm.new_password.value = '';
+      editForm.confirm_password.value = '';
+      togglePasswordFields();
+
       openPanel();
     } catch (err) {
       console.error(err);
@@ -128,9 +134,52 @@
     }
   }
 
+  // --- Toggle password fields ---
+  function togglePasswordFields() {
+    const changePasswordCheckbox = editForm.change_password;
+    const passwordFields = document.querySelector('.password-fields');
+    
+    if (changePasswordCheckbox.checked) {
+      passwordFields.style.display = 'block';
+      editForm.new_password.required = true;
+      editForm.confirm_password.required = true;
+    } else {
+      passwordFields.style.display = 'none';
+      editForm.new_password.required = false;
+      editForm.confirm_password.required = false;
+      editForm.new_password.value = '';
+      editForm.confirm_password.value = '';
+    }
+  }
+
+  // --- Password change checkbox event ---
+  editForm.change_password?.addEventListener('change', togglePasswordFields);
+
   // --- Submit edit form ---
   editForm?.addEventListener('submit', async e => {
     e.preventDefault();
+    
+    // Validate password fields if password change is enabled
+    if (editForm.change_password.checked) {
+      const newPassword = editForm.new_password.value;
+      const confirmPassword = editForm.confirm_password.value;
+      
+      if (!newPassword || !confirmPassword) {
+        flash('Please fill in both password fields.');
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        flash('Password must be at least 6 characters long.');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        flash('Passwords do not match.');
+        return;
+      }
+    }
+    
     const formData = new FormData(editForm);
 
     try {

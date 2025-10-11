@@ -149,6 +149,19 @@ $initials = $_SESSION['initials'];   // Initials
                     <option value="admin">Admin</option>
                 </select>
 
+                <div class="password-section">
+                    <label>Change Password:</label>
+                    <div class="password-toggle">
+                        <input type="checkbox" id="change_password" name="change_password">
+                        <label for="change_password">Enable password change</label>
+                    </div>
+                    <div class="password-fields" style="display: none;">
+                        <input type="password" id="new_password" name="new_password" placeholder="New Password" minlength="6">
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" minlength="6">
+                        <small class="password-help">Password must be at least 6 characters long.</small>
+                    </div>
+                </div>
+
                 <button type="submit">Save</button>
             </form>
         </div>

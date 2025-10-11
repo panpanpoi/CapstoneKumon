@@ -110,10 +110,69 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
+/* Password Section Styling */
+.password-section {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.password-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.password-toggle input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.password-toggle label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.password-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.password-fields input[type="password"] {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.password-fields input[type="password"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+.password-help {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  font-style: italic;
+}
+
 /* Responsive */
 @media (max-width: 500px) {
   .edit-panel-content {
     width: 95%;
     padding: 20px 15px;
+  }
+  
+  .password-section {
+    padding: 10px;
   }
 }
