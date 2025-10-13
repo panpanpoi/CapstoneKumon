@@ -1,8 +1,26 @@
 <?php
 // pages/studentPtc.php
+require_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../handler/studentPtcHandler.php';
 
-// at this point $studentName, $currentBooking, $availableSchedules are available
+// Ensure student session exists
+if (!$student_id) {
+    $_SESSION['error'] = "Student session not found.";
+    header("Location: ../login.php");
+    exit;
+}
+
+// 1️⃣ Fetch student info
+$stmt = $pdo->prepare("SELECT Firstname, Lastname FROM students WHERE student_id = ?");
+$stmt->execute([$student_id]);
+$student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// 2️⃣ Format name and avatar
+function sentence_case($string) {
+    return ucfirst(strtolower($string));
+}
+$fullName = sentence_case($student['Firstname']) . " " . sentence_case($student['Lastname']);
+$avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($student['Lastname'], 0, 1));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,11 +58,15 @@ require_once __DIR__ . '/../handler/studentPtcHandler.php';
             <li><a href="studentSchedules.php"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
             <li><a href="studentPayments.php"><i class="fas fa-money-bill-wave"></i> Balance</a></li>
             <li><a href="studentPtc.php" class="active"><i class="fas fa-comments"></i> PTC Meeting</a></li>
+            <li><a href="logout.php" class="php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </aside>
 
     <main class="main-content">
-        <h2><i class="fas fa-comments"></i> Parent-Teacher Conference</h2>
+        <!-- Header styled as card -->
+        <div class="header-card">
+            <h2><i class="fas fa-comments"></i> Parent-Teacher Conference</h2>
+        </div>
 
         <!-- Flash Messages -->
         <?php if (!empty($_SESSION['success'])): ?>
@@ -128,12 +150,7 @@ require_once __DIR__ . '/../handler/studentPtcHandler.php';
 document.addEventListener('DOMContentLoaded', function() {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
-        // Auto-hide after 5 seconds
-        const autoHide = setTimeout(() => {
-            hideAlert(alert);
-        }, 5000);
-        
-        // Stop auto-hide if user manually closes
+        const autoHide = setTimeout(() => hideAlert(alert), 5000);
         const closeBtn = alert.querySelector('.alert-close');
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
@@ -147,9 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function hideAlert(alert) {
     alert.style.opacity = '0';
     alert.style.transform = 'translateX(-50%) translateY(-20px)';
-    setTimeout(() => {
-        alert.remove();
-    }, 300);
+    setTimeout(() => alert.remove(), 300);
 }
 </script>
 </body>

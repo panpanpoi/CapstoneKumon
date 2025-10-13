@@ -1,52 +1,62 @@
 /* =========================================================
    🎓 STUDENT PTC PAGE STYLES
-   Matches the theme of other student account pages
+   Clean, consistent theme for Student Dashboard
    ========================================================= */
 
 /* ========== MAIN LAYOUT ========== */
-
 .main-content {
   margin-left: 250px;
-  padding: 20px 30px;
-  background: #f8f9fb;
+  padding: 25px 35px;
+  background: #f7f8fb;
   min-height: 100vh;
   transition: margin-left 0.3s ease;
   box-sizing: border-box;
 }
 
-/* ========== HEADER ========== */
-
-.main-content h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
+/* ========== HEADER CARD ========== */
+.header-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 18px 25px;
   margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
 }
 
-.main-content h2 i {
+.header-card h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.header-card h2 i {
   color: #3f97f5;
+  font-size: 1.3rem;
 }
 
 /* ========== ALERTS ========== */
-
 .alert {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10000;
-  padding: 12px 20px;
+  z-index: 9999;
+  padding: 12px 18px;
   border-radius: 8px;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   width: 90%;
+  max-width: 420px;
   animation: slideDown 0.3s ease;
 }
 
@@ -63,23 +73,21 @@
 }
 
 .alert-close {
+  margin-left: auto;
   background: none;
   border: none;
   font-size: 18px;
   font-weight: bold;
   color: inherit;
-  cursor: pointer;
-  padding: 0;
-  margin-left: auto;
   opacity: 0.7;
-  transition: opacity 0.2s;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
 .alert-close:hover {
   opacity: 1;
 }
 
-/* Alert animation */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -91,16 +99,16 @@
   }
 }
 
-/* ========== SECTIONS ========== */
-
+/* ========== SECTION CONTAINERS ========== */
 .current-booking,
 .available-slots {
   background: #fff;
   border-radius: 12px;
-  padding: 20px;
+  padding: 22px 25px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   border: 1px solid #e9ecef;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.5s ease;
 }
 
 .current-booking h3,
@@ -123,28 +131,26 @@
 }
 
 /* ========== CURRENT BOOKING ========== */
-
 .current-booking p {
   margin: 10px 0;
-  line-height: 1.6;
   color: #555;
+  line-height: 1.6;
 }
 
 .current-booking strong {
-  color: #333;
-  font-weight: 600;
+  color: #222;
 }
 
 .cancel-btn {
   background: #dc3545;
-  color: white;
+  color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -161,14 +167,12 @@
 }
 
 /* ========== AVAILABLE SLOTS TABLE ========== */
-
 .available-slots table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .available-slots thead {
@@ -185,36 +189,30 @@
 }
 
 .available-slots th {
-  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .available-slots tbody tr:hover {
   background: #f8f9fa;
 }
 
-.available-slots tbody tr:last-child td {
-  border-bottom: none;
-}
-
 /* ========== BOOKING BUTTONS ========== */
-
 .btn {
   background: #28a745;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  padding: 7px 13px;
+  border-radius: 5px;
+  font-size: 0.85rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn:hover {
@@ -227,7 +225,6 @@
 }
 
 /* ========== EMPTY STATE ========== */
-
 .empty-state {
   text-align: center;
   padding: 40px 20px;
@@ -235,17 +232,11 @@
 }
 
 .empty-state h4 {
-  margin: 0 0 10px 0;
+  margin-bottom: 10px;
   color: #495057;
 }
 
-.empty-state p {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-/* ========== FORM STYLING ========== */
-
+/* ========== FORMS & INPUTS ========== */
 form {
   display: inline-block;
 }
@@ -254,76 +245,7 @@ input[type="hidden"] {
   display: none;
 }
 
-/* ========== RESPONSIVE DESIGN ========== */
-
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    padding: 15px;
-  }
-  
-  .current-booking,
-  .available-slots {
-    padding: 15px;
-  }
-  
-  .available-slots table {
-    font-size: 0.8rem;
-  }
-  
-  .available-slots th,
-  .available-slots td {
-    padding: 8px 10px;
-  }
-  
-  .alert {
-    width: 95%;
-    max-width: 350px;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-content {
-    padding: 10px;
-  }
-  
-  .current-booking,
-  .available-slots {
-    padding: 12px;
-  }
-  
-  .available-slots table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  
-  .btn {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-  }
-}
-
-/* ========== ANIMATIONS ========== */
-
-.current-booking,
-.available-slots {
-  animation: fadeInUp 0.5s ease;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ========== FOCUS STATES ========== */
-
+/* ========== ACCESSIBILITY STATES ========== */
 .btn:focus,
 .cancel-btn:focus {
   outline: none;
@@ -334,8 +256,6 @@ input[type="hidden"] {
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
 }
 
-/* ========== LOADING STATES ========== */
-
 .btn:disabled,
 .cancel-btn:disabled {
   opacity: 0.6;
@@ -343,13 +263,60 @@ input[type="hidden"] {
   transform: none;
 }
 
-.btn:disabled:hover,
-.cancel-btn:disabled:hover {
-  transform: none;
-  background: #28a745;
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 992px) {
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
 }
 
-.cancel-btn:disabled:hover {
-  background: #dc3545;
+@media (max-width: 768px) {
+  .current-booking,
+  .available-slots {
+    padding: 15px;
+  }
+
+  .available-slots table {
+    font-size: 0.85rem;
+  }
+
+  .available-slots th,
+  .available-slots td {
+    padding: 8px 10px;
+  }
+
+  .alert {
+    width: 95%;
+    max-width: 350px;
+  }
 }
 
+@media (max-width: 480px) {
+  .main-content {
+    padding: 12px;
+  }
+
+  .available-slots table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
