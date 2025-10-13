@@ -86,7 +86,7 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
               <ul>
                 <?php foreach ($weekly_schedule[$day] as $sched): ?>
                   <li>
-                    <strong><?= htmlspecialchars($sched['subject']) ?></strong> with 
+                    <strong><?= htmlspecialchars($sched['subject']) ?></strong> Teacher:
                     <?= htmlspecialchars($sched['teacher_name'] . ' ' . $sched['teacher_surname']) ?><br>
                     <?= date('g:i A', strtotime($sched['start_time'])) ?> - 
                     <?= date('g:i A', strtotime($sched['end_time'])) ?>

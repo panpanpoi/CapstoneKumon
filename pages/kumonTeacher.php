@@ -63,8 +63,8 @@ $initials   = $_SESSION['initials'];   // LR
         <?php unset($_SESSION['flash_success']); // remove after showing ?>
     <?php endif; ?>
 
-    <h2>Welcome back, <?= htmlspecialchars($user['Name']); ?>!</h2>
-    <p>Select an option from the menu.</p>
+    <h2>Welcome back Teacher, <?= htmlspecialchars($user['Name']); ?>!</h2>
+   
 </div>
 </body>
 </html>

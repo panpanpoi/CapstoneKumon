@@ -50,9 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setActiveButton(weekBtn);
   }
 
-  /**
-   * Show only today’s schedule in a single card
-   */
+  
+    // Show only today’s schedule in a single card
   function renderTodayView() {
     scheduleContainer.innerHTML = "";
 

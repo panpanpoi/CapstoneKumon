@@ -168,6 +168,5 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
 
 <!-- ✅ JS -->
 <script src="../scr/studentHome.js"></script>
-<script src="../scr/sse_notifications.js"></script>
 </body>
 </html>

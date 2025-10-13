@@ -17,12 +17,12 @@ $currentPage = basename(__FILE__);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kumon Classes</title>
   <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 
-  <!-- ✅ Styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
   <link rel="stylesheet" href="../styles/kumonTeacher.css">
   <link rel="stylesheet" href="../styles/kumonClass.css">
@@ -32,14 +32,10 @@ $currentPage = basename(__FILE__);
 
 <body>
   <div class="dashboard">
-    <!-- ✅ Sidebar -->
+    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
-        <h1>
-          <a href="kumonTeacher.php">
-            <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px;">
-          </a>
-        </h1>
+        <h1><a href="kumonTeacher.php"><img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px;"></a></h1>
         <p>Practice Makes Possibilities</p>
       </div>
 
@@ -59,7 +55,7 @@ $currentPage = basename(__FILE__);
       </ul>
     </aside>
 
-    <!-- ✅ Main Content -->
+    <!-- Main Content -->
     <div class="main-content">
       <header class="header">
         <div class="header-left">
@@ -104,7 +100,7 @@ $currentPage = basename(__FILE__);
     </div>
   </div>
 
-  <!-- ✅ Add Student Modal -->
+  <!-- Add Student Modal -->
   <div id="addStudentModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -118,9 +114,11 @@ $currentPage = basename(__FILE__);
 
         <label for="levelSelect">Level</label>
         <select id="levelSelect">
-          <?php 
+          <?php
           $levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
-          foreach ($levels as $lvl) echo "<option value='$lvl'>$lvl</option>"; 
+          foreach ($levels as $lvl) {
+            echo "<option value='" . htmlspecialchars($lvl, ENT_QUOTES) . "'>" . htmlspecialchars($lvl) . "</option>";
+          }
           ?>
         </select>
 
@@ -156,17 +154,37 @@ $currentPage = basename(__FILE__);
     </div>
   </div>
 
-  <!-- ✅ Scripts -->
+  
+  <!-- 🧍 Remove Student Modal -->
+<div id="removeStudentModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Remove Student</h3>
+      <button class="close-btn" id="closeRemoveModal">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <p>Are you sure you want to remove this student from the class?</p>
+      <p id="removeStudentName" style="font-weight: 600; color: #222;"></p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelRemoveBtn">Cancel</button>
+      <button class="btn-remove-danger" id="confirmRemoveBtn">Remove</button>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="../scr/kumonClass.js"></script>
+  <script src="../scr/kumonClassRemove.js"></script>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("✅ kumonClass.js loaded");
-      if (typeof initKumonClass === "function") {
-        initKumonClass();
-      } else {
-        console.error("❌ initKumonClass() not found — check ../scr/kumonClass.js path");
-      }
+      if (typeof initKumonClass === "function") initKumonClass();
+      else console.error("initKumonClass() not found");
     });
   </script>
 </body>

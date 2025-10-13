@@ -4,14 +4,18 @@ if (!isset($_SESSION)) session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
-// ✅ Only allow teachers
-$teacher_id = $_SESSION['teacher_id'] ?? null;
-if (!$teacher_id) {
-    echo json_encode(["success" => false, "message" => "Unauthorized access."]);
+// ✅ Helper to always return valid JSON
+function jsonResponse($data) {
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// Optional day filter
+// ✅ Only allow teachers
+$teacher_id = $_SESSION['teacher_id'] ?? null;
+if (!$teacher_id) {
+    jsonResponse(["success" => false, "message" => "Unauthorized access. Please log in again."]);
+}
+
 $filter_day = $_GET['day'] ?? 'all';
 
 try {
@@ -66,11 +70,11 @@ try {
         ];
     }
 
-    echo json_encode(["success" => true, "data" => $assigned], JSON_UNESCAPED_UNICODE);
-    exit;
+    jsonResponse(["success" => true, "data" => $assigned]);
 
 } catch (PDOException $e) {
-    echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
-    exit;
+    jsonResponse(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+} catch (Throwable $e) {
+    jsonResponse(["success" => false, "message" => "Server error: " . $e->getMessage()]);
 }
 ?>

@@ -5,19 +5,16 @@
    ========================================================= */
 
 /* ========== MAIN LAYOUT ========== */
-
-/* Main content area (the part beside sidebar) */
 .main-content {
   flex: 1;
-  background: #f7f8fa; /* ✅ Adjust background color here */
+  background: #f7f8fa;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 0; /* Remove unwanted space */
+  padding: 0;
 }
 
-/* ========== HEADER (Copied from studentSchedule) ========== */
-
+/* ========== HEADER ========== */
 .header {
   display: flex;
   align-items: center;
@@ -39,7 +36,7 @@
 }
 
 .header-left i {
-  color: #0078ff; /* Icon color */
+  color: #0078ff;
 }
 
 .header-right .header-profile {
@@ -55,23 +52,20 @@
 }
 
 /* ========== MAIN PANEL ========== */
-
 .main_panel {
-  padding: 20px; /* ✅ Adjust space below header */
+  padding: 20px;
   flex: 1;
 }
 
-/* Section container */
 .class-section {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 20px;
-  margin-top: 10px; /* ✅ Space below header */
+  margin-top: 10px;
 }
 
 /* ========== SECTION HEADER ========== */
-
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -88,8 +82,7 @@
   gap: 6px;
 }
 
-/* ========== FILTER + BUTTONS (Copied from studentSchedule) ========== */
-
+/* ========== FILTER + BUTTONS ========== */
 .filter-actions {
   display: flex;
   align-items: center;
@@ -108,12 +101,7 @@
   transition: all 0.2s ease;
 }
 
-.day-filter:hover {
-  background: #e8f7fb;
-  border-color: #00acc1;
-  color: #008fa1;
-}
-
+.day-filter:hover,
 .day-filter:focus {
   background: #e8f7fb;
   border-color: #00acc1;
@@ -126,10 +114,10 @@
   background: #0078ff;
   border: none;
   color: white;
-  padding: 6px 12px; /* More compact padding */
+  padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem; /* Slightly smaller font */
+  font-size: 0.85rem;
   transition: background 0.3s;
   display: inline-flex;
   align-items: center;
@@ -141,23 +129,22 @@
   background: #005ec4;
 }
 
-
 /* Secondary button (Cancel) */
 .btn.btn-secondary {
-  background: #ff7c7c;
+  background: #f0f0f0;
   color: #333;
   border: none;
   padding: 7px 14px;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .btn.btn-secondary:hover {
-  background: #ccc;
+  background: #ddd;
 }
 
 /* ========== TABLE ========== */
-
 .assigned-table-container {
   overflow-x: auto;
   border-radius: 10px;
@@ -178,7 +165,7 @@
 
 .assigned-table th,
 .assigned-table td {
-  padding: 10px 12px; /* ✅ Adjust table cell padding */
+  padding: 10px 12px;
   text-align: left;
   font-size: 0.9rem;
 }
@@ -196,11 +183,10 @@
   color: #999;
 }
 
-/* ========== REMOVE BUTTON (Red Styling) ========== */
-
+/* ========== REMOVE BUTTON (Red Styling for Table) ========== */
 .btn-remove {
   background: #dc3545 !important;
-  color: white !important;
+  color: #fff !important;
   border: none !important;
   padding: 4px 8px !important;
   border-radius: 4px !important;
@@ -219,15 +205,9 @@
   box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
 }
 
-.btn-remove:active {
-  transform: translateY(0) !important;
-  box-shadow: 0 1px 2px rgba(220, 53, 69, 0.3) !important;
-}
-
 /* ========== MODAL ========== */
-
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
@@ -237,18 +217,18 @@
 }
 
 .modal.active {
-  display: flex; /* Show modal when active class is added */
+  display: flex;
 }
 
 .modal-content {
   background: #fff;
-  width: 400px; /* Slightly smaller */
+  width: 400px;
   max-width: 90%;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease;
-  max-height: 90vh; /* Prevent modal from being too tall */
-  overflow-y: auto; /* Allow scrolling if content is too long */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header,
@@ -280,10 +260,10 @@
 }
 
 .modal-body {
-  padding: 16px 20px; /* Slightly less padding */
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Smaller gap between elements */
+  gap: 10px;
 }
 
 .modal-body label {
@@ -295,7 +275,7 @@
 .modal-body select,
 .modal-body input[type="time"] {
   width: 100%;
-  padding: 5px 8px; /* Slightly less padding */
+  padding: 5px 8px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -314,14 +294,13 @@
   gap: 8px;
 }
 
+/* ✨ Fade-in animation for modal */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== TOM SELECT STYLES ========== */
-
-/* Fix TomSelect dropdown transparency */
+/* ========== TOM SELECT ========== */
 .ts-dropdown {
   background: #fff !important;
   border: 1px solid #ccc !important;
@@ -353,7 +332,6 @@
   font-weight: 600 !important;
 }
 
-/* TomSelect input styling */
 .ts-control {
   background: #fff !important;
   border: 1px solid #ccc !important;
@@ -367,16 +345,19 @@
   box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2) !important;
 }
 
-/* TomSelect dropdown arrow */
-.ts-control .ts-control-single .ts-control-input::after {
-  border-color: #666 transparent transparent !important;
+/* ========== 🔴 Red "Remove" button for MODAL ========== */
+.btn-remove-danger {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-/* TomSelect clear button */
-.ts-control .ts-control-single .ts-control-clear {
-  color: #999 !important;
+.btn-remove-danger:hover {
+  background-color: #c0392b;
 }
 
-.ts-control .ts-control-single .ts-control-clear:hover {
-  color: #666 !important;
-}

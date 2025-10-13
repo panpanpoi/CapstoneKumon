@@ -1,21 +1,17 @@
 // =========================================================
-// 📘 KUMON CLASS PAGE SCRIPT (Stable + Enhanced Layout)
+// kumonClass.js — fetch/add/display students
 // =========================================================
 console.log("✅ kumonClass.js loaded");
 
 window.initKumonClass = () => {
   console.log("🚀 initKumonClass() STARTED");
 
-  // 🌟 Elements
+  // Elements
   const openAddModal = document.getElementById("openAddModal");
   const closeAddModal = document.getElementById("closeAddModal");
   const closeModalBtn = document.getElementById("closeModalBtn");
   const addStudentModal = document.getElementById("addStudentModal");
   const addStudentBtn = document.getElementById("addStudentBtn");
-
-  console.log("🎯 Element check:", {
-    openAddModal, closeAddModal, closeModalBtn, addStudentModal, addStudentBtn
-  });
 
   const studentSelect = document.getElementById("studentSelect");
   const levelSelect = document.getElementById("levelSelect");
@@ -31,57 +27,31 @@ window.initKumonClass = () => {
   const dayFilter = document.getElementById("dayFilter");
   const assignedStudentsBody = document.getElementById("assignedStudentsBody");
 
-  // Test form elements accessibility
-  console.log("🔍 Form elements check:", {
-    studentSelect: studentSelect ? "✅ Found" : "❌ Missing",
-    levelSelect: levelSelect ? "✅ Found" : "❌ Missing",
-    schedule1Day: schedule1Day ? "✅ Found" : "❌ Missing",
-    schedule1Start: schedule1Start ? "✅ Found" : "❌ Missing",
-    schedule1End: schedule1End ? "✅ Found" : "❌ Missing"
-  });
+  let studentTomSelect = null;
 
-  let studentTomSelect = null; // 🔹 TomSelect instance
-
-  // =========================================================
-  // 🔹 MODAL CONTROL
-  // =========================================================
-  const openModal = () => {
-    console.log("🟢 openModal() triggered");
-    addStudentModal.classList.add("active");
-  };
+  // Modal open/close
+  const openModal = () => addStudentModal.classList.add("active");
   const closeModal = () => {
-    console.log("🔴 closeModal() triggered");
     addStudentModal.classList.remove("active");
-    // Clear form fields
+    // clear inputs
+    if (studentTomSelect) studentTomSelect.clear();
     if (studentSelect) studentSelect.value = "";
     if (levelSelect) levelSelect.value = "";
-    if (schedule1Day) schedule1Day.value = "";
-    if (schedule1Start) schedule1Start.value = "";
-    if (schedule1End) schedule1End.value = "";
-    if (schedule2Day) schedule2Day.value = "";
-    if (schedule2Start) schedule2Start.value = "";
-    if (schedule2End) schedule2End.value = "";
+    schedule1Day && (schedule1Day.value = "");
+    schedule1Start && (schedule1Start.value = "");
+    schedule1End && (schedule1End.value = "");
+    schedule2Day && (schedule2Day.value = "");
+    schedule2Start && (schedule2Start.value = "");
+    schedule2End && (schedule2End.value = "");
   };
 
-  if (openAddModal) openAddModal.addEventListener("click", openModal);
-  if (closeAddModal) closeAddModal.addEventListener("click", closeModal);
-  if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
-  
-  // Close modal when clicking outside of it
-  if (addStudentModal) {
-    addStudentModal.addEventListener("click", (e) => {
-      if (e.target === addStudentModal) {
-        closeModal();
-      }
-    });
-  }
-  
-  console.log("✅ Modal event listeners attached");
+  openAddModal?.addEventListener("click", openModal);
+  closeAddModal?.addEventListener("click", closeModal);
+  closeModalBtn?.addEventListener("click", closeModal);
+  addStudentModal?.addEventListener("click", (e) => { if (e.target === addStudentModal) closeModal(); });
 
-  // =========================================================
-  // 🔹 FETCH ASSIGNED STUDENTS
-  // =========================================================
-  async function fetchAssignedStudents(filterDay = "all") {
+  // FETCH ASSIGNED STUDENTS
+    async function fetchAssignedStudents(filterDay = "all") {
     console.log("📦 fetchAssignedStudents() called →", filterDay);
     try {
       const res = await fetch(`../handler/fetchAssignedStudent.php?day=${filterDay}`, {
@@ -95,7 +65,6 @@ window.initKumonClass = () => {
         data.data.forEach(st => {
           const tr = document.createElement("tr");
 
-          // Parse schedules string
           const scheduleItems = (st.schedules || "")
             .split(",")
             .map(s => s.trim())
@@ -122,7 +91,7 @@ window.initKumonClass = () => {
             <td class="cell-top">${st.full_name}</td>
             <td class="cell-top">${st.level}</td>
             <td class="schedule-cell">${scheduleHTML}</td>
-            <td><button class="btn-remove" data-id="${st.student_id}">Remove</button></td>
+            <td><button class="btn-remove" data-id="${st.student_id}" data-name="${st.full_name}">Remove</button></td>
           `;
           assignedStudentsBody.appendChild(tr);
         });
@@ -130,19 +99,13 @@ window.initKumonClass = () => {
         assignedStudentsBody.innerHTML = `<tr><td colspan="5" class="no-data">No students assigned yet.</td></tr>`;
       }
 
-      document.querySelectorAll(".btn-remove").forEach(btn => {
-        btn.addEventListener("click", () => removeStudent(btn.dataset.id));
-      });
-
     } catch (err) {
       console.error("❌ Error fetching assigned students:", err);
       assignedStudentsBody.innerHTML = `<tr><td colspan="5" class="no-data">Failed to load data.</td></tr>`;
     }
   }
 
-  // =========================================================
-  // 🔹 FETCH AVAILABLE STUDENTS
-  // =========================================================
+  // FETCH AVAILABLE STUDENTS
   async function fetchAvailableStudents() {
     console.log("📚 fetchAvailableStudents() called");
     try {
@@ -161,9 +124,10 @@ window.initKumonClass = () => {
         });
       }
 
-      if (studentTomSelect) studentTomSelect.destroy();
-      
-      // Initialize TomSelect with error handling
+      if (studentTomSelect) {
+        try { studentTomSelect.destroy(); } catch(e){ /* ignore */ }
+      }
+
       try {
         studentTomSelect = new TomSelect("#studentSelect", {
           create: false,
@@ -172,8 +136,8 @@ window.initKumonClass = () => {
           maxOptions: 400
         });
         console.log("✅ TomSelect initialized successfully");
-      } catch (tomSelectError) {
-        console.warn("⚠️ TomSelect initialization failed, using regular select:", tomSelectError);
+      } catch (err) {
+        console.warn("⚠️ TomSelect initialization failed:", err);
         studentTomSelect = null;
       }
     } catch (err) {
@@ -181,113 +145,105 @@ window.initKumonClass = () => {
     }
   }
 
-  // =========================================================
-// 🔹 ADD STUDENT (with debug + guaranteed click handling)
-// =========================================================
-function setupAddStudentHandler() {
-  const addBtn = document.getElementById("addStudentBtn");
-  if (!addBtn) {
-    console.error("❌ addStudentBtn not found at setup");
-    return;
-  }
-
-  console.log("✅ addStudentBtn found — listener attached");
-
-  addBtn.addEventListener("click", async (e) => {
+  // ADD STUDENT
+  addStudentBtn?.addEventListener("click", async (e) => {
     e.preventDefault();
     console.log("🟢 Add Student button clicked");
 
-    // Get student ID from TomSelect or regular select
     const studentId = studentTomSelect ? studentTomSelect.getValue() : studentSelect.value;
     const level = levelSelect.value;
 
     console.log("📦 Input values:", {
-      studentId,
-      level,
-      schedule1_day: schedule1Day.value,
-      schedule1_start: schedule1Start.value,
-      schedule1_end: schedule1End.value,
+      studentId, level,
+      schedule1_day: schedule1Day?.value, schedule1_start: schedule1Start?.value, schedule1_end: schedule1End?.value
     });
 
-    if (!studentId || !level || !schedule1Day.value || !schedule1Start.value || !schedule1End.value) {
+    if (!studentId || !level || !schedule1Day?.value || !schedule1Start?.value || !schedule1End?.value) {
       alert("⚠️ Please fill in all required fields for Schedule 1.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("action", "add");
-    formData.append("student_id", studentId);
-    formData.append("level", level);
-    formData.append("schedule1_day", schedule1Day.value);
-    formData.append("schedule1_start", schedule1Start.value);
-    formData.append("schedule1_end", schedule1End.value);
-
-    if (schedule2Day.value && schedule2Start.value && schedule2End.value) {
-      formData.append("schedule2_day", schedule2Day.value);
-      formData.append("schedule2_start", schedule2Start.value);
-      formData.append("schedule2_end", schedule2End.value);
-    }
-
     try {
-      console.log("🚀 Sending add student request...");
-      console.log("📤 FormData contents:");
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value}`);
+      const formData = new FormData();
+      formData.append("action", "add");
+      formData.append("student_id", studentId);
+      formData.append("level", level);
+      formData.append("schedule1_day", schedule1Day.value);
+      formData.append("schedule1_start", schedule1Start.value);
+      formData.append("schedule1_end", schedule1End.value);
+
+      if (schedule2Day.value && schedule2Start.value && schedule2End.value) {
+        formData.append("schedule2_day", schedule2Day.value);
+        formData.append("schedule2_start", schedule2Start.value);
+        formData.append("schedule2_end", schedule2End.value);
       }
-      
+
+      console.log("🚀 Sending add student request...");
       const res = await fetch("../handler/classStudentHandler.php", {
         method: "POST",
         body: formData,
         credentials: "include"
       });
-      
-      console.log("📡 Response status:", res.status);
-      console.log("📡 Response headers:", res.headers);
-      
+
       const data = await res.json();
       console.log("📬 add student response:", data);
 
       if (data.success) {
         alert(data.message);
         closeModal();
-        fetchAssignedStudents(dayFilter.value || "all");
+        fetchAssignedStudents(dayFilter?.value || "all");
         fetchAvailableStudents();
       } else {
         alert("❌ " + (data.message || "Failed to add student."));
       }
     } catch (err) {
       console.error("❌ Add student error:", err);
-      console.error("❌ Error details:", {
-        name: err.name,
-        message: err.message,
-        stack: err.stack
-      });
       alert("🚫 Error adding student: " + err.message);
     }
   });
-}
 
-  // =========================================================
-  // 🔹 FILTER BY DAY
-  // =========================================================
-  if (dayFilter) {
-    console.log("✅ dayFilter found — attaching change listener");
-    dayFilter.addEventListener("change", () => {
-      console.log("🔄 Day filter changed:", dayFilter.value);
-      fetchAssignedStudents(dayFilter.value);
-    });
-  } else {
-    console.warn("⚠️ dayFilter not found in DOM");
-  }
+  // Expose fetchAssignedStudents globally (so removal file can call it)
+  window.fetchAssignedStudents = fetchAssignedStudents;
 
-  // =========================================================
-  // 🔹 SETUP ADD STUDENT HANDLER
-  // =========================================================
-  setupAddStudentHandler();
+  // DELEGATED remove button handler (calls global openRemoveModal or fallback to direct remove)
+  assignedStudentsBody?.addEventListener("click", (e) => {
+    console.log("🗑️ Click event in assignedStudentsBody");
+    const btn = e.target.closest(".btn-remove");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const name = btn.dataset.name || "";
+    // prefer modal approach if openRemoveModal exists
+    if (typeof window.openRemoveModal === "function") {
+      window.openRemoveModal(id, name);
+    } else {
+      // fallback: direct confirm + delete
+      if (confirm(`Are you sure you want to remove ${name || "this student"}?`)) {
+        // call direct removal
+        (async () => {
+          try {
+            const formData = new FormData();
+            formData.append("action", "remove");
+            formData.append("student_id", id);
+            const res = await fetch("../handler/classStudentHandler.php", { method: "POST", body: formData, credentials: "include" });
+            const result = await res.json();
+            alert(result.message || (result.success ? "Removed" : "Failed"));
+            fetchAssignedStudents(dayFilter?.value || "all");
+          } catch (err) {
+            console.error("Error removing student (fallback):", err);
+            alert("Error removing student.");
+          }
+        })();
+      }
+    }
+  });
 
-  // =========================================================
-  // 🔹 INITIAL LOAD
-  // =========================================================
+  // DAY FILTER
+  dayFilter?.addEventListener("change", () => {
+    console.log("🔄 Day filter changed:", dayFilter.value);
+    fetchAssignedStudents(dayFilter.value);
+  });
+
+  // INITIAL LOAD
   console.log("🚀 Initial data loading...");
   fetchAssignedStudents();
   fetchAvailableStudents();
