@@ -26,29 +26,34 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student PTC</title>
+    <title>Kumon Student PTC</title>
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
+
+    <!-- Global & Student Styles -->
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonStudent.css">
-    <link rel="stylesheet" href="../styles/studentptc.css">
+
+    <!-- PTC-specific Styles (scoped by body.student-ptc) -->
+    <link rel="stylesheet" href="../styles/studentptc.css?v=<?= time() ?>">
+
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body>
+
+<body class="student-ptc">
 <div class="dashboard">
     <aside class="sidebar">
         <div class="logo">
-            <h1>
-                <a href="kumonStudent.php">
-                    <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px;">
-                </a>
-            </h1>
+            <a href="kumonStudent.php">
+                <img src="../styles/kumonLogo.png" alt="KUMON Logo" style="height:55px;">
+            </a>
             <p>Practice Makes Possibilities</p>
         </div>
 
         <div class="user-profile">
-            <div class="user-avatar"><?= htmlspecialchars(substr($studentName, 0, 2)) ?></div>
+            <div class="user-avatar"><?= htmlspecialchars(substr($avatarInitials, 0, 2)) ?></div>
             <div class="user-details">
-                <div class="user-name"><?= htmlspecialchars($studentName) ?></div>
+                <div class="user-name"><?= htmlspecialchars($fullName) ?></div>
                 <div class="user-role">Student</div>
             </div>
         </div>
@@ -58,7 +63,7 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
             <li><a href="studentSchedules.php"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
             <li><a href="studentPayments.php"><i class="fas fa-money-bill-wave"></i> Balance</a></li>
             <li><a href="studentPtc.php" class="active"><i class="fas fa-comments"></i> PTC Meeting</a></li>
-            <li><a href="logout.php" class="php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </aside>
 
@@ -76,6 +81,7 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
                 <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
             </div>
         <?php endif; ?>
+
         <?php if (!empty($_SESSION['error'])): ?>
             <div class="alert alert-error">
                 <i class="fas fa-exclamation-circle"></i>
@@ -146,8 +152,7 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
 </div>
 
 <script>
-// Auto-hide alerts after 5 seconds
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         const autoHide = setTimeout(() => hideAlert(alert), 5000);
@@ -163,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function hideAlert(alert) {
     alert.style.opacity = '0';
-    alert.style.transform = 'translateX(-50%) translateY(-20px)';
+    alert.style.transform = 'translateY(-20px)';
     setTimeout(() => alert.remove(), 300);
 }
 </script>

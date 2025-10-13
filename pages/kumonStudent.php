@@ -3,38 +3,44 @@ if (!isset($_SESSION)) session_start();
 
 require_once "../database.php";
 require_once "../handler/auth.php";
-require_once "../handler/studentData.php";
-require_once "../handler/studentScheduleData.php";
 
 // ✅ Ensure student is logged in
-if ($_SESSION['account_type'] !== 'student') {
+if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'student') {
     header("Location: loginform.php");
     exit;
 }
 
-$username   = $_SESSION['username'];   
-$userRole   = ucfirst($_SESSION['account_type']); 
-$initials   = $_SESSION['initials'];   
+$username = $_SESSION['username'];   
+$userRole = ucfirst($_SESSION['account_type']); 
+$initials = $_SESSION['initials'] ?? '';
 
-// ✅ Avatar initials
-$avatarInitials = strtoupper(
-    substr($student['Firstname'], 0, 1) . substr($student['Lastname'], 0, 1)
-);
+// ✅ Load dashboard data
+$dashboardData = require "../handler/studentDashboardData.php";
 
-// ✅ Student current level
-$current_level = $class_student['level'] ?? null;
-$class_id      = $class_student['class_id'] ?? null;
-
-// ✅ Schedule for today
-$today_schedule = $today_schedule ?? [];
+$student         = $dashboardData['student'] ?? [];
+$current_level   = $dashboardData['current_level'] ?? 'N/A';
+$latest_payment  = $dashboardData['latest_payment'] ?? null;
+$next_due        = $dashboardData['next_due'] ?? null;
+$upcoming_ptc    = $dashboardData['upcoming_ptc'] ?? null;
+$today_schedule  = $dashboardData['today_schedule'] ?? [];
 
 // ✅ Helper function
 function sentence_case($string) {
-    $string = strtolower($string);
-    return ucfirst($string);
+    return ucfirst(strtolower($string));
 }
 
-$fullName = sentence_case($student['Firstname']) . " " . sentence_case($student['Lastname']);
+// ✅ Build student name safely
+$firstName = $student['Firstname'] ?? '';
+$lastName  = $student['Lastname'] ?? '';
+$fullName  = sentence_case($firstName) . " " . sentence_case($lastName);
+
+// ✅ Avatar initials (fallback: session initials)
+$avatarInitials = strtoupper(
+    substr($firstName, 0, 1) . substr($lastName, 0, 1)
+);
+if (trim($avatarInitials) === '') {
+    $avatarInitials = strtoupper($initials ?: 'ST');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,14 +48,9 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
-
-    <!-- CSS -->
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css"> 
     <link rel="stylesheet" href="../styles/kumonStudent.css">
     <link rel="stylesheet" href="../styles/studentHome.css">
-    <link rel="stylesheet" href="../styles/notification_styles.css">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <title>KUMON Student Dashboard</title>
@@ -57,7 +58,7 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
 <body>
 <div class="dashboard">
 
-    <!-- ✅ Sidebar -->
+    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
             <a href="kumonStudent.php">
@@ -67,7 +68,7 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
         </div>
 
         <div class="user-profile">
-            <div class="user-avatar"><?= $avatarInitials ?></div>
+            <div class="user-avatar"><?= htmlspecialchars($avatarInitials) ?></div>
             <div class="user-details">
                 <div class="user-name"><?= htmlspecialchars($fullName) ?></div>
                 <div class="user-role">Student</div>
@@ -89,9 +90,8 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
         <header class="main-header">
             <h1>Student Dashboard</h1>
             <div class="header-right">
-                <!-- User Info -->
                 <div class="user-info">
-                    <div class="user-avatar"><?= $avatarInitials ?></div>
+                    <div class="user-avatar"><?= htmlspecialchars($avatarInitials) ?></div>
                 </div>
             </div>
         </header>
@@ -103,9 +103,9 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
                 <div class="card">
                     <div class="card-icon"><i class="fas fa-chart-line"></i></div>
                     <div class="card-title">Current Level</div>
-                    <div class="card-value"><?= htmlspecialchars($current_level ?? 'N/A') ?></div>
+                    <div class="card-value"><?= htmlspecialchars($current_level) ?></div>
                     <div class="card-subtitle">
-                        <?= !empty($today_schedule) ? htmlspecialchars($today_schedule[0]['subject']) : '' ?>
+                        <?= !empty($today_schedule) ? htmlspecialchars($today_schedule[0]['subject'] ?? '') : '' ?>
                     </div>
                 </div>
 
@@ -115,8 +115,9 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
                     <?php if ($next_due): ?>
                         <div class="card-value"><?= htmlspecialchars($next_due) ?></div>
                         <div class="card-subtitle">
-                            Latest Payment: <?= htmlspecialchars($latest_payment['amount'] ?? '0.00') ?>
-                            (<?= htmlspecialchars($latest_payment['payment_date'] ?? 'N/A') ?>)
+                            Latest Payment: 
+                            <?= htmlspecialchars($latest_payment['amount'] ?? '0.00') ?> 
+                            (<?= htmlspecialchars($latest_payment['formatted_payment_date'] ?? 'N/A') ?>)
                         </div>
                     <?php else: ?>
                         <div class="card-value">No payments found</div>
@@ -130,41 +131,41 @@ $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student[
                     <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
                     <div class="card-title">Next PTC Meeting</div>
                     <?php if ($upcoming_ptc): ?>
-                        <div class="card-value">
-                            <?= htmlspecialchars($upcoming_ptc['meetingDate']) ?>
-                            (<?= htmlspecialchars($upcoming_ptc['start_time'] . " - " . $upcoming_ptc['end_time']) ?>)
-                        </div>
-                        <div class="card-subtitle">
-                            Status: <?= htmlspecialchars($upcoming_ptc['status']) ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="card-value">No scheduled PTC</div>
-                    <?php endif; ?>
+                    <div class="card-value">
+                        <?= htmlspecialchars($upcoming_ptc['formatted_date'] ?? 'N/A') ?>
+                        (<?= htmlspecialchars($upcoming_ptc['formatted_start'] ?? '') ?> - <?= htmlspecialchars($upcoming_ptc['formatted_end'] ?? '') ?>)
+                    </div>
+                    <div class="card-subtitle">
+                        <span class="status-badge">
+                        <?= htmlspecialchars($upcoming_ptc['status'] ?? 'N/A') ?>
+                        </span>
+
+                    </div>
+                <?php else: ?>
+                    <div class="card-value">No scheduled PTC</div>
+                <?php endif; ?>
                 </div>
 
                 <div class="card">
                     <div class="card-icon"><i class="fas fa-calendar-day"></i></div>
                     <div class="card-title">Today's Schedule</div>
-                    <?php if (!empty($today_schedule)): ?>
-                        <ul>
-                            <?php foreach ($today_schedule as $sched): ?>
-                                <li>
-                                    <?= htmlspecialchars($sched['subject']) ?> 
-                                    <?= htmlspecialchars($sched['start_time'] . " - " . $sched['end_time']) ?>
-                                    with <?= htmlspecialchars($sched['teacher_name'] . " " . $sched['teacher_surname']) ?>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php else: ?>
-                        <div class="card-value">No schedule today</div>
-                    <?php endif; ?>
+                   <?php if (!empty($today_schedule)): ?>
+                    <ul>
+                        <?php foreach ($today_schedule as $sched): ?>
+                            <li>
+                                <?= htmlspecialchars($sched['formatted_start'] ?? '') ?> - 
+                                <?= htmlspecialchars($sched['formatted_end'] ?? '') ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="card-value">No schedule today</div>
+                <?php endif; ?>
                 </div>
             </div>
         </section>
     </main>
 </div>
-
-<
 
 <!-- ✅ JS -->
 <script src="../scr/studentHome.js"></script>
