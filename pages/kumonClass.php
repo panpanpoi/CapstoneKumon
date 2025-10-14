@@ -76,6 +76,9 @@ $currentPage = basename(__FILE__);
               <button id="openAddModal" class="btn btn-primary">
                 <i class="fa fa-plus"></i> Add Student
               </button>
+               <a href="teacherStudentAttendance.php" class="btn btn-attendance">
+                <i class="fa fa-clipboard-list"></i> Attendance
+                </a>
             </div>
           </div>
 

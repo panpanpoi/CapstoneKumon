@@ -231,6 +231,73 @@
   flex-wrap: wrap;
 }
 
+/* ===================== DONE BUTTON STYLES ===================== */
+.btn-done {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.btn-done:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+/* Disabled state */
+.btn-done:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Pulse animation while processing */
+.btn-pulse {
+    animation: pulse 1s infinite;
+}
+
+/* Success glow after done */
+.btn-success-glow {
+    box-shadow: 0 0 8px #28a745, 0 0 16px #28a74550;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+/* Keyframes for pulse animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0px #28a74550;
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 8px #28a74550;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0px #28a74550;
+    }
+}
+.status-done {
+  color: #28a745;
+  font-weight: bold;
+}
+.row-done {
+  animation: highlight 1.5s ease;
+}
+
+@keyframes highlight {
+  0% { background-color: #d4edda; }
+  100% { background-color: transparent; }
+}
+
+
 .btn-edit,
 .btn-delete {
   padding: 6px 12px;
