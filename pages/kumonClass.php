@@ -50,6 +50,7 @@ $currentPage = basename(__FILE__);
       <ul class="nav-menu">
         <li><a href="kumonTeacher.php"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="kumonClass.php" class="active"><i class="fa fa-users"></i> My Class</a></li>
+        <li><a href="teacherStudentAttendance.php"><i class="fa fa-clipboard-list"></i> Attendance</a></li>
         <li><a href="teacherPtcScheduler.php"><i class="fa fa-calendar"></i> PTC Schedule</a></li>
         <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
       </ul>
@@ -76,9 +77,9 @@ $currentPage = basename(__FILE__);
               <button id="openAddModal" class="btn btn-primary">
                 <i class="fa fa-plus"></i> Add Student
               </button>
-               <a href="teacherStudentAttendance.php" class="btn btn-attendance">
-                <i class="fa fa-clipboard-list"></i> Attendance
-                </a>
+              <a href="teacherStudentAttendance.php" class="btn btn-success">
+                <i class="fa fa-check-circle"></i> Take Attendance
+              </a>
             </div>
           </div>
 
@@ -157,27 +158,25 @@ $currentPage = basename(__FILE__);
     </div>
   </div>
 
-  
-  <!-- 🧍 Remove Student Modal -->
-<div id="removeStudentModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Remove Student</h3>
-      <button class="close-btn" id="closeRemoveModal">&times;</button>
-    </div>
+  <!-- Remove Student Modal -->
+  <div id="removeStudentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Remove Student</h3>
+        <button class="close-btn" id="closeRemoveModal">&times;</button>
+      </div>
 
-    <div class="modal-body">
-      <p>Are you sure you want to remove this student from the class?</p>
-      <p id="removeStudentName" style="font-weight: 600; color: #222;"></p>
-    </div>
+      <div class="modal-body">
+        <p>Are you sure you want to remove this student from the class?</p>
+        <p id="removeStudentName" style="font-weight: 600; color: #222;"></p>
+      </div>
 
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="cancelRemoveBtn">Cancel</button>
-      <button class="btn-remove-danger" id="confirmRemoveBtn">Remove</button>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelRemoveBtn">Cancel</button>
+        <button class="btn-remove-danger" id="confirmRemoveBtn">Remove</button>
+      </div>
     </div>
   </div>
-</div>
-
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>

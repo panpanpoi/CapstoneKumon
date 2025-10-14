@@ -34,7 +34,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$teacher_id]);
 $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,12 +73,12 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </ul>
 </aside>
 
-<!-- ================= FLASH MESSAGES ================= -->
+<!-- ================= FLASH MESSAGES (RESTORED) ================= -->
 <?php foreach (['success','error'] as $type): ?>
     <?php if (isset($_SESSION[$type])): ?>
         <div class="alert <?= $type ?>">
             <i class="fa <?= $type==='success' ? 'fa-check-circle':'fa-exclamation-circle' ?>"></i>
-            <span><?= $_SESSION[$type]; unset($_SESSION[$type]); ?></span>
+            <span><?= htmlspecialchars($_SESSION[$type]); unset($_SESSION[$type]); ?></span>
             <button class="alert-close">&times;</button>
         </div>
     <?php endif; ?>
@@ -110,7 +109,9 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <input type="time" name="end_time" id="end_time" required>
                 </div>
                 <div class="form-group">
-                    <button type="submit" name="create" class="btn-create"><i class="fa fa-plus"></i> Add Schedule</button>
+                    <button type="submit" name="create" class="btn-create">
+                        <i class="fa fa-plus"></i> Add Schedule
+                    </button>
                 </div>
             </div>
         </form>
@@ -131,9 +132,7 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach($teacherSchedules as $s): ?>
                         <?php if($s['status'] !== 'done'): ?>
-                            <?php
-                                $status = $s['booking_status']==='booked' ? 'booked' : 'open';
-                            ?>
+                            <?php $status = $s['booking_status']==='booked' ? 'booked' : 'open'; ?>
                             <tr>
                                 <td><?= htmlspecialchars($s['date']) ?></td>
                                 <td><?= htmlspecialchars($s['startTime']) ?> - <?= htmlspecialchars($s['endTime']) ?></td>
@@ -145,7 +144,6 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <i class="fa fa-check"></i> Done
                                         </button>
                                     <?php else: ?>
-                                        <!-- Edit form -->
                                         <form method="POST" action="../handler/ptcSchedule.php" class="inline-edit-form">
                                             <input type="hidden" name="schedule_id" value="<?= $s['schedule_id'] ?>">
                                             <input type="date" name="date" value="<?= $s['date'] ?>" required>
@@ -153,8 +151,9 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <input type="time" name="end_time" value="<?= $s['endTime'] ?>" required>
                                             <button type="submit" name="update" class="btn-edit"><i class="fa fa-edit"></i> Update</button>
                                         </form>
-                                        <a href="../handler/ptcSchedule.php?delete=<?= $s['schedule_id'] ?>" onclick="return confirm('Delete this schedule?')" class="btn-delete">
-                                            <i class="fa fa-trash"></i> Delete
+                                        <a href="../handler/ptcSchedule.php?delete=<?= $s['schedule_id'] ?>" 
+                                           onclick="return confirm('Delete this schedule?')" class="btn-delete">
+                                           <i class="fa fa-trash"></i> Delete
                                         </a>
                                     <?php endif; ?>
                                 </td>
@@ -165,10 +164,10 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
 
-                <!-- ===== Done PTC Table ===== -->
+        <!-- ===== Done PTC Table ===== -->
         <div class="schedule-section">
             <h3><i class="fa fa-calendar-check"></i> Done PTC</h3>
-            <table class="schedule-table">
+            <table class="schedule-table done-bookings">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -182,32 +181,25 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if($s['status'] === 'done'): ?>
                             <tr>
                                 <td><?= htmlspecialchars($s['date']) ?></td>
-                                <td>
-                                    <?php 
-                                        // Convert 24-hour to 12-hour format
-                                        $start = date("g:i A", strtotime($s['startTime']));
-                                        $end   = date("g:i A", strtotime($s['endTime']));
-                                        echo "$start - $end";
-                                    ?>
-                                </td>
+                                <td><?= date("g:i A", strtotime($s['startTime'])) . " - " . date("g:i A", strtotime($s['endTime'])) ?></td>
                                 <td><?= htmlspecialchars($s['student_name'] ?? '-') ?></td>
                                 <td>
                                     <?php
-                                        // Fetch notes
-                                        $stmt = $pdo->prepare("SELECT note, created_at FROM ptc_notes WHERE schedule_id=? ORDER BY created_at DESC");
-                                        $stmt->execute([$s['schedule_id']]);
-                                        $notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                        $stmtNotes = $pdo->prepare("SELECT note, created_at FROM ptc_notes WHERE schedule_id=? ORDER BY created_at DESC");
+                                        $stmtNotes->execute([$s['schedule_id']]);
+                                        $notes = $stmtNotes->fetchAll(PDO::FETCH_ASSOC);
                                     ?>
                                     <ul>
                                         <?php foreach($notes as $note): ?>
                                             <li><?= htmlspecialchars($note['note']) ?> <small>(<?= $note['created_at'] ?>)</small></li>
                                         <?php endforeach; ?>
                                     </ul>
-                                    <!-- Add note form -->
                                     <form method="POST" action="../handler/ptcSchedule.php" class="inline-note-form">
                                         <input type="hidden" name="schedule_id" value="<?= $s['schedule_id'] ?>">
                                         <input type="text" name="note" placeholder="Add note..." required>
-                                        <button type="submit" name="add_note" class="btn-note"></button>
+                                        <button type="submit" name="add_note" class="btn-note">
+                                            <i class="fa fa-sticky-note"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
@@ -216,7 +208,6 @@ $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
         </div>
-
     </div>
 </main>
 </div>
@@ -228,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     alerts.forEach(alert => {
         const autoHide = setTimeout(() => hideAlert(alert), 5000);
         const closeBtn = alert.querySelector('.alert-close');
-        if(closeBtn){
+        if (closeBtn) {
             closeBtn.addEventListener('click', () => {
                 clearTimeout(autoHide);
                 hideAlert(alert);

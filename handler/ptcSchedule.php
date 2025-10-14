@@ -1,66 +1,152 @@
 <?php
 if (!isset($_SESSION)) session_start();
 require_once "../database.php";
-require_once "auth.php";
 
-// ✅ Ensure only teacher
+// -------------------------
+// AUTH CHECK
+// -------------------------
 if (($_SESSION['account_type'] ?? '') !== 'teacher') {
-    header("Location: ../login.php");
+    header("Content-Type: application/json");
+    http_response_code(403);
+    echo json_encode(["status" => "error", "message" => "Unauthorized or session expired."]);
     exit;
 }
 
-$teacher_id = $_SESSION['teacher_id'];
+$teacher_id = $_SESSION["teacher_id"] ?? null;
+if (!$teacher_id) {
+    header("Content-Type: application/json");
+    echo json_encode(["status" => "error", "message" => "No teacher session found."]);
+    exit;
+}
 
-// ===============================
-// ✅ MARK schedule as DONE
-// ===============================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_done'])) {
-    $schedule_id = intval($_POST['schedule_id']);
-    
+// -------------------------
+// HELPER: detect JSON/AJAX request
+// -------------------------
+function isJsonRequest() {
+    return isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json');
+}
+
+// =======================
+// MARK SCHEDULE AS DONE
+// =======================
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["mark_done"])) {
+    header("Content-Type: application/json");
+    $schedule_id = intval($_POST["schedule_id"]);
+
     try {
-        // Update schedule status to 'done'
-        $stmt = $pdo->prepare("UPDATE ptc_schedules SET status='done' WHERE schedule_id=? AND teacher_id=?");
-        $stmt->execute([$schedule_id, $teacher_id]);
-
-        // Insert attendance for booked students
+        // Get schedule + booked student
         $stmt = $pdo->prepare("
-            SELECT pb.student_id, ps.date, ps.startTime, ps.endTime
-            FROM ptc_bookings pb
-            JOIN ptc_schedules ps ON pb.schedule_id = ps.schedule_id
-            WHERE pb.schedule_id = ? AND pb.status='booked'
+            SELECT ps.date, ps.startTime, ps.endTime, pb.student_id,
+                   CONCAT(s.Firstname, ' ', s.Lastname) AS student_name
+            FROM ptc_schedules ps
+            LEFT JOIN ptc_bookings pb 
+                ON ps.schedule_id = pb.schedule_id AND pb.status='booked'
+            LEFT JOIN students s 
+                ON pb.student_id = s.student_id
+            WHERE ps.schedule_id=? AND ps.teacher_id=?
+            LIMIT 1
         ");
-        $stmt->execute([$schedule_id]);
-        $bookedStudents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([$schedule_id, $teacher_id]);
+        $schedule = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        foreach ($bookedStudents as $b) {
-            $insert = $pdo->prepare("
-                INSERT INTO attendance (student_id, teacher_id, date, type, status)
-                VALUES (?, ?, ?, 'PTC', 'Present')
-            ");
-            $insert->execute([$b['student_id'], $teacher_id, $b['date']]);
+        if (!$schedule) {
+            echo json_encode(["status"=>"error","message"=>"Schedule not found."]);
+            exit;
         }
 
-        $_SESSION['success'] = "✅ Schedule marked as done.";
-    } catch (Exception $e) {
-        $_SESSION['error'] = "❌ Failed to mark schedule as done: " . $e->getMessage();
-    }
+        // Mark schedule as done
+        $pdo->prepare("UPDATE ptc_schedules SET status='done' WHERE schedule_id=? AND teacher_id=?")
+            ->execute([$schedule_id, $teacher_id]);
 
-    header("Location: ../pages/teacherPtcScheduler.php");
+        // Mark booking as done instead of deleting
+        if ($schedule['student_id']) {
+            $pdo->prepare("UPDATE ptc_bookings SET status='done' WHERE schedule_id=? AND student_id=?")
+                ->execute([$schedule_id, $schedule['student_id']]);
+        }
+
+        echo json_encode([
+            "status" => "success",
+            "schedule_id" => $schedule_id,
+            "date" => $schedule['date'],
+            "startTime" => date("g:i A", strtotime($schedule['startTime'])),
+            "endTime" => date("g:i A", strtotime($schedule['endTime'])),
+            "student_name" => $schedule['student_name'] ?? "-",
+            "student_id" => $schedule['student_id'] ?? null
+        ]);
+
+    } catch (Exception $e) {
+        echo json_encode(["status"=>"error","message"=>$e->getMessage()]);
+    }
     exit;
 }
 
-// ===============================
-// 📌 CREATE schedule
-// ===============================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create'])) {
-    $date  = $_POST['date'] ?? null;
-    $start = $_POST['start_time'] ?? null;
-    $end   = $_POST['end_time'] ?? null;
+// =======================
+// ADD NOTE (AJAX)
+// =======================
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add_note"])) {
+    header("Content-Type: application/json");
+    $schedule_id = intval($_POST["schedule_id"] ?? 0);
+    $note = trim($_POST["note"] ?? "");
 
-    if ($date && $start && $end) {
+    if (!$schedule_id || $note === "") {
+        echo json_encode(["status"=>"error","message"=>"Missing schedule or note."]);
+        exit;
+    }
+
+    try {
+        // Get student_id from booking or done schedule
+        $stmt = $pdo->prepare("
+            SELECT pb.student_id
+            FROM ptc_bookings pb
+            WHERE pb.schedule_id=? 
+            UNION
+            SELECT ps.schedule_id
+            FROM ptc_schedules ps
+            WHERE ps.schedule_id=? AND ps.status='done'
+            LIMIT 1
+        ");
+        $stmt->execute([$schedule_id, $schedule_id]);
+        $student = $stmt->fetch(PDO::FETCH_ASSOC);
+        $student_id = $student['student_id'] ?? null;
+
+        if (!$student_id) {
+            echo json_encode(["status"=>"error","message"=>"No student found for this schedule."]);
+            exit;
+        }
+
+        $insert = $pdo->prepare("
+            INSERT INTO ptc_notes (schedule_id, teacher_id, student_id, note)
+            VALUES (?, ?, ?, ?)
+        ");
+        $insert->execute([$schedule_id, $teacher_id, $student_id, $note]);
+
+        echo json_encode(["status"=>"success","message"=>"Note added successfully."]);
+
+    } catch (Exception $e) {
+        echo json_encode(["status"=>"error","message"=>$e->getMessage()]);
+    }
+    exit;
+}
+
+
+/* ===========================================================
+   3️⃣ CREATE SCHEDULE
+=========================================================== */
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create"])) {
+    $date = $_POST["date"] ?? null;
+    $start = $_POST["start_time"] ?? null;
+    $end = $_POST["end_time"] ?? null;
+
+    if (!$date || !$start || !$end) {
+        $_SESSION["error"] = "⚠️ Missing fields.";
+        header("Location: ../pages/teacherPtcScheduler.php");
+        exit;
+    }
+
+    try {
         $today = date("Y-m-d");
         if ($date < $today) {
-            $_SESSION['error'] = "⚠️ Cannot set schedules in the past. Today is {$today}, you selected {$date}.";
+            $_SESSION["error"] = "⚠️ Cannot set schedules in the past.";
         } else {
             $stmt = $pdo->prepare("
                 SELECT COUNT(*) FROM ptc_schedules 
@@ -70,144 +156,119 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create'])) {
             $stmt->execute([$teacher_id, $date, $end, $start]);
 
             if ($stmt->fetchColumn() > 0) {
-                $_SESSION['error'] = "⚠️ Schedule overlaps with an existing slot.";
+                $_SESSION["error"] = "⚠️ Overlapping schedule detected.";
             } else {
-                $stmt = $pdo->prepare("
-                    INSERT INTO ptc_schedules (teacher_id, `date`, startTime, endTime, status) 
-                    VALUES (?, ?, ?, ?, 'open')
-                ");
-                $stmt->execute([$teacher_id, $date, $start, $end]);
-                $_SESSION['success'] = "✅ Schedule created successfully.";
+                $pdo->prepare("INSERT INTO ptc_schedules (teacher_id, date, startTime, endTime, status) VALUES (?, ?, ?, ?, 'open')")
+                    ->execute([$teacher_id, $date, $start, $end]);
+                $_SESSION["success"] = "✅ Schedule created successfully.";
             }
         }
+    } catch (Exception $e) {
+        $_SESSION["error"] = "❌ Database error: " . $e->getMessage();
     }
+
     header("Location: ../pages/teacherPtcScheduler.php");
     exit;
 }
 
-// ===============================
-// ✏️ UPDATE schedule
-// ===============================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-    $id    = $_POST['schedule_id'] ?? null;
-    $date  = $_POST['date'] ?? null;
-    $start = $_POST['start_time'] ?? null;
-    $end   = $_POST['end_time'] ?? null;
+/* ===========================================================
+   4️⃣ UPDATE SCHEDULE
+=========================================================== */
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
+    $id = intval($_POST["schedule_id"] ?? 0);
+    $date = $_POST["date"] ?? null;
+    $start = $_POST["start_time"] ?? null;
+    $end = $_POST["end_time"] ?? null;
 
-    if ($id && $date && $start && $end) {
+    if (!$id || !$date || !$start || !$end) {
+        $_SESSION["error"] = "⚠️ Missing fields.";
+        header("Location: ../pages/teacherPtcScheduler.php");
+        exit;
+    }
+
+    try {
         $today = date("Y-m-d");
         if ($date < $today) {
-            $_SESSION['error'] = "⚠️ Cannot update schedule to a past date. Today is {$today}, you selected {$date}.";
+            $_SESSION["error"] = "⚠️ Cannot update to a past date.";
         } else {
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_bookings WHERE schedule_id=? AND status='booked'");
             $stmt->execute([$id]);
-
             if ($stmt->fetchColumn() > 0) {
-                $_SESSION['error'] = "⚠️ Cannot edit. This schedule is already booked.";
+                $_SESSION["error"] = "⚠️ Cannot edit a booked schedule.";
             } else {
                 $stmt = $pdo->prepare("
-                    SELECT COUNT(*) FROM ptc_schedules 
-                    WHERE teacher_id=? AND date=? AND schedule_id<>? 
+                    SELECT COUNT(*) FROM ptc_schedules
+                    WHERE teacher_id=? AND date=? AND schedule_id<>?
                     AND (startTime < ? AND endTime > ?)
                 ");
                 $stmt->execute([$teacher_id, $date, $id, $end, $start]);
 
                 if ($stmt->fetchColumn() > 0) {
-                    $_SESSION['error'] = "⚠️ Updated schedule conflicts with an existing slot.";
+                    $_SESSION["error"] = "⚠️ Overlaps with another slot.";
                 } else {
-                    $stmt = $pdo->prepare("
-                        UPDATE ptc_schedules 
-                        SET `date`=?, startTime=?, endTime=? 
-                        WHERE schedule_id=? AND teacher_id=?
-                    ");
-                    $stmt->execute([$date, $start, $end, $id, $teacher_id]);
-                    $_SESSION['success'] = "✅ Schedule updated successfully.";
+                    $pdo->prepare("UPDATE ptc_schedules SET date=?, startTime=?, endTime=? WHERE schedule_id=? AND teacher_id=?")
+                        ->execute([$date, $start, $end, $id, $teacher_id]);
+                    $_SESSION["success"] = "✅ Schedule updated successfully.";
                 }
             }
         }
+    } catch (Exception $e) {
+        $_SESSION["error"] = "❌ Error: " . $e->getMessage();
     }
+
     header("Location: ../pages/teacherPtcScheduler.php");
     exit;
 }
 
-// ===============================
-// ❌ DELETE schedule
-// ===============================
-if (isset($_GET['delete'])) {
-    $id = (int) $_GET['delete'];
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_bookings WHERE schedule_id=? AND status='booked'");
-    $stmt->execute([$id]);
+/* ===========================================================
+   5️⃣ DELETE SCHEDULE
+=========================================================== */
+if (isset($_GET["delete"])) {
+    $id = intval($_GET["delete"]);
 
-    if ($stmt->fetchColumn() > 0) {
-        $_SESSION['error'] = "⚠️ Cannot delete. This schedule is already booked.";
-    } else {
-        $stmt = $pdo->prepare("DELETE FROM ptc_bookings WHERE schedule_id=?");
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_bookings WHERE schedule_id=? AND status='booked'");
         $stmt->execute([$id]);
 
-        $stmt = $pdo->prepare("DELETE FROM ptc_schedules WHERE schedule_id=? AND teacher_id=?");
-        $stmt->execute([$id, $teacher_id]);
-
-        $_SESSION['success'] = "✅ Schedule deleted.";
-    }
-
-    header("Location: ../pages/teacherPtcScheduler.php");
-    exit;
-}
-
-// ===============================
-// 📝 ADD PTC NOTE
-// ===============================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_note'])) {
-    $schedule_id = $_POST['schedule_id'] ?? null;
-    $note = trim($_POST['note'] ?? '');
-
-    if ($schedule_id && $note) {
-        $stmt = $pdo->prepare("
-            SELECT pb.student_id 
-            FROM ptc_bookings pb
-            WHERE pb.schedule_id=? AND pb.status='booked' LIMIT 1
-        ");
-        $stmt->execute([$schedule_id]);
-        $student = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($student) {
-            $stmt = $pdo->prepare("
-                INSERT INTO ptc_notes (schedule_id, teacher_id, student_id, note)
-                VALUES (?, ?, ?, ?)
-            ");
-            $stmt->execute([$schedule_id, $teacher_id, $student['student_id'], $note]);
-            $_SESSION['success'] = "✅ Note added successfully.";
+        if ($stmt->fetchColumn() > 0) {
+            $_SESSION["error"] = "⚠️ Cannot delete. Schedule is booked.";
         } else {
-            $_SESSION['error'] = "⚠️ Cannot add note. No student booked for this schedule.";
+            $pdo->prepare("DELETE FROM ptc_bookings WHERE schedule_id=?")->execute([$id]);
+            $pdo->prepare("DELETE FROM ptc_schedules WHERE schedule_id=? AND teacher_id=?")->execute([$id, $teacher_id]);
+            $_SESSION["success"] = "✅ Schedule deleted successfully.";
         }
+    } catch (Exception $e) {
+        $_SESSION["error"] = "❌ Database error: " . $e->getMessage();
     }
+
     header("Location: ../pages/teacherPtcScheduler.php");
     exit;
 }
 
-// ===============================
-// 📋 FETCH teacher schedules
-// ===============================
+/* ===========================================================
+   📋 FETCH TEACHER SCHEDULES (DISPLAY)
+   =========================================================== */
 $stmt = $pdo->prepare("
-    SELECT ps.schedule_id, ps.date, 
-           TIME_FORMAT(ps.startTime, '%h:%i %p') AS startTime, 
-           TIME_FORMAT(ps.endTime, '%h:%i %p') AS endTime, 
-           ps.status,
-           (SELECT pb.status 
-              FROM ptc_bookings pb 
-             WHERE pb.schedule_id = ps.schedule_id 
-             ORDER BY pb.booking_id DESC LIMIT 1) AS booking_status,
-           (SELECT CONCAT(u.Name, ' ', u.Surname) 
-              FROM ptc_bookings pb 
-              JOIN students s ON pb.student_id = s.student_id
-              JOIN users u ON s.user_id = u.user_id
-             WHERE pb.schedule_id = ps.schedule_id 
-               AND pb.status = 'booked'
-             ORDER BY pb.booking_id DESC LIMIT 1) AS student_name
+    SELECT 
+        ps.schedule_id, 
+        ps.date, 
+        TIME_FORMAT(ps.startTime, '%h:%i %p') AS startTime,
+        TIME_FORMAT(ps.endTime, '%h:%i %p') AS endTime,
+        ps.status,
+        (
+            SELECT CONCAT(u.Name,' ',u.Surname)
+            FROM ptc_bookings pb
+            JOIN students s ON pb.student_id = s.student_id
+            JOIN users u ON s.user_id = u.user_id
+            WHERE pb.schedule_id = ps.schedule_id
+              AND pb.status='done'
+            LIMIT 1
+        ) AS student_name
     FROM ptc_schedules ps
     WHERE ps.teacher_id = ?
     ORDER BY ps.date, ps.startTime
 ");
 $stmt->execute([$teacher_id]);
 $teacherSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>

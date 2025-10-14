@@ -48,13 +48,9 @@ $currentPage = basename(__FILE__);
         <div class="section-header">
           <h2><i class="fa fa-calendar-check"></i> Manage Attendance</h2>
           <div class="filter-actions">
-            <select id="attendanceTypeFilter" class="day-filter">
-              <option value="Normal">Normal</option>
-              <option value="PTC">PTC</option>
-            </select>
             <input type="date" id="attendanceDate">
             <button id="loadAttendanceBtn" class="btn btn-primary">
-              <i class="fa fa-filter"></i> Load Attendance
+              <i class="fa fa-filter"></i> Load Students
             </button>
           </div>
         </div>
@@ -66,12 +62,11 @@ $currentPage = basename(__FILE__);
                 <th>Student Code</th>
                 <th>Name</th>
                 <th>Status</th>
-                <th>Type</th>
                 <th>Date</th>
               </tr>
             </thead>
             <tbody id="attendanceTableBody">
-              <tr><td colspan="5" class="no-data">Select date and type to view attendance.</td></tr>
+              <tr><td colspan="4" class="no-data">Select a date to load students.</td></tr>
             </tbody>
           </table>
         </div>
