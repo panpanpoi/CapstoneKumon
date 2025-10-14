@@ -1,0 +1,119 @@
+/* =========================================================
+   📱 SMALL SIDEBAR TOGGLE BUTTON (Left-Aligned)
+   ========================================================= */
+:root {
+  --blue-primary: #3f97f5;
+  --blue-accent: #6DCFF6;
+  --white: #fff;
+  --transition: 0.3s ease;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================
+   🌟 Compact Toggle Button
+   ============================ */
+.sidebar-toggle {
+  position: fixed;
+  top: 16px;
+  left: 10px; /* ⬅️ Close to screen edge */
+  width: 38px;  /* smaller size */
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue-primary);
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  z-index: 30;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.sidebar-toggle:hover {
+  background: var(--blue-accent);
+  transform: scale(1.05);
+}
+
+/* ============================
+   🍔 Hamburger Icon (Smaller)
+   ============================ */
+.sidebar-toggle .bar {
+  position: relative;
+  width: 16px; /* smaller lines */
+  height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle .bar::before,
+.sidebar-toggle .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 16px;
+  height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle .bar::before {
+  top: -6px;
+}
+
+.sidebar-toggle .bar::after {
+  top: 6px;
+}
+
+/* ============================
+   ✖️ Animate to "X"
+   ============================ */
+.sidebar-toggle.active .bar {
+  background: transparent;
+}
+
+.sidebar-toggle.active .bar::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.sidebar-toggle.active .bar::after {
+  transform: rotate(-45deg);
+  top: 0;
+}
+
+/* ============================
+   🌙 Overlay (dim background)
+   ============================ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 15;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ============================
+   📱 Responsive Rules
+   ============================ */
+@media (max-width: 1000px) {
+  .sidebar-toggle {
+    display: flex;
+  }
+}
+
+@media (min-width: 1001px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}

@@ -1,9 +1,9 @@
 /* =========================================================
-   🎓 STUDENT PTC PAGE — Modern Compact Theme
+   🎓 STUDENT PTC PAGE — Modern Compact Theme (Scoped)
    ========================================================= */
 
 /* ========== LAYOUT ========== */
-.main-content {
+.student-ptc .main-content {
   margin-left: 250px;
   padding: 24px 32px;
   background: #f5f6fa;
@@ -15,7 +15,7 @@
 }
 
 /* ========== HEADER ========== */
-.header-card {
+.student-ptc .header-card {
   background: #fff;
   border-radius: 10px;
   border: 1px solid #e4e6eb;
@@ -27,7 +27,7 @@
   align-items: center;
 }
 
-.header-card h2 {
+.student-ptc .header-card h2 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
@@ -36,12 +36,12 @@
   gap: 10px;
 }
 
-.header-card h2 i {
+.student-ptc .header-card h2 i {
   color: #3f8efc;
 }
 
 /* ========== ALERTS ========== */
-.alert {
+.student-ptc .alert {
   position: fixed;
   top: 20px;
   left: 50%;
@@ -59,19 +59,19 @@
   animation: fadeSlideDown 0.3s ease;
 }
 
-.alert-success {
+.student-ptc .alert-success {
   background: #e8f6ee;
   color: #1b6630;
   border-left: 4px solid #28a745;
 }
 
-.alert-error {
+.student-ptc .alert-error {
   background: #fbeaea;
   color: #a12727;
   border-left: 4px solid #dc3545;
 }
 
-.alert-close {
+.student-ptc .alert-close {
   margin-left: auto;
   background: none;
   border: none;
@@ -82,12 +82,12 @@
   transition: opacity 0.2s ease;
 }
 
-.alert-close:hover {
+.student-ptc .alert-close:hover {
   opacity: 1;
 }
 
 /* ========== CARDS ========== */
-.section-card {
+.student-ptc .section-card {
   background: #fff;
   border-radius: 10px;
   padding: 20px 22px;
@@ -97,7 +97,7 @@
   animation: fadeInUp 0.4s ease;
 }
 
-.section-card h3 {
+.student-ptc .section-card h3 {
   font-size: 1.05rem;
   font-weight: 600;
   margin-bottom: 14px;
@@ -107,17 +107,17 @@
   color: #222;
 }
 
-.section-card h3 i {
+.student-ptc .section-card h3 i {
   color: #3f8efc;
 }
 
 /* ========== CURRENT BOOKING ========== */
-.current-booking p {
+.student-ptc .current-booking p {
   margin: 8px 0;
   color: #555;
 }
 
-.cancel-btn {
+.student-ptc .cancel-btn {
   background: #dc3545;
   color: #fff;
   border: none;
@@ -129,13 +129,13 @@
   transition: 0.2s ease;
 }
 
-.cancel-btn:hover {
+.student-ptc .cancel-btn:hover {
   background: #c82333;
   transform: translateY(-1px);
 }
 
 /* ========== AVAILABLE SLOTS TABLE ========== */
-.available-slots table {
+.student-ptc .available-slots table {
   width: 100%;
   border-collapse: collapse;
   border-radius: 8px;
@@ -143,23 +143,23 @@
   font-size: 0.9rem;
 }
 
-.available-slots thead {
+.student-ptc .available-slots thead {
   background: #3f8efc;
   color: #fff;
 }
 
-.available-slots th,
-.available-slots td {
+.student-ptc .available-slots th,
+.student-ptc .available-slots td {
   padding: 10px 14px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
-.available-slots tbody tr:hover {
+.student-ptc .available-slots tbody tr:hover {
   background: #f9fafc;
 }
 
-.available-slots th {
+.student-ptc .available-slots th {
   font-weight: 600;
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -167,7 +167,7 @@
 }
 
 /* ========== BUTTONS ========== */
-.btn {
+.student-ptc .btn {
   background: #28a745;
   color: #fff;
   border: none;
@@ -182,24 +182,24 @@
   transition: 0.2s ease;
 }
 
-.btn:hover {
+.student-ptc .btn:hover {
   background: #218838;
   transform: translateY(-1px);
 }
 
-.btn:disabled {
+.student-ptc .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 /* ========== EMPTY STATE ========== */
-.empty-state {
+.student-ptc .empty-state {
   text-align: center;
   padding: 35px 15px;
   color: #6c757d;
 }
 
-.empty-state h4 {
+.student-ptc .empty-state h4 {
   font-size: 1rem;
   color: #444;
   margin-bottom: 6px;
@@ -230,35 +230,35 @@
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 992px) {
-  .main-content {
+  .student-ptc .main-content {
     margin-left: 0;
     padding: 20px;
   }
 }
 
 @media (max-width: 768px) {
-  .section-card {
+  .student-ptc .section-card {
     padding: 15px;
   }
 
-  .available-slots table {
+  .student-ptc .available-slots table {
     font-size: 0.85rem;
   }
 }
 
 @media (max-width: 480px) {
-  .main-content {
+  .student-ptc .main-content {
     padding: 12px;
   }
 
-  .available-slots table {
+  .student-ptc .available-slots table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
 
-  .btn,
-  .cancel-btn {
+  .student-ptc .btn,
+  .student-ptc .cancel-btn {
     padding: 7px 10px;
     font-size: 0.8rem;
   }

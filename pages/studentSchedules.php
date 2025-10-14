@@ -35,10 +35,16 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
   <link rel="stylesheet" href="../styles/kumonStudent.css">
   <link rel="stylesheet" href="../styles/studentSchedule.css">
+  <link rel="stylesheet" href="../styles/sidebarToggle.css">
+  <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 <div class="dashboard">
+  
+        <button id="sidebarToggle" class="sidebar-toggle">
+        <div class="bar"></div>
+        </button>
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">
@@ -64,7 +70,7 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
       <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
   </aside>
-
+  <div class="overlay" id="overlay"></div> <!-- Overlay for mobile menu -->
   <!-- Main Content -->
   <main class="main-content">
     <header class="header">
@@ -105,5 +111,6 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 </div>
 
 <script src="../scr/studentSchedule.js"></script>
+<script src="../scr/sidebarToggle.js"></script>
 </body>
 </html>

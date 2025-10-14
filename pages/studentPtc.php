@@ -1,21 +1,38 @@
 <?php
 // pages/studentPtc.php
+// Ensure session is started to access session variables.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../handler/studentPtcHandler.php';
 
-// Ensure student session exists
+// Check for student_id in the session. Redirect to login if not found.
+$student_id = $_SESSION['student_id'] ?? null;
 if (!$student_id) {
-    $_SESSION['error'] = "Student session not found.";
+    $_SESSION['error'] = "You must be logged in to view this page.";
     header("Location: ../login.php");
     exit;
 }
 
-// 1️⃣ Fetch student info
-$stmt = $pdo->prepare("SELECT Firstname, Lastname FROM students WHERE student_id = ?");
-$stmt->execute([$student_id]);
-$student = $stmt->fetch(PDO::FETCH_ASSOC);
+// --- 1. Fetch Student Information for Sidebar ---
+try {
+    $stmt = $pdo->prepare("SELECT Firstname, Lastname FROM students WHERE student_id = ?");
+    $stmt->execute([$student_id]);
+    $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// 2️⃣ Format name and avatar
+    if (!$student) {
+        session_destroy();
+        $_SESSION['error'] = "Student profile not found. Please log in again.";
+        header("Location: ../login.php");
+        exit;
+    }
+} catch (PDOException $e) {
+    die("Database error: Could not fetch student data.");
+}
+
+// --- 2. Format Name and Avatar ---
 function sentence_case($string) {
     return ucfirst(strtolower($string));
 }
@@ -26,22 +43,29 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kumon Student PTC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTC Meeting - Kumon</title>
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 
-    <!-- Global & Student Styles -->
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
     <link rel="stylesheet" href="../styles/kumonStudent.css">
-
-    <!-- PTC-specific Styles (scoped by body.student-ptc) -->
+    <!-- Your new PTC-specific styles -->
     <link rel="stylesheet" href="../styles/studentptc.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="../styles/sidebarToggle.css">
 
-    <!-- Icons -->
+    <!-- Icons via Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body class="student-ptc">
 <div class="dashboard">
+    <!-- Sidebar Toggle Button (for mobile) -->
+    <button id="sidebarToggle" class="sidebar-toggle">
+        <div class="bar"></div>
+    </button>
+    
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
         <div class="logo">
             <a href="kumonStudent.php">
@@ -49,7 +73,6 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
             </a>
             <p>Practice Makes Possibilities</p>
         </div>
-
         <div class="user-profile">
             <div class="user-avatar"><?= htmlspecialchars(substr($avatarInitials, 0, 2)) ?></div>
             <div class="user-details">
@@ -57,7 +80,6 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
                 <div class="user-role">Student</div>
             </div>
         </div>
-
         <ul class="nav-menu">
             <li><a href="kumonStudent.php"><i class="fas fa-home"></i> Home</a></li>
             <li><a href="studentSchedules.php"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
@@ -67,13 +89,17 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
         </ul>
     </aside>
 
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main Content Area -->
     <main class="main-content">
-        <!-- Header styled as card -->
+        <!-- Header -->
         <div class="header-card">
             <h2><i class="fas fa-comments"></i> Parent-Teacher Conference</h2>
         </div>
 
-        <!-- Flash Messages -->
+        <!-- Flash Messages (these will now be styled by your new CSS) -->
         <?php if (!empty($_SESSION['success'])): ?>
             <div class="alert alert-success">
                 <i class="fas fa-check-circle"></i>
@@ -90,35 +116,37 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
             </div>
         <?php endif; ?>
 
-        <!-- Current Booking -->
-        <section class="current-booking">
+        <!-- Current Booking Section -->
+        <!-- MODIFIED: Wrapped with the new .section-card class -->
+        <section class="section-card current-booking">
             <h3><i class="fas fa-check-circle"></i> Your Current Booking</h3>
             <?php if ($currentBooking): ?>
                 <p>
-                    <strong>Date:</strong> <?= htmlspecialchars($currentBooking['date']) ?><br>
-                    <strong>Time:</strong> <?= htmlspecialchars($currentBooking['startTime']) ?> - <?= htmlspecialchars($currentBooking['endTime']) ?><br>
+                    <strong>Date:</strong> <?= htmlspecialchars(date("F j, Y", strtotime($currentBooking['date']))) ?><br>
+                    <strong>Time:</strong> <?= htmlspecialchars(date("g:i A", strtotime($currentBooking['startTime']))) ?> - <?= htmlspecialchars(date("g:i A", strtotime($currentBooking['endTime']))) ?><br>
                     <strong>Teacher:</strong> <?= htmlspecialchars($currentBooking['teacherName']) ?>
                 </p>
-                <form method="POST" action="../handler/studentPtcHandler.php">
+                <form method="POST" action="../handler/studentPtcHandler.php" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                     <input type="hidden" name="booking_id" value="<?= htmlspecialchars($currentBooking['booking_id']) ?>">
                     <button type="submit" name="cancel" class="cancel-btn">
                         <i class="fas fa-times"></i> Cancel Booking
                     </button>
                 </form>
             <?php else: ?>
-                <p>No active booking yet.</p>
+                <p>You have no scheduled PTC meetings.</p>
             <?php endif; ?>
         </section>
 
-        <!-- Available Slots -->
-        <section class="available-slots">
+        <!-- Available Slots Section -->
+        <!-- MODIFIED: Wrapped with the new .section-card class -->
+        <section class="section-card available-slots">
             <h3><i class="fas fa-calendar-alt"></i> Available Slots</h3>
             <?php if (!empty($availableSchedules)): ?>
                 <table>
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Time Range</th>
+                            <th>Time</th>
                             <th>Teacher</th>
                             <th>Action</th>
                         </tr>
@@ -126,13 +154,14 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
                     <tbody>
                         <?php foreach ($availableSchedules as $slot): ?>
                             <tr>
-                                <td><?= htmlspecialchars($slot['date']) ?></td>
-                                <td><?= htmlspecialchars($slot['startTime']) ?> - <?= htmlspecialchars($slot['endTime']) ?></td>
+                                <!-- NOTE: data-label attributes are removed as they are not needed for this design's mobile view -->
+                                <td><?= htmlspecialchars(date("F j, Y", strtotime($slot['date']))) ?></td>
+                                <td><?= htmlspecialchars(date("g:i A", strtotime($slot['startTime']))) ?> - <?= htmlspecialchars(date("g:i A", strtotime($slot['endTime']))) ?></td>
                                 <td><?= htmlspecialchars($slot['teacherName']) ?></td>
                                 <td>
                                     <form method="POST" action="../handler/studentPtcHandler.php">
                                         <input type="hidden" name="schedule_id" value="<?= htmlspecialchars($slot['schedule_id']) ?>">
-                                        <button type="submit" name="book" class="btn">
+                                        <button type="submit" name="book" class="btn" <?= $currentBooking ? 'disabled' : '' ?> title="<?= $currentBooking ? 'You must cancel your current booking first.' : 'Book this slot' ?>">
                                             <i class="fas fa-bookmark"></i> Book
                                         </button>
                                     </form>
@@ -143,34 +172,41 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
                 </table>
             <?php else: ?>
                 <div class="empty-state">
-                    <h4>No available slots</h4>
-                    <p>No available slots from your assigned teacher(s).</p>
+                    <h4>No Schedules Available</h4>
+                    <p>There are currently no PTC slots available.</p>
                 </div>
             <?php endif; ?>
         </section>
     </main>
 </div>
 
+<!-- JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Auto-hide alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
+        // Use setTimeout to hide the alert after the delay
         const autoHide = setTimeout(() => hideAlert(alert), 5000);
         const closeBtn = alert.querySelector('.alert-close');
+        
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {
-                clearTimeout(autoHide);
+                clearTimeout(autoHide); // Stop the auto-hide if closed manually
                 hideAlert(alert);
             });
         }
     });
 });
 
+// Function to smoothly hide alerts
 function hideAlert(alert) {
     alert.style.opacity = '0';
-    alert.style.transform = 'translateY(-20px)';
+    alert.style.transform = 'translate(-50%, -15px)'; // Match animation exit
     setTimeout(() => alert.remove(), 300);
 }
 </script>
+<script src="../scr/sidebarToggle.js"></script>
+
 </body>
 </html>

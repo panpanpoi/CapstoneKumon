@@ -44,9 +44,13 @@ $next_due = $paymentData['next_due'] ?? date('F j, Y');
 <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
 <link rel="stylesheet" href="../styles/kumonStudent.css">
 <link rel="stylesheet" href="../styles/studentPaymentStyle.css">
+<link rel="stylesheet" href="../styles/sidebarToggle.css">
 </head>
 <body>
 <div class="dashboard">
+   <button id="sidebarToggle" class="sidebar-toggle">
+        <div class="bar"></div>
+   </button>
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
@@ -68,6 +72,7 @@ $next_due = $paymentData['next_due'] ?? date('F j, Y');
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </aside>
+    <div class="overlay" id="overlay"></div> <!-- Overlay for mobile menu -->
 
     <!-- Main Content -->
     <main class="main-content">
@@ -122,5 +127,6 @@ $next_due = $paymentData['next_due'] ?? date('F j, Y');
         </section>
     </main>
 </div>
+    <script src="../scr/sidebarToggle.js"></script>
 </body>
 </html>
