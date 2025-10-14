@@ -1,5 +1,5 @@
 /* =========================================================
-   🎓 STUDENT PTC PAGE — Modern Compact Theme (Scoped)
+   🎓 STUDENT PTC PAGE — Modern Compact Theme v2
    ========================================================= */
 
 /* ========== LAYOUT ========== */
@@ -14,30 +14,36 @@
   color: #333;
 }
 
+/* Sidebar collapsed adjustment */
+.student-ptc.sidebar-collapsed .main-content {
+  margin-left: 80px;
+}
+
 /* ========== HEADER ========== */
 .student-ptc .header-card {
   background: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #e4e6eb;
-  padding: 16px 24px;
-  margin-bottom: 22px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  padding: 20px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .student-ptc .header-card h2 {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 600;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .student-ptc .header-card h2 i {
   color: #3f8efc;
+  font-size: 1.4rem;
 }
 
 /* ========== ALERTS ========== */
@@ -47,91 +53,94 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   width: 90%;
-  max-width: 400px;
+  max-width: 420px;
   animation: fadeSlideDown 0.3s ease;
 }
 
 .student-ptc .alert-success {
-  background: #e8f6ee;
+  background: #e6f4ea;
   color: #1b6630;
-  border-left: 4px solid #28a745;
+  border-left: 5px solid #28a745;
 }
 
 .student-ptc .alert-error {
-  background: #fbeaea;
+  background: #fdecea;
   color: #a12727;
-  border-left: 4px solid #dc3545;
+  border-left: 5px solid #dc3545;
 }
 
 .student-ptc .alert-close {
   margin-left: auto;
   background: none;
   border: none;
-  font-size: 18px;
-  font-weight: 500;
-  opacity: 0.6;
+  font-size: 20px;
+  font-weight: 600;
+  opacity: 0.7;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .student-ptc .alert-close:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 /* ========== CARDS ========== */
 .student-ptc .section-card {
   background: #fff;
-  border-radius: 10px;
-  padding: 20px 22px;
+  border-radius: 12px;
+  padding: 22px 26px;
   border: 1px solid #e4e6eb;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
   animation: fadeInUp 0.4s ease;
 }
 
 .student-ptc .section-card h3 {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: #222;
 }
 
 .student-ptc .section-card h3 i {
   color: #3f8efc;
+  font-size: 1.1rem;
 }
 
 /* ========== CURRENT BOOKING ========== */
 .student-ptc .current-booking p {
-  margin: 8px 0;
+  margin: 10px 0;
   color: #555;
+  line-height: 1.5;
 }
 
 .student-ptc .cancel-btn {
   background: #dc3545;
   color: #fff;
   border: none;
-  padding: 8px 14px;
+  padding: 9px 16px;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.25s ease;
 }
 
 .student-ptc .cancel-btn:hover {
   background: #c82333;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 /* ========== AVAILABLE SLOTS TABLE ========== */
@@ -141,6 +150,7 @@
   border-radius: 8px;
   overflow: hidden;
   font-size: 0.9rem;
+  transition: all 0.2s ease;
 }
 
 .student-ptc .available-slots thead {
@@ -150,20 +160,21 @@
 
 .student-ptc .available-slots th,
 .student-ptc .available-slots td {
-  padding: 10px 14px;
+  padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
 .student-ptc .available-slots tbody tr:hover {
-  background: #f9fafc;
+  background: #f0f4ff;
+  transform: translateX(2px);
 }
 
 .student-ptc .available-slots th {
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
 }
 
 /* ========== BUTTONS ========== */
@@ -171,38 +182,81 @@
   background: #28a745;
   color: #fff;
   border: none;
-  padding: 7px 12px;
-  border-radius: 5px;
-  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: 0.2s ease;
+  transition: 0.25s ease;
 }
 
 .student-ptc .btn:hover {
   background: #218838;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .student-ptc .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* ========== NOTES POPUP ========== */
+.student-ptc .notes-popup {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  padding: 18px 22px;
+  margin: 10px 0;
+  animation: fadeInUp 0.35s ease;
+}
+
+.student-ptc .btn-view-notes {
+  background: #3f8efc;
+  color: #fff;
+  border: none;
+  padding: 7px 12px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.student-ptc .btn-view-notes:hover {
+  background: #367ad6;
+  transform: translateY(-1px);
+}
+
+.student-ptc .close-popup {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.25s ease;
+}
+
+.student-ptc .close-popup:hover {
+  background: #c82333;
 }
 
 /* ========== EMPTY STATE ========== */
 .student-ptc .empty-state {
   text-align: center;
-  padding: 35px 15px;
+  padding: 40px 15px;
   color: #6c757d;
 }
 
 .student-ptc .empty-state h4 {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: #444;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 /* ========== ANIMATIONS ========== */
@@ -238,7 +292,7 @@
 
 @media (max-width: 768px) {
   .student-ptc .section-card {
-    padding: 15px;
+    padding: 16px 18px;
   }
 
   .student-ptc .available-slots table {
@@ -258,8 +312,10 @@
   }
 
   .student-ptc .btn,
-  .student-ptc .cancel-btn {
-    padding: 7px 10px;
+  .student-ptc .cancel-btn,
+  .student-ptc .btn-view-notes,
+  .student-ptc .close-popup {
+    padding: 6px 10px;
     font-size: 0.8rem;
   }
 }

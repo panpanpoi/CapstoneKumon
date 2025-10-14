@@ -1,148 +1,233 @@
 document.addEventListener("DOMContentLoaded", () => {
-  initDoneButtons();
-  initNoteForms();
+    fetchAndRenderSchedules();
 });
 
 // ===============================
-// ✅ Initialize "Done" buttons
+// Fetch schedules from server
 // ===============================
-function initDoneButtons() {
-  document.querySelectorAll(".btn-done").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const scheduleId = btn.dataset.scheduleId;
-      if (!confirm("Mark this PTC meeting as done?")) return;
+async function fetchAndRenderSchedules() {
+    try {
+        const res = await fetch("../handler/ptcSchedule.php");
+        const text = await res.text();
 
-      try {
-        setButtonLoading(btn, true);
-        const data = await postData("../handler/ptcSchedule.php", {
-          mark_done: 1,
-          schedule_id: scheduleId
+        if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) {
+            console.error("Server returned HTML instead of JSON:", text);
+            showAlert("error", "Server returned HTML instead of JSON. Check console.");
+            return;
+        }
+
+        const data = JSON.parse(text);
+        if (data.status !== "success") {
+            showAlert("error", data.message || "Failed to fetch schedules.");
+            return;
+        }
+
+        const activeTableBody = document.querySelector(".schedule-section:nth-of-type(1) .schedule-table tbody");
+        const doneTableBody = document.querySelector(".done-bookings tbody");
+        if (!activeTableBody || !doneTableBody) return;
+
+        activeTableBody.innerHTML = "";
+        doneTableBody.innerHTML = "";
+
+        data.schedules.forEach(schedule => {
+            if (schedule.status === "done") {
+                // Done table
+                const noteListHTML = (schedule.notes || [])
+                    .map(n => `<li>${n.note} (${n.created_at || "just now"})</li>`).join("");
+
+                const tr = document.createElement("tr");
+                tr.dataset.scheduleId = schedule.schedule_id;
+                tr.innerHTML = `
+                    <td>${schedule.date}</td>
+                    <td>${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}</td>
+                    <td>${schedule.student_name || "-"}</td>
+                    <td>
+                        <ul class="note-list">${noteListHTML}</ul>
+                        <form class="inline-note-form">
+                            <input type="hidden" name="schedule_id" value="${schedule.schedule_id}">
+                            <input type="text" name="note" placeholder="Add note..." required>
+                            <button type="submit" class="btn-note"><i class="fa fa-sticky-note"></i></button>
+                        </form>
+                    </td>
+                `;
+                doneTableBody.appendChild(tr);
+            } else {
+                // Active table
+                const status = schedule.booking_status === "booked" ? "booked" : "open";
+                const student = schedule.student_name || (status === "booked" ? "-" : "-");
+
+                const tr = document.createElement("tr");
+                tr.dataset.scheduleId = schedule.schedule_id;
+                tr.innerHTML = `
+                    <td>${schedule.date}</td>
+                    <td>${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}</td>
+                    <td><span class="status-${status}">${capitalize(status)}</span></td>
+                    <td>${student}</td>
+                    <td class="actions-cell">
+                        ${status === "booked" ? `<button class="btn-done" data-schedule-id="${schedule.schedule_id}"><i class="fa fa-check"></i> Done</button>` : `<span class="locked-status">No actions</span>`}
+                    </td>
+                `;
+                activeTableBody.appendChild(tr);
+            }
         });
 
-        if (data.status === "success") {
-          alert("✅ Schedule marked as done!");
-          moveToDoneTable(btn.closest("tr"), data);
-        } else {
-          alert("❌ Error: " + (data.message || "Failed to mark as done."));
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        alert("❌ Connection or JSON error. Check console for details.");
-      } finally {
-        setButtonLoading(btn, false);
-      }
-    });
-  });
+        initDynamicEvents();
+
+    } catch (err) {
+        console.error("Fetch/render schedules error:", err);
+        showAlert("error", "Fetch/render schedules failed. Check console.");
+    }
 }
 
 // ===============================
-// ✅ Initialize "Add Note" forms
+// Initialize dynamic events
 // ===============================
-function initNoteForms() {
-  document.querySelectorAll(".inline-note-form").forEach(form => {
-    // Only attach if not already attached
-    if (form.dataset.listenerAttached) return;
-    form.dataset.listenerAttached = "true";
+function initDynamicEvents() {
+    const activeTableBody = document.querySelector(".schedule-section:nth-of-type(1) .schedule-table tbody");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // Done button click
+    if (activeTableBody) {
+        activeTableBody.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".btn-done");
+            if (!btn) return;
+            e.preventDefault();
 
-      const scheduleId = form.querySelector('input[name="schedule_id"]').value;
-      const noteInput = form.querySelector('input[name="note"]');
-      const noteText = noteInput.value.trim();
-      if (!noteText) return;
+            const scheduleId = btn.dataset.scheduleId;
+            if (!confirm("Mark this PTC meeting as done?")) return;
 
-      try {
-        const data = await postData("../handler/ptcSchedule.php", {
-          add_note: 1,
-          schedule_id: scheduleId,
-          note: noteText
+            try {
+                setButtonLoading(btn, true);
+                const data = await postData("../handler/ptcSchedule.php", {
+                    mark_done: 1,
+                    schedule_id: scheduleId
+                });
+
+                if (data.status === "success") {
+                    showAlert("success", "✅ Schedule marked as done!");
+                    moveToDoneTable(scheduleId, data);
+                } else {
+                    showAlert("error", "❌ Error: " + (data.message || "Failed to mark as done."));
+                }
+            } catch (err) {
+                console.error(err);
+                showAlert("error", "❌ Connection or JSON error. Check console.");
+            } finally {
+                setButtonLoading(btn, false);
+            }
         });
+    }
 
-        if (data.status === "success") {
-          const ul = form.closest("td").querySelector("ul");
-          const li = document.createElement("li");
-          li.textContent = `${noteText} (just now)`;
-          ul.prepend(li);
-          noteInput.value = "";
-        } else {
-          alert("❌ Error adding note: " + (data.message || "Unknown error"));
-          console.error("Server response:", data);
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        alert("❌ Connection or JSON error. Try again.");
-      }
+    // Add note forms
+    document.querySelectorAll("form.inline-note-form").forEach(form => {
+        if (form.dataset.initialized) return;
+        form.dataset.initialized = true;
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const scheduleId = form.querySelector('input[name="schedule_id"]').value;
+            const noteInput = form.querySelector('input[name="note"]');
+            const noteText = noteInput.value.trim();
+            if (!noteText) return;
+
+            try {
+                const data = await postData("../handler/ptcSchedule.php", {
+                    add_note: 1,
+                    schedule_id: scheduleId,
+                    note: noteText
+                });
+
+                if (data.status === "success") {
+                    const ul = form.closest("td").querySelector(".note-list");
+                    const li = document.createElement("li");
+                    li.textContent = `${noteText} (just now)`;
+                    ul.prepend(li);
+                    noteInput.value = "";
+                    showAlert("success", "✅ Note added successfully!");
+                } else {
+                    showAlert("error", "❌ Error adding note: " + (data.message || "Unknown error"));
+                }
+            } catch (err) {
+                console.error(err);
+                showAlert("error", "❌ Connection or JSON error. Try again.");
+            }
+        });
     });
-  });
 }
 
 // ===============================
-// ✅ Move schedule to "Done PTC"
+// Move schedule to Done table
 // ===============================
-function moveToDoneTable(row, data) {
-  row.remove();
+function moveToDoneTable(scheduleId, data) {
+    const row = document.querySelector(`tr[data-schedule-id='${scheduleId}']`);
+    if (!row) return;
+    row.remove();
 
-  const doneTableBody = document.querySelector(".done-bookings tbody");
-  if (!doneTableBody) return;
+    const doneTableBody = document.querySelector(".done-bookings tbody");
+    if (!doneTableBody) return;
 
-  const newRow = document.createElement("tr");
-  newRow.innerHTML = `
-    <td>${data.date}</td>
-    <td>${data.startTime} - ${data.endTime}</td>
-    <td>${data.student_name || "-"}</td>
-    <td>
-      <ul></ul>
-      <form class="inline-note-form">
-        <input type="hidden" name="schedule_id" value="${data.schedule_id}">
-        <input type="text" name="note" placeholder="Add note..." required>
-        <button type="submit" class="btn-note"><i class="fa fa-sticky-note"></i></button>
-      </form>
-    </td>
-  `;
-  doneTableBody.prepend(newRow);
-
-  // ✅ Reinitialize note forms for dynamically added elements
-  initNoteForms();
+    const newRow = document.createElement("tr");
+    newRow.dataset.scheduleId = data.schedule_id;
+    newRow.innerHTML = `
+        <td>${data.date}</td>
+        <td>${formatTime(data.startTime)} - ${formatTime(data.endTime)}</td>
+        <td>${data.student_name || "-"}</td>
+        <td data-booking-status="done">
+            <ul class="note-list"></ul>
+            <form class="inline-note-form">
+                <input type="hidden" name="schedule_id" value="${data.schedule_id}">
+                <input type="text" name="note" placeholder="Add note..." required>
+                <button type="submit" class="btn-note"><i class="fa fa-sticky-note"></i></button>
+            </form>
+        </td>
+    `;
+    doneTableBody.prepend(newRow);
+    initDynamicEvents();
 }
 
 // ===============================
-// ✅ Button loading effect
+// Helper functions
 // ===============================
 function setButtonLoading(button, loading) {
-  if (loading) {
-    button.disabled = true;
-    button.classList.add("btn-pulse");
-    button.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Marking...`;
-  } else {
-    button.disabled = false;
-    button.classList.remove("btn-pulse");
-    button.innerHTML = `<i class="fa fa-check"></i> Done`;
-  }
+    if (loading) {
+        button.disabled = true;
+        button.classList.add("btn-pulse");
+        button.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Marking...`;
+    } else {
+        button.disabled = false;
+        button.classList.remove("btn-pulse");
+        button.innerHTML = `<i class="fa fa-check"></i> Done`;
+    }
 }
 
-// ===============================
-// ✅ POST helper (with safe JSON)
-// ===============================
 async function postData(url, params) {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(params).toString()
-  });
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(params).toString()
+    });
 
-  const text = await res.text();
-
-  if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) {
-    console.error("❌ Server returned HTML instead of JSON:", text);
-    throw new Error("Invalid JSON response — HTML returned");
-  }
-
-  try {
+    const text = await res.text();
+    if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) throw new Error("HTML returned instead of JSON");
     return JSON.parse(text);
-  } catch (err) {
-    console.error("❌ Invalid JSON from server:", text);
-    throw new Error("Invalid JSON from server");
-  }
+}
+
+function showAlert(type, message) {
+    alert(message);
+    const div = document.createElement("div");
+    div.className = `alert ${type}`;
+    div.innerHTML = `<span>${message}</span><button class="alert-close">&times;</button>`;
+    document.body.appendChild(div);
+    div.querySelector(".alert-close")?.addEventListener("click", () => div.remove());
+    setTimeout(() => div.remove(), 5000);
+}
+
+function formatTime(time24) {
+    const [hour, min] = time24.split(":");
+    const date = new Date();
+    date.setHours(parseInt(hour), parseInt(min));
+    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true });
+}
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
