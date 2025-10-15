@@ -2,7 +2,7 @@
 require_once "../database.php";
 session_start();
 
-// ✅ Ensure teacher is logged in
+// Ensure teacher is logged in
 $teacher_id = $_SESSION['teacher_id'] ?? null;
 if (!$teacher_id) {
     header('Content-Type: application/json');
@@ -13,7 +13,7 @@ if (!$teacher_id) {
     exit;
 }
 
-// ✅ Get POST data
+// Get POST data
 $date = $_POST['date'] ?? null;
 $attendanceData = $_POST['attendance'] ?? null;
 

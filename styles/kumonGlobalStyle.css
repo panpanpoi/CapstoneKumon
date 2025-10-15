@@ -1,7 +1,3 @@
-/* 🌍 kumonGlobalStyle.css */
-/* This file should only contain global resets, typography, and shared utilities. */
-/* Page-specific styling (sidebar, forms, buttons) should live in their own CSS files. */
-
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Work+Sans:wght@400;600&family=Montserrat:wght@400;600&display=swap');
 

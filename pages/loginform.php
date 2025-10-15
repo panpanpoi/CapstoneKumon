@@ -6,11 +6,10 @@
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 
     <link rel="stylesheet" href="../styles/login.css">
-  <!-- Font Awesome for Eye Icon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- 🔐 Login Box -->
+  <!-- Login Box -->
   <div class="login-box">
     <img src="../styles/KumonLogo.png" alt="Kumon Logo" class="login-logo">
 
@@ -38,7 +37,7 @@
     </form>
   </div>
 
-  <!-- 👁️ Password Toggle Script -->
+  <!-- Password Toggle Script -->
   <script>
     const passwordInput = document.getElementById("password");
     const toggleBtn = document.getElementById("togglePassword");

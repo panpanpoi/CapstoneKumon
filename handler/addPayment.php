@@ -1,5 +1,5 @@
 <?php
-require_once "../database.php"; // your PDO connection file
+require_once "../database.php"; // connect to database
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $student_id = $_POST['student_id'] ?? null;
@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $reference_number = $_POST['reference_number'] ?? null;
     $remarks = $_POST['remarks'] ?? null;
 
-    // Basic validation
+    // check required fields
     if (!$student_id || !$amount || !$payment_date || !$payment_method) {
         die("Missing required fields.");
     }
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':remarks' => $remarks
         ]);
 
-     // Store flash message in session
+        // success message
         $_SESSION['success'] = "Payment recorded successfully!";
         header("Location: ../pages/viewPayment.php");
         exit;

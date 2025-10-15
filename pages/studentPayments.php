@@ -12,19 +12,19 @@ if (!$student_id) {
     exit;
 }
 
-// 1️⃣ Fetch student info
+//  Fetch student info
 $stmt = $pdo->prepare("SELECT Firstname, Lastname FROM students WHERE student_id = ?");
 $stmt->execute([$student_id]);
 $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// 2️⃣ Full name & avatar initials
+// Full name & avatar initials
 function sentence_case($string) {
     return ucfirst(strtolower($string));
 }
 $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student['Lastname']);
 $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($student['Lastname'], 0, 1));
 
-// 3️⃣ Load current month payment data
+//   Load current month payment data
 $paymentData = include "../handler/studentPaymentData.php";
 $payments = $paymentData['payments'] ?? [];
 $total_paid = $paymentData['total_paid'] ?? 0;

@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 require_once "../database.php";
 
-// ✅ Start session safely
+// Start session safely
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -16,14 +16,14 @@ if (empty($_SESSION['student_id'])) {
 
 $student_id = (int)$_SESSION['student_id'];
 
-// ✅ Only allow POST requests
+// Only allow POST requests
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(405);
     echo json_encode(["success" => false, "error" => "Invalid request method."]);
     exit;
 }
 
-// ✅ Validate inputs
+// Validate inputs
 $payment_id = $_POST['payment_id'] ?? null;
 $receipt    = $_FILES['receipt'] ?? null;
 
@@ -32,7 +32,7 @@ if (!$payment_id || !$receipt) {
     exit;
 }
 
-// ✅ File validation
+// File validation
 $uploadDir = "../uploads/receipts/";
 if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
     echo json_encode(["success" => false, "error" => "Failed to create upload directory."]);
@@ -49,17 +49,17 @@ if (!in_array($fileExt, $allowed)) {
     exit;
 }
 
-// ✅ Generate safe unique filename
+// Generate safe unique filename
 $newFileName = sprintf("receipt_%d_%d.%s", $student_id, time(), $fileExt);
 $destPath = $uploadDir . $newFileName;
 
-// ✅ Move uploaded file
+// Move uploaded file
 if (!move_uploaded_file($fileTmp, $destPath)) {
     echo json_encode(["success" => false, "error" => "File upload failed. Please try again."]);
     exit;
 }
 
-// ✅ Save to database and set payment status to pending review
+// Save to database and set payment status to pending review
 try {
     $relativePath = "uploads/receipts/" . $newFileName;
 

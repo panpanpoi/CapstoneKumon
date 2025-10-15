@@ -3,7 +3,6 @@ if (!isset($_SESSION)) session_start();
 require_once "../database.php";
 require_once "../handler/auth.php";
 
-// ✅ Only teachers allowed
 if ($_SESSION['account_type'] !== 'teacher') {
     header("Location: ../login.php");
     exit;
@@ -11,7 +10,7 @@ if ($_SESSION['account_type'] !== 'teacher') {
 
 $teacher_id = $_SESSION['teacher_id'];
 
-// --- Fetch Active Schedules ---
+// Fetch Active Schedules
 try {
     $stmt = $pdo->prepare("
         SELECT s.schedule_id, s.date, s.start_time, s.end_time,
@@ -43,7 +42,7 @@ try {
 <body>
 <div class="dashboard">
 
-<!-- ================= SIDEBAR ================= -->
+<!-- SIDEBAR -->
 <aside class="sidebar">
     <div class="logo">
         <h1><a href="kumonTeacher.php">
@@ -66,7 +65,7 @@ try {
     </ul>
 </aside>
 
-<!-- ================= MAIN CONTENT ================= -->
+<!-- MAIN CONTENT -->
 <main class="main-content">
     <div class="header">
         <h1><i class="fa fa-calendar"></i> PTC Schedule Management</h1>

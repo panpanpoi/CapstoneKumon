@@ -16,13 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
-        // ✅ Check if status is active
+        // Check if user account is active
         if (strtolower($user['status']) !== 'active') {
             header("Location: ../pages/loginForm.php?error=Your account is not active");
             exit;
         }
 
-        // ✅ Generate new session token
+        // Generate a new session token
         $sessionToken = bin2hex(random_bytes(32));
         $stmt = $pdo->prepare("UPDATE users SET session_token = :token WHERE user_id = :id");
         $stmt->execute([
@@ -30,16 +30,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             'id'    => $user['user_id']
         ]);
 
-        // ✅ Store in session
+        // Store user information in session
         $_SESSION['session_token'] = $sessionToken;
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['account_type'] = strtolower($user['account_type']);
         $_SESSION['username'] = $user['username'];
 
-        // Flash welcome message
+        // Set welcome message
         $_SESSION['flash_success'] = "Welcome back, " . ucfirst($_SESSION['account_type']) . "!";
 
-        // ✅ Role-specific redirect
+        // Redirect based on user role
         switch ($_SESSION['account_type']) {
             case 'teacher':
                 $stmt = $pdo->prepare("SELECT teacher_id FROM teachers WHERE user_id = ?");
@@ -69,8 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // ❌ Invalid login
+    // Invalid username or password
     header("Location: ../pages/loginForm.php?error=Invalid username or password");
     exit;
 }
-?>

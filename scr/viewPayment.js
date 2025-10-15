@@ -1,8 +1,4 @@
-// ==========================
-// viewPayment.js (Admin Payments)
-// ==========================
-
-document.addEventListener("DOMContentLoaded", () => {
+ document.addEventListener("DOMContentLoaded", () => {
   const paymentsContainer = document.getElementById("paymentsContainer");
   const flashMessage = document.getElementById("flashMessage");
   const verifyModal = document.getElementById("verifyModal");
@@ -13,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentStatus = "active";
 
-  // ========================== INIT =========================
+  //  INIT 
   loadPayments(currentStatus);
 
   showActive.addEventListener("click", () => {
@@ -33,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     verifyForm.reset();
   });
 
-  // ========================== LOAD PAYMENTS =========================
+  //  LOAD PAYMENTS 
   async function loadPayments(status) {
     paymentsContainer.innerHTML = `<p class="loading-text">Loading payments...</p>`;
 
@@ -53,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ========================== RENDER TABLE =========================
+  //  RENDER TABLE 
   function renderPaymentsTable(payments, status) {
     const table = document.createElement("table");
     table.className = "payments-table";
@@ -105,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     paymentsContainer.appendChild(table);
   }
 
-  // ========================== HELPERS =========================
+  //  HELPERS 
   function renderReceipt(payment) {
     if (!payment.receipt_path) return "No receipt";
     if (payment.receipt_path === "invalid") return `<span style="color:red;">Invalid file</span>`;
@@ -147,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => flashMessage.style.display = "none", 3000);
   }
 
-  // ========================== VERIFY PAYMENT =========================
+  //  VERIFY PAYMENT 
   window.openVerifyModal = function(paymentId) {
     document.getElementById("paymentId").value = paymentId;
     verifyModal.style.display = "flex";
@@ -171,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ========================== ARCHIVE / RESTORE =========================
+  //  ARCHIVE / RESTORE 
   window.updatePaymentStatus = async function(paymentId, newStatus) {
     const action = newStatus === "archived" ? "archive" : "restore";
     if (!confirm(`Are you sure you want to ${action} this payment?`)) return;

@@ -17,9 +17,8 @@ if (!$student_id) {
     exit;
 }
 
-// =========================
+
 // Handle Booking / Cancel
-// =========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo->beginTransaction();
@@ -57,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['success'] = "PTC booking confirmed.";
         }
 
-        // --- CANCEL ---
+        // CANCEL
         if (isset($_POST['cancel'], $_POST['booking_id'])) {
             $booking_id = (int) $_POST['booking_id'];
 
@@ -91,9 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// =========================
+
 // Fetch Current Booking
-// =========================
+
 $currentBooking = null;
 $stmt = $pdo->prepare("
     SELECT pb.booking_id, ps.schedule_id, ps.date, ps.startTime, ps.endTime,
@@ -110,9 +109,9 @@ $stmt = $pdo->prepare("
 $stmt->execute([$student_id]);
 $currentBooking = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// =========================
+
 // Fetch Available Slots (only if no current booking)
-// =========================
+
 $availableSchedules = [];
 if (!$currentBooking) {
     $stmt = $pdo->prepare("
@@ -130,9 +129,7 @@ if (!$currentBooking) {
     $availableSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// =========================
 // Fetch Completed PTCs with Notes
-// =========================
 $doneBookings = [];
 $stmt = $pdo->prepare("
     SELECT pb.booking_id, ps.schedule_id, ps.date, CONCAT(u.Name,' ',u.Surname) AS teacherName
@@ -154,5 +151,3 @@ foreach ($bookings as $b) {
     $doneBookings[] = $b;
 }
 
-// Export variables for studentPtc.php
-// $currentBooking, $availableSchedules, $doneBookings

@@ -4,7 +4,7 @@ if (!isset($_SESSION)) session_start();
 require_once "../database.php";
 require_once "../handler/auth.php";
 
-// ✅ Ensure student session ID exists
+// Ensure student session ID exists
 $student_id = $_SESSION['student_id'] ?? null;
 if (!$student_id) {
     $_SESSION['error'] = "Student session not found.";
@@ -190,7 +190,6 @@ if (trim($avatarInitials) === '') {
     </main>
 </div>
 
-<!-- JS -->
 <script src="../scr/sidebarToggle.js"></script>
 <script src="../scr/studentAttendance.js"></script>
 </body>

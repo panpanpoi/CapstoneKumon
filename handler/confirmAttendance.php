@@ -2,7 +2,7 @@
 require_once "../database.php";
 session_start();
 
-// ✅ Ensure teacher is logged in
+// Ensure teacher is logged in
 if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'teacher') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
     exit;
@@ -18,7 +18,7 @@ if (!$attendance_id || !$teacher_id) {
 }
 
 try {
-    // ✅ Update attendance record to Present and record teacher
+    //  Update attendance record to Present and record teacher
     $stmt = $pdo->prepare("
         UPDATE attendance
         SET status = ?, marked_by = ?, attendance_date = CURDATE()

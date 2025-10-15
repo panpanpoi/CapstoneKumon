@@ -1,6 +1,4 @@
-/* =========================================================
-   📱 SMALL SIDEBAR TOGGLE BUTTON (Left-Aligned)
-   ========================================================= */
+/* sidebarToggle.css */
 :root {
   --blue-primary: #3f97f5;
   --blue-accent: #6DCFF6;
@@ -9,9 +7,7 @@
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* ============================
-   🌟 Compact Toggle Button
-   ============================ */
+
 .sidebar-toggle {
   position: fixed;
   top: 16px;
@@ -36,9 +32,6 @@
   transform: scale(1.05);
 }
 
-/* ============================
-   🍔 Hamburger Icon (Smaller)
-   ============================ */
 .sidebar-toggle .bar {
   position: relative;
   width: 16px; /* smaller lines */
@@ -68,9 +61,7 @@
   top: 6px;
 }
 
-/* ============================
-   ✖️ Animate to "X"
-   ============================ */
+
 .sidebar-toggle.active .bar {
   background: transparent;
 }
@@ -85,9 +76,7 @@
   top: 0;
 }
 
-/* ============================
-   🌙 Overlay (dim background)
-   ============================ */
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -103,9 +92,7 @@
   visibility: visible;
 }
 
-/* ============================
-   📱 Responsive Rules
-   ============================ */
+
 @media (max-width: 1000px) {
   .sidebar-toggle {
     display: flex;

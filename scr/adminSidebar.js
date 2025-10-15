@@ -1,5 +1,5 @@
 (() => {
-  // --- Sidebar Dropdown ---
+  // Sidebar Dropdown
   document.querySelectorAll('.subnavbtn').forEach(btn => {
     btn.addEventListener('click', () => {
       const content = btn.nextElementSibling;
@@ -10,7 +10,7 @@
     });
   });
 
-  // --- Optional: highlight current menu item ---
+  // Optional: highlight current menu item
   const currentUrl = window.location.pathname.split("/").pop();
   document.querySelectorAll('.nav-menu a').forEach(link => {
     if (link.getAttribute('href') === currentUrl) {
@@ -18,7 +18,7 @@
     }
   });
 
-  // --- User profile toggle (if you have a dropdown for user settings) ---
+  // User profile toggle (if you have a dropdown for user settings)
   const userProfile = document.querySelector('.user-profile');
   if (userProfile) {
     userProfile.addEventListener('click', () => {

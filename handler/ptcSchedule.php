@@ -2,9 +2,7 @@
 if (!isset($_SESSION)) session_start();
 require_once "../database.php";
 
-// -------------------------
-// AUTH CHECK
-// -------------------------
+// AUTH CHECK: Only allow teachers
 if (($_SESSION['account_type'] ?? '') !== 'teacher') {
     header("Content-Type: application/json");
     http_response_code(403);
@@ -19,22 +17,18 @@ if (!$teacher_id) {
     exit;
 }
 
-// -------------------------
-// HELPER
-// -------------------------
+// Helper function to check if request expects JSON
 function isJsonRequest() {
     return isset($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json');
 }
 
-// ===========================
-// 1️⃣ MARK DONE
-// ===========================
+// MARK SCHEDULE AS DONE
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["mark_done"])) {
     header("Content-Type: application/json");
     $schedule_id = intval($_POST["schedule_id"]);
 
     try {
-        // Get latest booked student
+        // Get latest booked student for this schedule
         $stmt = $pdo->prepare("
             SELECT pb.student_id, s.Firstname, s.Lastname, ps.date, ps.startTime, ps.endTime
             FROM ptc_bookings pb
@@ -49,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["mark_done"])) {
         $student_name = $student ? $student['Firstname'].' '.$student['Lastname'] : '-';
         $student_id = $student['student_id'] ?? null;
 
-        // Update schedule to done
+        // Update schedule status to done
         $pdo->prepare("UPDATE ptc_schedules SET status='done', student_id=? WHERE schedule_id=? AND teacher_id=?")
             ->execute([$student_id, $schedule_id, $teacher_id]);
 
@@ -74,9 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["mark_done"])) {
     exit;
 }
 
-// ===========================
-// 2️⃣ ADD NOTE
-// ===========================
+// ADD NOTE TO SCHEDULE
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add_note"])) {
     header("Content-Type: application/json");
     $schedule_id = intval($_POST["schedule_id"] ?? 0);
@@ -88,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add_note"])) {
     }
 
     try {
-        // Get student_id (from schedule or latest booking)
+        // Get student_id from schedule or latest booking
         $stmt = $pdo->prepare("SELECT student_id FROM ptc_schedules WHERE schedule_id=?");
         $stmt->execute([$schedule_id]);
         $student_id = $stmt->fetchColumn();
@@ -104,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add_note"])) {
             exit;
         }
 
-        // Insert note
+        // Insert note into ptc_notes
         $pdo->prepare("INSERT INTO ptc_notes (schedule_id, teacher_id, student_id, note) VALUES (?,?,?,?)")
             ->execute([$schedule_id, $teacher_id, $student_id, $note]);
 
@@ -115,46 +107,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["add_note"])) {
     exit;
 }
 
-// ===========================
-// 3️⃣ CREATE SCHEDULE
-// ===========================
+// CREATE NEW SCHEDULE
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["create"])) {
     $date = $_POST["date"] ?? null;
     $start = $_POST["start_time"] ?? null;
     $end = $_POST["end_time"] ?? null;
 
     if (!$date || !$start || !$end) {
-        $_SESSION["error"] = "⚠️ Missing fields.";
+        $_SESSION["error"] = "Missing fields.";
         header("Location: ../pages/teacherPtcScheduler.php");
         exit;
     }
 
     try {
         if ($date < date("Y-m-d")) {
-            $_SESSION["error"] = "⚠️ Cannot set schedules in the past.";
+            $_SESSION["error"] = "Cannot set schedules in the past.";
         } else {
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_schedules WHERE teacher_id=? AND date=? AND (startTime < ? AND endTime > ?)");
             $stmt->execute([$teacher_id, $date, $end, $start]);
 
             if ($stmt->fetchColumn() > 0) {
-                $_SESSION["error"] = "⚠️ Overlapping schedule detected.";
+                $_SESSION["error"] = "Overlapping schedule detected.";
             } else {
                 $pdo->prepare("INSERT INTO ptc_schedules (teacher_id, date, startTime, endTime, status) VALUES (?,?,?,?, 'open')")
                     ->execute([$teacher_id, $date, $start, $end]);
-                $_SESSION["success"] = "✅ Schedule created successfully.";
+                $_SESSION["success"] = "Schedule created successfully.";
             }
         }
     } catch (Exception $e) {
-        $_SESSION["error"] = "❌ Database error: ".$e->getMessage();
+        $_SESSION["error"] = "Database error: ".$e->getMessage();
     }
 
     header("Location: ../pages/teacherPtcScheduler.php");
     exit;
 }
 
-// ===========================
-// 4️⃣ UPDATE SCHEDULE
-// ===========================
+// UPDATE EXISTING SCHEDULE
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
     $id = intval($_POST["schedule_id"] ?? 0);
     $date = $_POST["date"] ?? null;
@@ -162,44 +150,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
     $end = $_POST["end_time"] ?? null;
 
     if (!$id || !$date || !$start || !$end) {
-        $_SESSION["error"] = "⚠️ Missing fields.";
+        $_SESSION["error"] = "Missing fields.";
         header("Location: ../pages/teacherPtcScheduler.php");
         exit;
     }
 
     try {
         if ($date < date("Y-m-d")) {
-            $_SESSION["error"] = "⚠️ Cannot update to a past date.";
+            $_SESSION["error"] = "Cannot update to a past date.";
         } else {
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_bookings WHERE schedule_id=? AND status='booked'");
             $stmt->execute([$id]);
 
             if ($stmt->fetchColumn() > 0) {
-                $_SESSION["error"] = "⚠️ Cannot edit a booked schedule.";
+                $_SESSION["error"] = "Cannot edit a booked schedule.";
             } else {
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_schedules WHERE teacher_id=? AND date=? AND schedule_id<>? AND (startTime < ? AND endTime > ?)");
                 $stmt->execute([$teacher_id, $date, $id, $end, $start]);
 
                 if ($stmt->fetchColumn() > 0) {
-                    $_SESSION["error"] = "⚠️ Overlaps with another slot.";
+                    $_SESSION["error"] = "Overlaps with another slot.";
                 } else {
                     $pdo->prepare("UPDATE ptc_schedules SET date=?, startTime=?, endTime=? WHERE schedule_id=? AND teacher_id=?")
                         ->execute([$date, $start, $end, $id, $teacher_id]);
-                    $_SESSION["success"] = "✅ Schedule updated successfully.";
+                    $_SESSION["success"] = "Schedule updated successfully.";
                 }
             }
         }
     } catch (Exception $e) {
-        $_SESSION["error"] = "❌ Error: ".$e->getMessage();
+        $_SESSION["error"] = "Error: ".$e->getMessage();
     }
 
     header("Location: ../pages/teacherPtcScheduler.php");
     exit;
 }
 
-/// ===========================
 // DELETE SCHEDULE
-// ===========================
 if (isset($_POST['delete_schedule']) && isset($_POST['schedule_id'])) {
     $schedule_id = intval($_POST['schedule_id']);
 
@@ -219,7 +205,7 @@ if (isset($_POST['delete_schedule']) && isset($_POST['schedule_id'])) {
             exit;
         }
 
-        // Delete from ptc_bookings first (should be empty but safe)
+        // Delete related bookings first
         $pdo->prepare("DELETE FROM ptc_bookings WHERE schedule_id=?")->execute([$schedule_id]);
 
         // Delete the schedule
@@ -234,9 +220,7 @@ if (isset($_POST['delete_schedule']) && isset($_POST['schedule_id'])) {
     }
 }
 
-// ===========================
-// 6️⃣ FETCH SCHEDULES (JSON)
-// ===========================
+// FETCH ALL SCHEDULES FOR TEACHER (JSON)
 $stmt = $pdo->prepare("
     SELECT 
         ps.schedule_id, 
@@ -257,7 +241,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$teacher_id]);
 $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// For each schedule, also fetch notes
+// For each schedule, fetch notes
 foreach ($schedules as &$s) {
     $noteStmt = $pdo->prepare("SELECT note, created_at FROM ptc_notes WHERE schedule_id=? ORDER BY created_at DESC");
     $noteStmt->execute([$s['schedule_id']]);
@@ -269,4 +253,3 @@ echo json_encode([
     'status' => 'success',
     'schedules' => $schedules
 ]);
-

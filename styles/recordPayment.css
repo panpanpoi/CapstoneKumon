@@ -1,4 +1,4 @@
-/* ========== SEARCH RESULTS DROPDOWN ========== */
+/* SEARCH RESULTS DROPDOWN */
 .search-results {
   border: 1px solid #444;
   max-height: 180px;
@@ -21,14 +21,14 @@
   color: #fff;
 }
 
-/* ========== SELECTED STUDENT INFO ========== */
+/* SELECTED STUDENT INFO */
 .selected-student {
   margin-top: 10px;
   color: #2ecc71;
   font-weight: bold;
 }
 
-/* ========== CHANGE BUTTON ========== */
+/* CHANGE BUTTON */
 .change-btn {
   display: none;
   margin-top: 5px;
@@ -44,7 +44,7 @@
   background-color: #2980b9;
 }
 
-/* ========== FORM STYLING ========== */
+/* FORM STYLING */
 form label {
   display: block;
   margin-top: 12px;
@@ -67,7 +67,7 @@ form input:focus, form select:focus, form textarea:focus {
   outline: none;
 }
 
-/* ========== SUBMIT BUTTON ========== */
+/* SUBMIT BUTTON */
 form button[type="submit"] {
   margin-top: 15px;
   padding: 8px 16px;
@@ -88,7 +88,7 @@ form button:disabled {
   cursor: not-allowed;
 }
 
-/* ========== POSITIONING HELPERS ========== */
+/* POSITIONING HELPERS */
 #student_search, #results, .selected-student, .change-btn {
   position: relative;
   z-index: 10;

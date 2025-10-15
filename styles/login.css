@@ -1,9 +1,8 @@
-/* 🌍 General Page Setup */
 body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  /* 🔵 Background gradient */
+  /* Background gradient */
   background: linear-gradient(180deg, #2196f3, #1976d2);
   display: flex;
   align-items: center;
@@ -13,19 +12,19 @@ body {
   overflow: hidden;
 }
 
-/* 🎨 Large Background Logo (black, faded) */
+/* Large Background Logo (black, faded) */
 body::before {
   content: "";
   position: absolute;
   inset: 0;
   background: url("../styles/KumonLogo.png") no-repeat center center;
-  background-size: 1000px; /* 🔧 Adjust size of faded logo */
-  opacity: 1; /* 🔧 Adjust transparency of background logo */
+  background-size: 1000px; /* Adjust size of faded logo */
+  opacity: 1; /* Adjust transparency of background logo */
   filter: brightness(0); /* makes logo black */
   z-index: 0;
 }
 
-/* 🔐 Login Box */
+/* Login Box */
 .login-box {
   position: relative;
   z-index: 1; /* keeps above background logo */
@@ -112,7 +111,7 @@ input:focus {
   color: #2196f3;
 }
 
-/* 🚪 Login Button */
+/*Login Button */
 .login-btn {
   margin-top: 20px;
   width: 100%;

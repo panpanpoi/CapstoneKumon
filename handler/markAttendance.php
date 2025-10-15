@@ -2,7 +2,7 @@
 require_once "../database.php";
 session_start();
 
-// ✅ Ensure student is logged in
+// Check if student is logged in
 if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'student') {
     echo json_encode([
         'success' => false,
@@ -23,7 +23,7 @@ if (!$student_id || !$class_id) {
 }
 
 try {
-    // Check if attendance already exists for this student & class today
+    // Check if attendance already exists for this student and class today
     $stmtCheck = $pdo->prepare("
         SELECT attendance_id, status 
         FROM attendance 
@@ -43,7 +43,7 @@ try {
             exit;
         }
 
-        // Update existing record to Pending
+        // Update existing attendance record to Pending
         $stmt = $pdo->prepare("
             UPDATE attendance
             SET status = 'Pending'
@@ -69,4 +69,3 @@ try {
         'message' => 'Database error: ' . $e->getMessage()
     ]);
 }
-?>

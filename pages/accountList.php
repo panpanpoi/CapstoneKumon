@@ -24,7 +24,7 @@ $initials = $_SESSION['initials'];   // Initials
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Sidebar -->
+    <!-- Sidebar  -->
     <div class="sidebar">
         <div class="logo">
             <a href="kumonAdmin.php">
@@ -167,7 +167,7 @@ $initials = $_SESSION['initials'];   // Initials
         </div>
     </div>
 
-    <!-- JS -->
+    
     <script src="../scr/accountList.js"></script>
 </body>
 </html>

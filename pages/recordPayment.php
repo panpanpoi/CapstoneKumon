@@ -1,7 +1,7 @@
 <?php
 require_once "../handler/auth.php"; 
 
-// ✅ Only allow admins
+// Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
     header("Location: ../loginform.php");
     exit;
@@ -27,7 +27,7 @@ $initials = $_SESSION['initials'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- ================= SIDEBAR ================= -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div class="logo">
             <a href="kumonAdmin.php">
@@ -73,7 +73,7 @@ $initials = $_SESSION['initials'];
         </ul>
     </div>
 
-    <!-- ================= MAIN CONTENT ================= -->
+    <!-- MAIN CONTENT -->
     <div class="main-content">
         <!-- Header -->
         <div class="header">

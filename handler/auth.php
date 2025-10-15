@@ -6,7 +6,7 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
-// ❌ No active session
+// Check for active session
 if (!isset($_SESSION['user_id'], $_SESSION['session_token'])) {
     header("Location: ../pages/loginform.php");
     exit;
@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id'], $_SESSION['session_token'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// ✅ Fetch user info + token
+// Fetch user info
 $stmt = $pdo->prepare("SELECT user_id, Name, Surname, account_type, session_token FROM users WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -25,20 +25,20 @@ if (!$user) {
     exit;
 }
 
-// ✅ Verify session token matches DB
+// Verify session token
 if ($user['session_token'] !== $_SESSION['session_token']) {
     session_destroy();
     header("Location: ../login.php?error=You have been logged out because another session started.");
     exit;
 }
 
-// ✅ Normalize account_type
+// Set account type
 $_SESSION['account_type'] = strtolower($user['account_type']);
 
-// ✅ Store common display info
+// Set display name
 $_SESSION['username'] = $user['Name'] . " " . $user['Surname'];
 
-// ✅ Generate initials for avatar
+// Generate initials
 function getInitials($name) {
     $parts = explode(" ", trim($name));
     $initials = "";
@@ -51,7 +51,7 @@ function getInitials($name) {
 }
 $_SESSION['initials'] = getInitials($_SESSION['username']);
 
-// ✅ Ensure role-specific IDs are set
+// Set role-specific IDs
 switch ($_SESSION['account_type']) {
     case 'teacher':
         if (empty($_SESSION['teacher_id'])) {

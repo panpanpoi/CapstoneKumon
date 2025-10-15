@@ -1,7 +1,7 @@
 <?php
 require_once "../handler/auth.php"; 
 
-// ✅ Only allow admins
+// Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
     header("Location: loginform.php");
     exit;
@@ -96,7 +96,7 @@ $initials   = $_SESSION['initials'];   // LR
     </div>
 
     <script>
-        // ✅ Dropdown toggle
+        // Dropdown toggle
             document.querySelectorAll('.subnavbtn').forEach(btn => {
             btn.addEventListener('click', function () {
                 const content = this.nextElementSibling;

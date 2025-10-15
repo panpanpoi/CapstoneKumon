@@ -1,5 +1,3 @@
-// recordPayment.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const studentSearch = document.getElementById("student_search");
   const studentId = document.getElementById("student_id");
@@ -8,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const changeBtn = document.getElementById("changeStudentBtn");
   const submitBtn = document.getElementById("submitBtn");
 
-  // ========== SEARCH STUDENT ==========
+  // SEARCH STUDENT
   let searchTimeout;
   studentSearch.addEventListener("input", () => {
     clearTimeout(searchTimeout);
@@ -32,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 300);
   });
 
-  // ========== SELECT STUDENT ==========
+  // SELECT STUDENT
   window.selectStudent = (id, code, name) => {
     studentId.value = id;
     studentSearch.value = `[${code}] ${name}`;
@@ -43,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     submitBtn.disabled = false;
   };
 
-  // ========== CHANGE STUDENT ==========
+  // CHANGE STUDENT
   changeBtn.addEventListener("click", () => {
     studentId.value = "";
     studentSearch.value = "";
@@ -54,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     submitBtn.disabled = true;
   });
 
-  // ========== CONFIRM BEFORE SUBMIT ==========
+  // CONFIRM BEFORE SUBMIT
   const form = document.getElementById("paymentForm");
   form.addEventListener("submit", (e) => {
     const student = studentSearch.value || "Not selected";
@@ -77,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ========== POSITION SEARCH RESULTS RELATIVE TO MAIN CONTENT ==========
+  // POSITION SEARCH RESULTS RELATIVE TO MAIN CONTENT
   const mainContent = document.querySelector(".main-content");
   resultsContainer.style.position = "absolute";
   resultsContainer.style.top = `${studentSearch.offsetTop + studentSearch.offsetHeight}px`;

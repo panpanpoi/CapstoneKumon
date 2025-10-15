@@ -2,7 +2,7 @@
 require_once "../handler/auth.php";
 require_once "../database.php";
 
-// ✅ Only allow teachers
+// Only allow teachers
 if ($_SESSION['account_type'] !== 'teacher') {
   header("Location: loginform.php");
   exit;

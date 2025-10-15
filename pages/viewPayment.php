@@ -27,7 +27,7 @@ $initials = $_SESSION['initials'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- ================= SIDEBAR ================= -->
+    <!--SIDEBAR-->
     <aside class="sidebar">
         <div class="logo">
             <a href="kumonAdmin.php">
@@ -74,7 +74,7 @@ $initials = $_SESSION['initials'];
         </nav>
     </aside>
 
-    <!-- ================= MAIN CONTENT ================= -->
+    <!--MAIN CONTENT-->
     <main class="main-content">
         <!-- Header -->
         <header class="header">
@@ -123,7 +123,7 @@ $initials = $_SESSION['initials'];
         </section>
     </main>
 
-    <!-- ================= VERIFY MODAL ================= -->
+    <!--VERIFY MODAL-->
     <div id="verifyModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="closeModal">&times;</span>

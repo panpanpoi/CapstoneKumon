@@ -7,7 +7,7 @@ require_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../handler/auth.php'; // ensures logged-in + session
 require_once __DIR__ . '/../handler/studentPtcHandler.php';
 
-// --- 1. Fetch Student Information for Sidebar ---
+// Fetch Student Information for Sidebar 
 $student_id = $_SESSION['student_id'] ?? null;
 if (!$student_id) {
     $_SESSION['error'] = "You must be logged in to view this page.";
@@ -30,7 +30,7 @@ try {
     die("Database error: Could not fetch student data.");
 }
 
-// --- 2. Format Name and Avatar ---
+//  Format Name and Avatar 
 function sentence_case($string) {
     return ucfirst(strtolower($string));
 }

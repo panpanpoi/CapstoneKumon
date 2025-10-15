@@ -2,7 +2,7 @@
 if (!isset($_SESSION)) session_start();
 require_once "../database.php";
 
-// Ensure student is logged in
+// Check if student is logged in
 if (!isset($_SESSION['student_id'])) {
     $_SESSION['error'] = "Student not logged in.";
     header("Location: ../login.php");
@@ -11,9 +11,7 @@ if (!isset($_SESSION['student_id'])) {
 
 $student_id = $_SESSION['student_id'];
 
-// =======================
-// 🎓 1. Fetch Student Info
-// =======================
+// 1. Fetch student information
 $stmt = $pdo->prepare("
     SELECT s.student_id, s.Firstname, s.Lastname, cs.class_id, cs.level
     FROM students s
@@ -27,9 +25,7 @@ $student = $stmt->fetch(PDO::FETCH_ASSOC);
 $class_id = $student['class_id'] ?? null;
 $current_level = $student['level'] ?? null;
 
-// =======================
-// 💰 2. Latest Payment
-// =======================
+// 2. Get latest payment details
 $stmt = $pdo->prepare("
     SELECT amount, payment_date
     FROM payments
@@ -40,14 +36,12 @@ $stmt = $pdo->prepare("
 $stmt->execute([$student_id]);
 $latest_payment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// ✅ Format payment date
+// Format payment date
 if ($latest_payment && !empty($latest_payment['payment_date'])) {
     $latest_payment['formatted_payment_date'] = date("F j, Y", strtotime($latest_payment['payment_date']));
 }
 
-// =======================
-// 📅 3. Next Due Payment
-// =======================
+// 3. Get next due payment date
 $stmt = $pdo->prepare("
     SELECT due_date
     FROM payments
@@ -62,9 +56,7 @@ $next_due = $next_due_raw
     ? date("F j, Y", strtotime($next_due_raw)) 
     : null;
 
-// =======================
-// 🧑‍🏫 4. Upcoming PTC Meeting
-// =======================
+// 4. Get upcoming PTC meeting
 $stmt = $pdo->prepare("
     SELECT ps.date, ps.startTime, ps.endTime, ps.status
     FROM ptc_bookings pb
@@ -76,7 +68,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$student_id]);
 $upcoming_ptc = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// ✅ Format PTC meeting date and time
+// Format PTC meeting date and time
 if ($upcoming_ptc) {
     if (!empty($upcoming_ptc['date'])) {
         $upcoming_ptc['formatted_date'] = date("F j, Y", strtotime($upcoming_ptc['date']));
@@ -89,9 +81,7 @@ if ($upcoming_ptc) {
     }
 }
 
-// =======================
-// 🗓️ 5. Today's Schedule
-// =======================
+// 5. Get today's class schedule
 $today = date('l'); // e.g. Monday, Tuesday
 
 $today_schedule = [];
@@ -105,7 +95,7 @@ if ($class_id) {
     $stmt->execute([$class_id, $today]);
     $today_schedule = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ✅ Format times for each schedule
+    // Format times for each schedule
     foreach ($today_schedule as &$sched) {
         if (!empty($sched['start_time'])) {
             $sched['formatted_start'] = date("g:i A", strtotime($sched['start_time']));
@@ -117,7 +107,7 @@ if ($class_id) {
     unset($sched); // break reference
 }
 
-// ✅ Return all data
+// Return all data
 return [
     'student' => $student,
     'current_level' => $current_level,
@@ -126,4 +116,3 @@ return [
     'upcoming_ptc' => $upcoming_ptc,
     'today_schedule' => $today_schedule
 ];
-?>

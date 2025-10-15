@@ -4,13 +4,13 @@ if (!isset($_SESSION)) session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
-// ✅ Helper to always return valid JSON
+// Helper to always return valid JSON
 function jsonResponse($data) {
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// ✅ Only allow teachers
+// Only allow teachers
 $teacher_id = $_SESSION['teacher_id'] ?? null;
 if (!$teacher_id) {
     jsonResponse(["success" => false, "message" => "Unauthorized access. Please log in again."]);
@@ -19,7 +19,7 @@ if (!$teacher_id) {
 $filter_day = $_GET['day'] ?? 'all';
 
 try {
-    // 🎯 Fetch all assigned students for this teacher
+    // Fetch all assigned students for this teacher
     $stmt = $pdo->prepare("
         SELECT cs.class_id, s.student_id, s.studentCode, s.Firstname, s.Lastname, cs.level
         FROM class_students cs
@@ -33,7 +33,7 @@ try {
     $assigned = [];
 
     foreach ($students as $st) {
-        // 📅 Fetch their schedules
+        // Fetch their schedules
         $schedStmt = $pdo->prepare("
             SELECT schedule_day, start_time, end_time 
             FROM class_schedules 
@@ -43,7 +43,7 @@ try {
         $schedStmt->execute([$st['class_id']]);
         $schedules = $schedStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // 🕒 Format each schedule
+        // Format each schedule
         $schedFormatted = [];
         $days = [];
 
@@ -55,7 +55,7 @@ try {
             $days[] = strtolower($day);
         }
 
-        // 🧭 Apply filter if needed
+        // Apply filter if needed
         if ($filter_day !== 'all' && !in_array(strtolower($filter_day), $days)) {
             continue;
         }
@@ -77,4 +77,3 @@ try {
 } catch (Throwable $e) {
     jsonResponse(["success" => false, "message" => "Server error: " . $e->getMessage()]);
 }
-?>

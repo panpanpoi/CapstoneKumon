@@ -6,11 +6,11 @@ $student_id = $_SESSION['student_id'] ?? null;
 
 if (!$student_id) {
     // Optional safety fallback
-    die("❌ Error: Student ID not found in session.");
+    die(" Error: Student ID not found in session.");
 }
 
 try {
-    // ✅ Fetch full weekly schedule for the logged-in student
+    // Fetch full weekly schedule for the logged-in student
     $stmt = $pdo->prepare("
         SELECT 
             cs.schedule_day, 
@@ -31,7 +31,7 @@ try {
     $stmt->execute([$student_id]);
     $all_schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // ✅ Group schedules by day for easy rendering in HTML
+    // Group schedules by day for easy rendering in HTML
     $weekly_schedule = [];
     foreach ($all_schedules as $sched) {
         $day = $sched['schedule_day'];
@@ -42,7 +42,7 @@ try {
     }
 
 } catch (PDOException $e) {
-    // 🛑 Error logging (useful for debugging)
+    //  Error logging (useful for debugging)
     error_log("Error fetching schedule: " . $e->getMessage());
     $weekly_schedule = [];
 }

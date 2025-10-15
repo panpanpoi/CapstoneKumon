@@ -1,13 +1,10 @@
-// =========================================================
-// 🗑️ KUMON CLASS — REMOVE STUDENT SCRIPT (UPDATED)
-// =========================================================
-console.log("✅ kumonClassRemove.js loaded");
+console.log(" kumonClassRemove.js loaded");
 
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("removeStudentModal");
   const studentNameEl = document.getElementById("removeStudentName");
 
-  // ✅ HTML button IDs
+  // HTML button IDs
   const confirmBtn = document.getElementById("confirmRemoveBtn");
   const cancelBtn = document.getElementById("cancelRemoveBtn");
   const closeBtn = document.getElementById("closeRemoveModal");
@@ -15,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedStudentId = null;
   let selectedStudentRow = null; // Optional: reference to the student row in the table/list
 
-  // 🌟 Open modal with student info
+  // Open modal with student info
   window.openRemoveModal = function (studentId, studentName, rowEl = null) {
     selectedStudentId = studentId;
     selectedStudentRow = rowEl || null; // Pass the row element if available
@@ -23,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.style.display = "flex";
   };
 
-  // ❌ Close modal
+  // Close modal
   const closeModal = () => {
     modal.style.display = "none";
     selectedStudentId = null;
@@ -34,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btn) btn.addEventListener("click", closeModal);
   });
 
-  // ✅ Toast notification helper
+  //  Toast notification helper
   function showToast(message, success = true) {
     const toast = document.createElement("div");
     toast.className = `toast ${success ? "success" : "error"}`;
@@ -43,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // ✅ Confirm removal
+  //  Confirm removal
   if (confirmBtn) {
     confirmBtn.addEventListener("click", async () => {
       if (!selectedStudentId) return;
@@ -73,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         closeModal();
       } catch (err) {
-        console.error("❌ Error removing student:", err);
+        console.error("Error removing student:", err);
         showToast("An error occurred while removing the student.", false);
       }
     });

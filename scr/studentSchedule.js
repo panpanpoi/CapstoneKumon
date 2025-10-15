@@ -11,9 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     html: card.innerHTML.trim()
   }));
 
-  /**
-   * Utility: Creates a schedule panel
-   */
+  // Utility: Creates a schedule panel  
   function createPanel(title, innerHTML, isToday = false) {
     const panel = document.createElement("div");
     panel.className = "day-card";
@@ -25,9 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return panel;
   }
 
-  /**
-   * Show the entire week’s schedule
-   */
+
+   // Show the entire week’s schedule
   function renderWeekView() {
     scheduleContainer.innerHTML = "";
 
@@ -42,9 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setActiveButton(weekBtn);
   }
 
-  /**
-   * Show only today’s schedule
-   */
+  // Show only today's schedule
+ 
   function renderTodayView() {
     scheduleContainer.innerHTML = "";
 
@@ -56,10 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     scheduleContainer.appendChild(createPanel(todayName, content, true));
     setActiveButton(todayBtn);
   }
-
-  /**
-   * Toggle active button states
-   */
+  // Toggle active button styles
   function setActiveButton(activeBtn) {
     [weekBtn, todayBtn].forEach(btn => btn.classList.remove("active"));
     activeBtn.classList.add("active");

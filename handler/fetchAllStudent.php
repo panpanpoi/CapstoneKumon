@@ -4,7 +4,7 @@ if (!isset($_SESSION)) session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
-// ✅ Only allow teachers
+// Only allow teachers
 $teacher_id = $_SESSION['teacher_id'] ?? null;
 if (!$teacher_id) {
     echo json_encode(["success" => false, "message" => "Unauthorized access."]);

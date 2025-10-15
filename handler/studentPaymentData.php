@@ -13,13 +13,13 @@ if (!$student_id) {
 }
 
 try {
-    // 1️⃣ Fetch student's monthly fee
+    // Fetch student's monthly fee
     $stmt = $pdo->prepare("SELECT monthlyFee FROM students WHERE student_id = ?");
     $stmt->execute([$student_id]);
     $student = $stmt->fetch(PDO::FETCH_ASSOC);
     $monthlyFee = floatval($student['monthlyFee'] ?? 0);
 
-    // 2️⃣ Fetch all active payments up to today
+    // Fetch all active payments up to today
     $stmt = $pdo->prepare("
         SELECT payment_date, amount, payment_status, 
                COALESCE(payment_method, 'N/A') AS payment_method,
@@ -32,7 +32,7 @@ try {
     $stmt->execute([$student_id]);
     $all_payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 3️⃣ Filter payments for current month & track balances
+    // Filter payments for current month & track balances
     $currentMonth = date('m');
     $currentYear = date('Y');
 
@@ -65,19 +65,19 @@ try {
         }
     }
 
-    // 4️⃣ Compute remaining balance
+    // Compute remaining balance
     $remaining_balance = max($monthlyFee - $total_this_month, 0);
 
-    // 5️⃣ Fully paid flag
+    // Fully paid flag
     $fully_paid = ($remaining_balance == 0);
 
-    // 6️⃣ Next due date = first day of next month
+    // Next due date = first day of next month
     $next_due = date('F j, Y', strtotime("first day of next month"));
 
-    // 7️⃣ Payment reminder logic
+    // Payment reminder logic
     $shouldNotify = (date('j') >= 24 && !$fully_paid);
 
-    // 8️⃣ Return structured data
+    // Return structured data
     return [
         'payments' => $payments_this_month,
         'total_paid' => $total_this_month,

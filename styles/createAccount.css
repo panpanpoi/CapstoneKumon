@@ -1,4 +1,4 @@
-/* === Main Form Layout === */
+/* Main Form Layout */
 .main-content {
     padding: 30px;
     background: #121212; /* Match sidebar dark tone */
@@ -6,7 +6,7 @@
     color: #fff;
 }
 
-/* === Header === */
+/* Header */
 .header h1 {
     text-align: center;
     font-size: 28px;
@@ -16,7 +16,7 @@
     letter-spacing: 1px;
 }
 
-/* === Form Container === */
+/* Form Container */
 main form {
     background: #1e1e1e;
     padding: 25px;
@@ -26,7 +26,7 @@ main form {
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
 
-/* === Section Titles === */
+/* Section Titles */
 main h3 {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -36,7 +36,7 @@ main h3 {
     padding-bottom: 5px;
 }
 
-/* === Labels === */
+/* Labels */
 form label {
     display: block;
     margin: 8px 0 4px;
@@ -44,7 +44,7 @@ form label {
     color: #ddd;
 }
 
-/* === Inputs === */
+/* Inputs */
 form input[type="text"],
 form input[type="password"],
 form input[type="number"],
@@ -65,7 +65,7 @@ form input:focus {
     box-shadow: 0 0 6px rgba(77,166,255,0.4);
 }
 
-/* === Radio Groups === */
+/* Radio Groups */
 #accountType label,
 #subject label,
 #student-plan label {
@@ -80,7 +80,7 @@ input[type="radio"] {
     accent-color: #4da6ff; /* Modern browsers */
 }
 
-/* === Submit Button === */
+/* Submit Button */
 form button {
     margin-top: 25px;
     width: 100%;
@@ -99,7 +99,7 @@ form button:hover {
     background: #3385cc;
 }
 
-/* === Responsive Layout === */
+/* Responsive Layout */
 @media (max-width: 768px) {
     main form {
         padding: 20px;

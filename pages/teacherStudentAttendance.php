@@ -2,7 +2,7 @@
 require_once "../database.php";
 session_start();
 
-// ✅ Ensure teacher is logged in
+// Only allow teachers
 $teacher_id = $_SESSION['teacher_id'] ?? null;
 if (!$teacher_id) {
     header("Location: ../pages/loginform.php");

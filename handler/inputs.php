@@ -9,12 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 try {
-    // -------------------------
     // Collect and sanitize inputs
-    // -------------------------
     $accountType   = trim($_POST['account_type'] ?? '');
     $firstName     = trim($_POST['fname'] ?? '');
-    $middleName    = trim($_POST['mname'] ?? '');  // ✅ only in users table
+    $middleName    = trim($_POST['mname'] ?? '');  // only in users table
     $lastName      = trim($_POST['lname'] ?? '');
     $contactNumber = trim($_POST['contact'] ?? '');
     $street        = trim($_POST['street'] ?? '');
@@ -26,9 +24,7 @@ try {
     $address = trim("$street, $city, $state");
     $year    = date("Y");
 
-    // -------------------------
     // Validation
-    // -------------------------
     if (!$accountType || !$firstName || !$lastName) {
         throw new Exception("Missing required fields.");
     }
@@ -36,9 +32,7 @@ try {
         throw new Exception("Please select a plan for the student.");
     }
 
-    // -------------------------
     // Insert base user record
-    // -------------------------
     $stmt = $pdo->prepare("
         INSERT INTO users
         (account_type, Name, middleName, Surname, Address, username, password, subject, mobileNumber)
@@ -56,9 +50,7 @@ try {
 
     $user_id = $pdo->lastInsertId();
 
-    // -------------------------
-    // STUDENT
-    // -------------------------
+    // Student
     if ($accountType === "student") {
         // Get the latest code for the current year
         $stmt = $pdo->prepare("SELECT MAX(studentCode) FROM students WHERE studentCode LIKE ?");
@@ -105,15 +97,13 @@ try {
         $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE user_id = ?");
         $stmt->execute([$username, $password, $user_id]);
 
-        $_SESSION['success'] = "✅ Student created!<br>
+        $_SESSION['success'] = "Student created!<br>
             Username: <b>$username</b><br>
             Password: <b>$passwordPlain</b><br>
             Student Code: <b>$studentCode</b>";
     }
 
-    // -------------------------
-    // TEACHER
-    // -------------------------
+    // Teacher
     if ($accountType === "teacher") {
         $stmt = $pdo->prepare("SELECT MAX(teacherCode) FROM teachers WHERE teacherCode LIKE ?");
         $stmt->execute(["KTEA$year%"]);
@@ -147,15 +137,13 @@ try {
         $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE user_id = ?");
         $stmt->execute([$username, $password, $user_id]);
 
-        $_SESSION['success'] = "✅ Teacher created!<br>
+        $_SESSION['success'] = "Teacher created!<br>
             Username: <b>$username</b><br>
             Password: <b>$passwordPlain</b><br>
             Teacher Code: <b>$teacherCode</b>";
     }
 
-    // -------------------------
-    // ADMIN
-    // -------------------------
+    // Admin
     if ($accountType === "admin") {
         $username      = strtolower($lastName) . "admin";
         $passwordPlain = strtolower($lastName) . "kumon";
@@ -164,7 +152,7 @@ try {
         $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE user_id = ?");
         $stmt->execute([$username, $password, $user_id]);
 
-        $_SESSION['success'] = "✅ Admin created!<br>
+        $_SESSION['success'] = "Admin created!<br>
             Username: <b>$username</b><br>
             Password: <b>$passwordPlain</b>";
     }
@@ -173,7 +161,7 @@ try {
     exit;
 
 } catch (Exception $e) {
-    $_SESSION['error'] = "❌ " . $e->getMessage();
+    $_SESSION['error'] = $e->getMessage();
     header("Location: ../pages/createAccount.php");
     exit;
 }

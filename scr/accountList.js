@@ -13,7 +13,7 @@
   const editForm = document.getElementById('editUserForm');
   const closeBtn = document.querySelector('.close-btn');
 
-  // --- Flash messaging ---
+  // Flash messaging
   function flash(msg) {
     if (!flashEl) return;
     flashEl.textContent = msg;
@@ -23,7 +23,7 @@
     }, 2500);
   }
 
-  // --- Sidebar dropdown toggle ---
+  // Sidebar dropdown toggle
   document.querySelectorAll('.subnavbtn').forEach(btn => {
     btn.addEventListener('click', () => {
       btn.nextElementSibling?.classList.toggle('show');
@@ -31,7 +31,7 @@
     });
   });
 
-  // --- Floating Edit Panel ---
+  // Floating Edit Panel
   function openPanel() {
     editPanel?.classList.add('show');
   }
@@ -40,7 +40,7 @@
   }
   closeBtn?.addEventListener('click', closePanel);
 
-  // --- Load users ---
+  // Load users
   async function loadData(search = '', archived = 0, page = 1) {
     currentArchived = archived;
     currentPage = page;
@@ -60,7 +60,7 @@
     }
   }
 
-  // --- Render user table ---
+  // Render user table
   function renderTable(users) {
     if (!tbody) return;
     tbody.innerHTML = '';
@@ -92,7 +92,7 @@
     });
   }
 
-  // --- Table actions ---
+  // Table actions
   tbody?.addEventListener('click', e => {
     const el = e.target;
     if (el.matches('.btn-delete')) {
@@ -104,7 +104,7 @@
     }
   });
 
-  // --- Open edit panel ---
+  // Open edit panel
   async function openEditPanel(id) {
     try {
       const resp = await fetch(`${API}getUser.php?id=${encodeURIComponent(id)}`);
@@ -134,7 +134,7 @@
     }
   }
 
-  // --- Toggle password fields ---
+  // Toggle password fields
   function togglePasswordFields() {
     const changePasswordCheckbox = editForm.change_password;
     const passwordFields = document.querySelector('.password-fields');
@@ -152,10 +152,10 @@
     }
   }
 
-  // --- Password change checkbox event ---
+  // Password change checkbox event
   editForm.change_password?.addEventListener('change', togglePasswordFields);
 
-  // --- Submit edit form ---
+  // Submit edit form
   editForm?.addEventListener('submit', async e => {
     e.preventDefault();
     
@@ -199,7 +199,7 @@
     }
   });
 
-  // --- Archive / Restore ---
+  // Archive / Restore
   async function updateStatus(id, status, successMsg) {
     try {
       const resp = await fetch(`${API}updateUserStatus.php`, {
@@ -218,7 +218,7 @@
     }
   }
 
-  // --- Filters ---
+  // Filters
   function setActiveFilterButton(id) {
     document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
     document.getElementById(id)?.classList.add('active');
@@ -233,12 +233,12 @@
     loadData(searchInput.value || '', 1, 1);
   });
 
-  // --- Search input ---
+  // Search input
   searchInput?.addEventListener('input', debounce(() => {
     loadData(searchInput.value || '', currentArchived, 1);
   }, 250));
 
-  // --- Pagination ---
+  // Pagination
   function renderPagination(pagination) {
     const container = document.getElementById('pagination');
     if (!container || !pagination) return;
@@ -262,7 +262,7 @@
     }
   });
 
-  // --- Utils ---
+  // Utils
   function debounce(fn, wait = 200) {
     let t;
     return (...args) => {
@@ -281,7 +281,7 @@
       .replace(/'/g, '&#039;');
   }
 
-  // --- Initial load ---
+  // Initial load
   loadData('', 0, 1);
 
 })();

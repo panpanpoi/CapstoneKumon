@@ -3,6 +3,7 @@ require_once "../database.php";
 
 $q = $_GET['q'] ?? '';
 
+// Only search if query is at least 2 characters
 if (strlen($q) >= 2) {
     $stmt = $pdo->prepare("
         SELECT student_id, studentCode, Firstname, Lastname
@@ -17,7 +18,7 @@ if (strlen($q) >= 2) {
         $code = $row['studentCode'];
         $name = $row['Firstname'] . " " . $row['Lastname'];
 
-        // safely encode for JS
+        // Encode values for JavaScript
         $jsCode = json_encode($code);
         $jsName = json_encode($name);
 

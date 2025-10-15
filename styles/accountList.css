@@ -1,4 +1,4 @@
-/* === Account List Table Styling === */
+/*  Account List Table Styling  */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -7,13 +7,13 @@ table {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  font-family: Verdana, Arial, sans-serif; /* Consistent font */
+  font-family: Verdana, Arial, sans-serif; 
 }
 
 /* Table Head */
 #userTable th {
   background: #007BFF;
-  color: #fff !important;   /* White text for contrast */
+  color: #fff !important;   
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -27,7 +27,7 @@ table {
   padding: 12px 15px;
   text-align: center;
   font-size: 14px;
-  color: #000 !important;   /* ✅ Black text */
+  color: #000 !important;   
 }
 
 /* Zebra Stripes */
@@ -38,7 +38,7 @@ table {
 /* Hover Effect */
 #userTable tr:hover {
   background: #f1f7ff;
-  color: #000 !important;  /* Keep text black */
+  color: #000 !important;  
 }
 
 /* Flash Message */
@@ -70,7 +70,7 @@ table {
   box-shadow: 0 0 5px rgba(0,123,255,0.4);
 }
 
-/* === Action Buttons (KEEP COLORS) === */
+/*  Action Buttons */
 .btn-edit {
   background: #ffc107;
   color: #000;

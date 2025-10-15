@@ -2,7 +2,7 @@
 require_once "../database.php";
 require_once "../handler/auth.php";
 
-header('Content-Type: application/json'); // ✅ Always JSON
+header('Content-Type: application/json'); 
 
 if ($_SESSION['account_type'] !== 'teacher') {
     http_response_code(403);

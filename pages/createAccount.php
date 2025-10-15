@@ -1,18 +1,18 @@
 <?php
 require_once "../handler/auth.php"; 
 
-// ✅ Only allow admins
+// Only allow admins
 if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
     header("Location: loginform.php");
     exit;
 }
 
-// ✅ User session data
+// User session data
 $username   = $_SESSION['username'];              
 $userRole   = ucfirst($_SESSION['account_type']); 
 $initials   = $_SESSION['initials'];              
 
-// ✅ Flash messages
+// Flash messages
 $successMsg = $_SESSION['success'] ?? null;
 $errorMsg   = $_SESSION['error'] ?? null;
 unset($_SESSION['success'], $_SESSION['error']);
@@ -30,7 +30,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 </head>
 <body>
 
-    <!-- ✅ Sidebar -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <a href="kumonAdmin.php">
@@ -39,7 +39,7 @@ unset($_SESSION['success'], $_SESSION['error']);
             <p>Practice Makes Possibilities</p>
         </div>
 
-        <!-- ✅ User Profile -->
+        <!-- User Profile -->
         <div class="user-profile"> 
             <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
             <div class="user-details">
@@ -48,7 +48,7 @@ unset($_SESSION['success'], $_SESSION['error']);
             </div>
         </div>
 
-        <!-- ✅ Navigation -->
+        <!-- Navigation -->
         <ul class="nav-menu">
             <li><a href="kumonAdmin.php"><i class="fa fa-home"></i> Home</a></li>
             <li class="subnav">
@@ -75,7 +75,7 @@ unset($_SESSION['success'], $_SESSION['error']);
         </ul>
     </div>
 
-    <!-- ✅ Main Content -->
+    <!-- Main Content -->
     <div class="main-content">
         <div class="header">
             <div class="header-right">
@@ -93,7 +93,7 @@ unset($_SESSION['success'], $_SESSION['error']);
         <main>
             <h2>Create New Account</h2>
 
-            <!-- ✅ Flash Messages -->
+            <!-- Flash Messages -->
             <?php if ($successMsg): ?>
                 <div class="alert success"><?= $successMsg ?></div>
             <?php endif; ?>
@@ -101,7 +101,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <div class="alert error"><?= $errorMsg ?></div>
             <?php endif; ?>
 
-            <!-- ✅ Account Form -->
+            <!-- Account Form -->
             <form action="../handler/inputs.php" method="POST" class="account-form">
 
                 <!-- Account Type -->
@@ -175,7 +175,7 @@ unset($_SESSION['success'], $_SESSION['error']);
         </main>
     </div>
 
-    <!-- ✅ External JS -->
+    <!-- External JS -->
     <script src="../scr/createAccount.js"></script>
 </body>
 </html>

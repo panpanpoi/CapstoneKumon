@@ -14,14 +14,14 @@ if (empty($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
     exit;
 }
 
-// ✅ Get filter: 'active' or 'archived'
+// Get filter: 'active' or 'archived'
 $status = $_GET['status'] ?? 'active';
 if (!in_array($status, ['active', 'archived'])) {
     $status = 'active';
 }
 
 try {
-    // 🧾 Fetch payments with student details
+    // Fetch payments with student details
     $stmt = $pdo->prepare("
         SELECT 
             p.payment_id,

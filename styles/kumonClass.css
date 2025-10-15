@@ -1,10 +1,5 @@
-/* =========================================================
-   🎓 KUMON CLASS PAGE STYLES
-   Used together with kumonTeacher.css
-   Adjust values below as needed — notes provided.
-   ========================================================= */
 
-/* ========== MAIN LAYOUT ========== */
+/*  MAIN LAYOUT  */
 .main-content {
   flex: 1;
   background: #f7f8fa;
@@ -14,7 +9,7 @@
   padding: 0;
 }
 
-/* ========== HEADER ========== */
+/*  HEADER  */
 .header {
   display: flex;
   align-items: center;
@@ -51,7 +46,7 @@
   font-weight: 600;
 }
 
-/* ========== MAIN PANEL ========== */
+/*  MAIN PANEL  */
 .main_panel {
   padding: 20px;
   flex: 1;
@@ -65,7 +60,7 @@
   margin-top: 10px;
 }
 
-/* ========== SECTION HEADER ========== */
+/*  SECTION HEADER  */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -82,7 +77,7 @@
   gap: 6px;
 }
 
-/* ========== FILTER + BUTTONS ========== */
+/*  FILTER + BUTTONS  */
 .filter-actions {
   display: flex;
   align-items: center;
@@ -163,7 +158,7 @@
   background: #ddd;
 }
 
-/* ========== TABLE ========== */
+/*  TABLE  */
 .assigned-table-container {
   overflow-x: auto;
   border-radius: 10px;
@@ -202,7 +197,7 @@
   color: #999;
 }
 
-/* ========== REMOVE BUTTON (Red Styling for Table) ========== */
+/*  REMOVE BUTTON (Red Styling for Table)  */
 .btn-remove {
   background: #dc3545 !important;
   color: #fff !important;
@@ -224,7 +219,7 @@
   box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
 }
 
-/* ========== MODAL ========== */
+/*  MODAL  */
 .modal {
   display: none;
   position: fixed;
@@ -319,7 +314,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ========== TOM SELECT ========== */
+/*  TOM SELECT  */
 .ts-dropdown {
   background: #fff !important;
   border: 1px solid #ccc !important;
@@ -364,7 +359,7 @@
   box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2) !important;
 }
 
-/* ========== 🔴 Red "Remove" button for MODAL ========== */
+/*  🔴 Red "Remove" button for MODAL  */
 .btn-remove-danger {
   background-color: #e74c3c;
   color: white;

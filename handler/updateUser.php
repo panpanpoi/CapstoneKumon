@@ -10,7 +10,7 @@ try {
 }
 
 try {
-    // --- Get POST data from JS ---
+    // Get POST data from JS 
     $id       = $_POST['user_id'] ?? null;
     $name     = $_POST['Name'] ?? null;
     $surname  = $_POST['Surname'] ?? null;
@@ -20,18 +20,18 @@ try {
     $changePassword = isset($_POST['change_password']);
     $newPassword = $_POST['new_password'] ?? null;
 
-    // --- Validate ---
+    //  Validate 
     if (!$id) throw new Exception("User ID is required.");
     if (!$name || !$surname) throw new Exception("Name and surname are required.");
     if (!$account) throw new Exception("Account type is required.");
 
-    // --- Password validation if changing password ---
+    //  Password validation if changing password 
     if ($changePassword) {
         if (!$newPassword) throw new Exception("New password is required when changing password.");
         if (strlen($newPassword) < 6) throw new Exception("Password must be at least 6 characters long.");
     }
 
-    // --- Build update query ---
+    //  Build update query 
     $updateFields = [
         'Name = :name',
         'Surname = :surname', 

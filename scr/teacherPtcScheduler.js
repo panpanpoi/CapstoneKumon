@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchAndRenderSchedules();
 });
 
-// ===============================
+
 // Fetch schedules from server
-// ===============================
+
 async function fetchAndRenderSchedules() {
     try {
         const res = await fetch("../handler/ptcSchedule.php");
@@ -81,9 +81,9 @@ async function fetchAndRenderSchedules() {
     }
 }
 
-// ===============================
+
 // Initialize dynamic events
-// ===============================
+
 function initDynamicEvents() {
     const activeTableBody = document.querySelector(".schedule-section:nth-of-type(1) .schedule-table tbody");
 
@@ -146,9 +146,9 @@ function initDynamicEvents() {
     });
 }
 
-// ===============================
+
 // Mark schedule as done
-// ===============================
+
 async function markScheduleDone(button, scheduleId) {
     try {
         setButtonLoading(button, true);
@@ -171,9 +171,9 @@ async function markScheduleDone(button, scheduleId) {
     }
 }
 
-// ===============================
+
 // Delete schedule
-// ===============================
+
 async function deleteSchedule(button, scheduleId) {
     try {
         setButtonLoading(button, true);
@@ -197,9 +197,9 @@ async function deleteSchedule(button, scheduleId) {
     }
 }
 
-// ===============================
+
 // Move schedule to Done table
-// ===============================
+
 function moveToDoneTable(scheduleId, data) {
     const row = document.querySelector(`tr[data-schedule-id='${scheduleId}']`);
     if (!row) return;
@@ -227,9 +227,9 @@ function moveToDoneTable(scheduleId, data) {
     initDynamicEvents();
 }
 
-// ===============================
+
 // Helper functions
-// ===============================
+
 function setButtonLoading(button, loading) {
     if (loading) {
         button.disabled = true;
