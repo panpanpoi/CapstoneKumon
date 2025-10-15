@@ -64,7 +64,9 @@ async function fetchAndRenderSchedules() {
                     <td><span class="status-${status}">${capitalize(status)}</span></td>
                     <td>${student}</td>
                     <td class="actions-cell">
-                        ${status === "booked" ? `<button class="btn-done" data-schedule-id="${schedule.schedule_id}"><i class="fa fa-check"></i> Done</button>` : `<span class="locked-status">No actions</span>`}
+                        ${status === "booked" 
+                            ? `<button class="btn-done" data-schedule-id="${schedule.schedule_id}"><i class="fa fa-check"></i> Done</button>` 
+                            : `<button class="btn-delete" data-schedule-id="${schedule.schedule_id}"><i class="fa fa-trash"></i> Delete</button>`}
                     </td>
                 `;
                 activeTableBody.appendChild(tr);
@@ -88,31 +90,21 @@ function initDynamicEvents() {
     // Done button click
     if (activeTableBody) {
         activeTableBody.addEventListener("click", async (e) => {
-            const btn = e.target.closest(".btn-done");
-            if (!btn) return;
-            e.preventDefault();
+            const btnDone = e.target.closest(".btn-done");
+            const btnDelete = e.target.closest(".btn-delete");
 
-            const scheduleId = btn.dataset.scheduleId;
-            if (!confirm("Mark this PTC meeting as done?")) return;
+            if (btnDone) {
+                e.preventDefault();
+                const scheduleId = btnDone.dataset.scheduleId;
+                if (!confirm("Mark this PTC meeting as done?")) return;
+                await markScheduleDone(btnDone, scheduleId);
+            }
 
-            try {
-                setButtonLoading(btn, true);
-                const data = await postData("../handler/ptcSchedule.php", {
-                    mark_done: 1,
-                    schedule_id: scheduleId
-                });
-
-                if (data.status === "success") {
-                    showAlert("success", "✅ Schedule marked as done!");
-                    moveToDoneTable(scheduleId, data);
-                } else {
-                    showAlert("error", "❌ Error: " + (data.message || "Failed to mark as done."));
-                }
-            } catch (err) {
-                console.error(err);
-                showAlert("error", "❌ Connection or JSON error. Check console.");
-            } finally {
-                setButtonLoading(btn, false);
+            if (btnDelete) {
+                e.preventDefault();
+                const scheduleId = btnDelete.dataset.scheduleId;
+                if (!confirm("Are you sure you want to delete this open schedule?")) return;
+                await deleteSchedule(btnDelete, scheduleId);
             }
         });
     }
@@ -155,6 +147,57 @@ function initDynamicEvents() {
 }
 
 // ===============================
+// Mark schedule as done
+// ===============================
+async function markScheduleDone(button, scheduleId) {
+    try {
+        setButtonLoading(button, true);
+        const data = await postData("../handler/ptcSchedule.php", {
+            mark_done: 1,
+            schedule_id: scheduleId
+        });
+
+        if (data.status === "success") {
+            showAlert("success", "✅ Schedule marked as done!");
+            moveToDoneTable(scheduleId, data);
+        } else {
+            showAlert("error", "❌ Error: " + (data.message || "Failed to mark as done."));
+        }
+    } catch (err) {
+        console.error(err);
+        showAlert("error", "❌ Connection or JSON error. Check console.");
+    } finally {
+        setButtonLoading(button, false);
+    }
+}
+
+// ===============================
+// Delete schedule
+// ===============================
+async function deleteSchedule(button, scheduleId) {
+    try {
+        setButtonLoading(button, true);
+        const data = await postData("../handler/ptcSchedule.php", {
+            delete_schedule: 1,
+            schedule_id: scheduleId
+        });
+
+        if (data.status === "success") {
+            const row = document.querySelector(`tr[data-schedule-id='${scheduleId}']`);
+            if (row) row.remove();
+            showAlert("success", "✅ Schedule deleted successfully!");
+        } else {
+            showAlert("error", "❌ Error deleting schedule: " + (data.message || "Unknown error"));
+        }
+    } catch (err) {
+        console.error(err);
+        showAlert("error", "❌ Connection or JSON error. Try again.");
+    } finally {
+        setButtonLoading(button, false);
+    }
+}
+
+// ===============================
 // Move schedule to Done table
 // ===============================
 function moveToDoneTable(scheduleId, data) {
@@ -191,11 +234,13 @@ function setButtonLoading(button, loading) {
     if (loading) {
         button.disabled = true;
         button.classList.add("btn-pulse");
-        button.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Marking...`;
+        if (button.classList.contains("btn-done")) button.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Marking...`;
+        if (button.classList.contains("btn-delete")) button.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Deleting...`;
     } else {
         button.disabled = false;
         button.classList.remove("btn-pulse");
-        button.innerHTML = `<i class="fa fa-check"></i> Done`;
+        if (button.classList.contains("btn-done")) button.innerHTML = `<i class="fa fa-check"></i> Done`;
+        if (button.classList.contains("btn-delete")) button.innerHTML = `<i class="fa fa-trash"></i> Delete`;
     }
 }
 

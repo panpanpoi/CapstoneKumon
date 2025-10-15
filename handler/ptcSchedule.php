@@ -197,29 +197,41 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
     exit;
 }
 
+/// ===========================
+// DELETE SCHEDULE
 // ===========================
-// 5️⃣ DELETE SCHEDULE
-// ===========================
-if (isset($_GET["delete"])) {
-    $id = intval($_GET["delete"]);
+if (isset($_POST['delete_schedule']) && isset($_POST['schedule_id'])) {
+    $schedule_id = intval($_POST['schedule_id']);
 
     try {
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM ptc_bookings WHERE schedule_id=? AND status='booked'");
-        $stmt->execute([$id]);
+        // Check if schedule exists, belongs to this teacher, and is open
+        $stmt = $pdo->prepare("SELECT status FROM ptc_schedules WHERE schedule_id=? AND teacher_id=?");
+        $stmt->execute([$schedule_id, $teacher_id]);
+        $schedule = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($stmt->fetchColumn() > 0) {
-            $_SESSION["error"] = "⚠️ Cannot delete. Schedule is booked.";
-        } else {
-            $pdo->prepare("DELETE FROM ptc_bookings WHERE schedule_id=?")->execute([$id]);
-            $pdo->prepare("DELETE FROM ptc_schedules WHERE schedule_id=? AND teacher_id=?")->execute([$id, $teacher_id]);
-            $_SESSION["success"] = "✅ Schedule deleted successfully.";
+        if (!$schedule) {
+            echo json_encode(["status" => "error", "message" => "Schedule not found."]);
+            exit;
         }
-    } catch (Exception $e) {
-        $_SESSION["error"] = "❌ Database error: ".$e->getMessage();
-    }
 
-    header("Location: ../pages/teacherPtcScheduler.php");
-    exit;
+        if ($schedule['status'] !== "open") {
+            echo json_encode(["status" => "error", "message" => "Only open schedules can be deleted."]);
+            exit;
+        }
+
+        // Delete from ptc_bookings first (should be empty but safe)
+        $pdo->prepare("DELETE FROM ptc_bookings WHERE schedule_id=?")->execute([$schedule_id]);
+
+        // Delete the schedule
+        $pdo->prepare("DELETE FROM ptc_schedules WHERE schedule_id=? AND teacher_id=?")->execute([$schedule_id, $teacher_id]);
+
+        echo json_encode(["status" => "success", "message" => "Schedule deleted successfully."]);
+        exit;
+
+    } catch (PDOException $e) {
+        echo json_encode(["status" => "error", "message" => "Database error: " . $e->getMessage()]);
+        exit;
+    }
 }
 
 // ===========================

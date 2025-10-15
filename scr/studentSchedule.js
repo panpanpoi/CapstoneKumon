@@ -5,43 +5,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const scheduleContainer = document.querySelector(".schedule-container");
   const allCards = document.querySelectorAll(".day-card");
 
-  // Extract each day's HTML (so PHP doesn't have to rerender)
+  // Extract each day's HTML (from PHP)
   const dayData = Array.from(allCards).map(card => ({
     day: card.dataset.day,
     html: card.innerHTML.trim()
   }));
 
   /**
-   * Utility: Creates a schedule panel with a title and inner content
+   * Utility: Creates a schedule panel
    */
-  function createPanel(title, innerHTML) {
+  function createPanel(title, innerHTML, isToday = false) {
     const panel = document.createElement("div");
     panel.className = "day-card";
-    panel.innerHTML = `
-      <h3>${title}</h3>
-      ${innerHTML}
-    `;
+    panel.innerHTML = `<h3>${title}</h3>${innerHTML}`;
+    
+    if (isToday) {
+      panel.querySelectorAll(".inner-day").forEach(div => div.classList.add("today"));
+    }
     return panel;
   }
 
   /**
-   * Show the entire week’s schedule in one card
+   * Show the entire week’s schedule
    */
   function renderWeekView() {
     scheduleContainer.innerHTML = "";
 
+    // Use HTML directly from PHP to avoid duplication
     const weekHTML = dayData
-      .map(({ day, html }) => {
-        const content = html.includes("<li>")
-          ? html
-          : `<p class="no-class-msg">No classes this day</p>`;
-        return `
-          <div class="inner-day">
-            <h4>${day}</h4>
-            ${content}
-          </div>
-        `;
-      })
+      .map(d => d.html || `<p class="no-class-msg">No classes this day</p>`)
       .join("");
 
     const weekPanel = createPanel("Entire Week", weekHTML);
@@ -50,26 +42,18 @@ document.addEventListener("DOMContentLoaded", () => {
     setActiveButton(weekBtn);
   }
 
-  
-    // Show only today’s schedule in a single card
+  /**
+   * Show only today’s schedule
+   */
   function renderTodayView() {
     scheduleContainer.innerHTML = "";
 
-    const todayData = dayData.find(d => d.day === todayName);
-    if (!todayData) {
-      scheduleContainer.appendChild(
-        createPanel(todayName, `<p class="no-class-msg">No classes today</p>`)
-      );
-      setActiveButton(todayBtn);
-      return;
-    }
-
-    const hasClasses = todayData.html.includes("<li>");
-    const content = hasClasses
-      ? todayData.html
+    const todayDataObj = dayData.find(d => d.day === todayName);
+    const content = todayDataObj && todayDataObj.html.includes("<li>")
+      ? todayDataObj.html
       : `<p class="no-class-msg">No classes today</p>`;
 
-    scheduleContainer.appendChild(createPanel(todayName, content));
+    scheduleContainer.appendChild(createPanel(todayName, content, true));
     setActiveButton(todayBtn);
   }
 
@@ -81,17 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
     activeBtn.classList.add("active");
   }
 
-  /**
-   * Initialize: auto-detect whether to show today or the full week
-   */
-  const todayHasClass = dayData.some(
-    d => d.day === todayName && d.html.includes("<li>")
-  );
-
+  // Auto-detect initial view
+  const todayHasClass = dayData.some(d => d.day === todayName && d.html.includes("<li>"));
   if (todayHasClass) renderTodayView();
   else renderWeekView();
 
-  // Button Event Listeners
+  // Button listeners
   weekBtn.addEventListener("click", renderWeekView);
   todayBtn.addEventListener("click", renderTodayView);
 });

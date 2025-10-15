@@ -4,9 +4,10 @@ if (!isset($_SESSION)) session_start();
 
 header("Content-Type: application/json; charset=utf-8");
 
-$teacher_id = $_SESSION['teacher_id'] ?? null;
+// ✅ Force numeric IDs
+$teacher_id = isset($_SESSION['teacher_id']) ? (int)$_SESSION['teacher_id'] : null;
 $action     = $_POST['action'] ?? null;
-$student_id = $_POST['student_id'] ?? null;
+$student_id = isset($_POST['student_id']) ? (int)$_POST['student_id'] : null;
 $level      = $_POST['level'] ?? null;
 
 if (!$teacher_id) {
@@ -56,21 +57,38 @@ try {
         $getClass->execute([$teacher_id, $student_id]);
         $class = $getClass->fetch(PDO::FETCH_ASSOC);
 
-        if ($class) {
-            $class_id = $class['class_id'];
-            // Delete schedules
+        if (!$class) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Student not found in your class.",
+                "teacher_id" => $teacher_id,
+                "student_id" => $student_id
+            ]);
+            exit;
+        }
+
+        $class_id = $class['class_id'];
+
+        // ✅ Transaction ensures both deletions succeed together
+        $pdo->beginTransaction();
+        try {
+            // Delete schedules first
             $delSched = $pdo->prepare("DELETE FROM class_schedules WHERE class_id = ?");
             $delSched->execute([$class_id]);
+
             // Delete student assignment
             $delStudent = $pdo->prepare("DELETE FROM class_students WHERE class_id = ?");
             $delStudent->execute([$class_id]);
 
+            $pdo->commit();
             echo json_encode(["success" => true, "message" => "🗑️ Student removed successfully."]);
             exit;
-        } else {
-            echo json_encode(["success" => false, "message" => "Student not found in your class."]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
             exit;
         }
+
     } else {
         echo json_encode(["success" => false, "message" => "Invalid action."]);
         exit;

@@ -128,8 +128,8 @@
 .btn.btn-primary:hover {
   background: #005ec4;
 }
-/* Attendance button */
-.btn.btn-attendance {
+/* Success button */
+.btn.btn-success {
   background: #14bb3b;
   border: none;
   color: white;
@@ -144,7 +144,7 @@
   white-space: nowrap;
   text-decoration: none;
 }
-.btn.btn-attendance:hover {
+.btn.btn-success:hover {
   background: #28a745;
 }
 
@@ -380,3 +380,17 @@
   background-color: #c0392b;
 }
 
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+  opacity: 0.95;
+}
+.toast.success { background-color: #4caf50; }
+.toast.error { background-color: #f44336; }

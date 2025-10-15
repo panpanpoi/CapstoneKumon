@@ -12,15 +12,13 @@ if (!$student_id) {
     exit;
 }
 
-// 1️⃣ Fetch student info
+// Fetch student info
 $stmt = $pdo->prepare("SELECT Firstname, Lastname FROM students WHERE student_id = ?");
 $stmt->execute([$student_id]);
 $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// 2️⃣ Full name & avatar initials
-function sentence_case($string) {
-    return ucfirst(strtolower($string));
-}
+// Full name & avatar initials
+function sentence_case($string) { return ucfirst(strtolower($string)); }
 $fullName = sentence_case($student['Firstname']) . " " . sentence_case($student['Lastname']);
 $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($student['Lastname'], 0, 1));
 
@@ -41,19 +39,14 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 </head>
 <body>
 <div class="dashboard">
-  
-        <button id="sidebarToggle" class="sidebar-toggle">
-        <div class="bar"></div>
-        </button>
+  <!-- Sidebar Toggle -->
+    <button id="sidebarToggle" class="sidebar-toggle"><div class="bar"></div></button>
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">
-      <a href="kumonStudent.php">
-        <img src="../styles/kumonLogo.png" alt="KUMON Logo">
-      </a>
+      <a href="kumonStudent.php"><img src="../styles/kumonLogo.png" alt="KUMON Logo"></a>
       <p>Practice Makes Possibilities</p>
     </div>
-
     <div class="user-profile">
       <div class="user-avatar"><?= $avatarInitials ?></div>
       <div class="user-details">
@@ -61,7 +54,6 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
         <div class="user-role">Student</div>
       </div>
     </div>
-
     <ul class="nav-menu">
       <li><a href="kumonStudent.php"><i class="fas fa-home"></i> Home</a></li>
       <li><a href="studentSchedules.php" class="active"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
@@ -70,42 +62,37 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
       <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
   </aside>
-  <div class="overlay" id="overlay"></div> <!-- Overlay for mobile menu -->
+  <div class="overlay" id="overlay"></div>
+
   <!-- Main Content -->
   <main class="main-content">
     <header class="header">
-      <h2>Weekly Schedule</h2>
+      <h2><i class="fas fa-calendar-alt"></i> Weekly Schedule</h2>
       <div class="filter-buttons">
         <button id="filter-week" class="filter-btn active">Entire Week</button>
         <button id="filter-today" class="filter-btn">Today</button>
       </div>
     </header>
 
-    <section class="schedule-container" id="schedule-container">
-      <div class="day-card" data-day="">
-        
-
-        <?php foreach ($daysOfWeek as $day): ?>
-          <div class="inner-day" data-day="<?= $day ?>">
-            <h4><?= $day ?></h4>
-            <?php if (!empty($weekly_schedule[$day])): ?>
-              <ul>
-                <?php foreach ($weekly_schedule[$day] as $sched): ?>
-                  <li>
-                    <strong><?= htmlspecialchars($sched['subject']) ?></strong> Teacher:
-                    <?= htmlspecialchars($sched['teacher_name'] . ' ' . $sched['teacher_surname']) ?><br>
-                    <?= date('g:i A', strtotime($sched['start_time'])) ?> - 
-                    <?= date('g:i A', strtotime($sched['end_time'])) ?>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            <?php else: ?>
-              <p class="no-class-msg">No classes this day</p>
-            <?php endif; ?>
-          </div>
-        <?php endforeach; ?>
-
-      </div>
+    <section class="schedule-container week-grid" id="schedule-container">
+      <?php foreach ($daysOfWeek as $day): ?>
+        <div class="day-card inner-day" data-day="<?= $day ?>">
+          <h4><?= $day ?></h4>
+          <?php if (!empty($weekly_schedule[$day])): ?>
+            <ul>
+              <?php foreach ($weekly_schedule[$day] as $sched): ?>
+                <li>
+                  <strong><?= htmlspecialchars($sched['subject']) ?></strong><br>
+                  Teacher: <?= htmlspecialchars($sched['teacher_name'] . ' ' . $sched['teacher_surname']) ?><br>
+                  <?= date('g:i A', strtotime($sched['start_time'])) ?> - <?= date('g:i A', strtotime($sched['end_time'])) ?>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          <?php else: ?>
+            <p class="no-class-msg">No classes this day</p>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
     </section>
   </main>
 </div>

@@ -50,7 +50,6 @@ $currentPage = basename(__FILE__);
       <ul class="nav-menu">
         <li><a href="kumonTeacher.php"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="kumonClass.php" class="active"><i class="fa fa-users"></i> My Class</a></li>
-        <li><a href="teacherStudentAttendance.php"><i class="fa fa-clipboard-list"></i> Attendance</a></li>
         <li><a href="teacherPtcScheduler.php"><i class="fa fa-calendar"></i> PTC Schedule</a></li>
         <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
       </ul>

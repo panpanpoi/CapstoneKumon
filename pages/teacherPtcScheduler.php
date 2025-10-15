@@ -10,6 +10,24 @@ if ($_SESSION['account_type'] !== 'teacher') {
 }
 
 $teacher_id = $_SESSION['teacher_id'];
+
+// --- Fetch Active Schedules ---
+try {
+    $stmt = $pdo->prepare("
+        SELECT s.schedule_id, s.date, s.start_time, s.end_time,
+               b.student_id, CONCAT(st.Firstname,' ',st.Lastname) AS studentName,
+               CASE WHEN b.status='booked' THEN 'Booked' ELSE 'Open' END AS status
+        FROM ptc_schedules s
+        LEFT JOIN ptc_bookings b ON s.schedule_id = b.schedule_id
+        LEFT JOIN students st ON b.student_id = st.student_id
+        WHERE s.teacher_id = ?
+        ORDER BY s.date, s.start_time
+    ");
+    $stmt->execute([$teacher_id]);
+    $activeSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $activeSchedules = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +110,27 @@ $teacher_id = $_SESSION['teacher_id'];
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Active schedules will be populated via JS -->
+                    <?php foreach($activeSchedules as $s): ?>
+                    <tr>
+                        <td><?= date("F j, Y", strtotime($s['date'])) ?></td>
+                        <td><?= date("g:i A", strtotime($s['start_time'])) ?> - <?= date("g:i A", strtotime($s['end_time'])) ?></td>
+                        <td><?= htmlspecialchars($s['status']) ?></td>
+                        <td><?= htmlspecialchars($s['studentName'] ?? '-') ?></td>
+                        <td>
+                            <?php if($s['status'] === 'Open'): ?>
+                                <!-- Delete button only for open schedules -->
+                                <button class="btn-delete" data-schedule-id="<?= $s['schedule_id'] ?>"><i class="fa fa-trash"></i> Delete</button>
+                            <?php else: ?>
+                                <button class="btn-delete disabled" disabled title="Cannot delete booked schedule">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if(empty($activeSchedules)): ?>
+                    <tr><td colspan="5" style="text-align:center;">No active schedules found.</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -110,7 +148,7 @@ $teacher_id = $_SESSION['teacher_id'];
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Done schedules will be populated via JS -->
+                    <!-- Populate via JS or PHP similar to above -->
                 </tbody>
             </table>
         </div>
@@ -121,5 +159,28 @@ $teacher_id = $_SESSION['teacher_id'];
 
 <!-- ===== JS ===== -->
 <script src="../scr/teacherPtcScheduler.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".btn-delete").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const scheduleId = btn.dataset.id;
+            if(!scheduleId) return;
+
+            if(!confirm("Are you sure you want to delete this schedule?")) return;
+
+            try {
+                const resp = await fetch("../handler/ptcSchedule.php?delete=" + scheduleId, {
+                    method: "GET"
+                });
+                // Reload page after deletion
+                location.reload();
+            } catch(err) {
+                alert("Error deleting schedule.");
+                console.error(err);
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

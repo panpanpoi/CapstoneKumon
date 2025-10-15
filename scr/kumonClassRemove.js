@@ -1,5 +1,5 @@
 // =========================================================
-// 🗑️ KUMON CLASS — REMOVE STUDENT SCRIPT (FIXED)
+// 🗑️ KUMON CLASS — REMOVE STUDENT SCRIPT (UPDATED)
 // =========================================================
 console.log("✅ kumonClassRemove.js loaded");
 
@@ -7,16 +7,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("removeStudentModal");
   const studentNameEl = document.getElementById("removeStudentName");
 
-  // ✅ match your HTML button IDs
+  // ✅ HTML button IDs
   const confirmBtn = document.getElementById("confirmRemoveBtn");
   const cancelBtn = document.getElementById("cancelRemoveBtn");
   const closeBtn = document.getElementById("closeRemoveModal");
 
   let selectedStudentId = null;
+  let selectedStudentRow = null; // Optional: reference to the student row in the table/list
 
-  // 🌟 Open the remove modal with name + ID
-  window.openRemoveModal = function (studentId, studentName) {
+  // 🌟 Open modal with student info
+  window.openRemoveModal = function (studentId, studentName, rowEl = null) {
     selectedStudentId = studentId;
+    selectedStudentRow = rowEl || null; // Pass the row element if available
     studentNameEl.textContent = studentName || "";
     modal.style.display = "flex";
   };
@@ -25,11 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModal = () => {
     modal.style.display = "none";
     selectedStudentId = null;
+    selectedStudentRow = null;
   };
 
   [closeBtn, cancelBtn].forEach((btn) => {
     if (btn) btn.addEventListener("click", closeModal);
   });
+
+  // ✅ Toast notification helper
+  function showToast(message, success = true) {
+    const toast = document.createElement("div");
+    toast.className = `toast ${success ? "success" : "error"}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
 
   // ✅ Confirm removal
   if (confirmBtn) {
@@ -47,19 +59,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const result = await response.json();
-        alert(result.message);
+        showToast(result.message, result.success);
 
+        // Remove the student row immediately if exists
+        if (selectedStudentRow && result.success) {
+          selectedStudentRow.remove();
+        }
+
+        // Refresh list if function exists
         if (result.success && typeof fetchAssignedStudents === "function") {
-          await fetchAssignedStudents(); // Refresh list
+          await fetchAssignedStudents();
         }
 
         closeModal();
       } catch (err) {
         console.error("❌ Error removing student:", err);
-        alert("An error occurred while removing the student.");
+        showToast("An error occurred while removing the student.", false);
       }
     });
   }
 
-  console.log("🗑️ kumonClassRemove.js initialized successfully");
+  console.log(" kumonClassRemove.js initialized successfully");
 });

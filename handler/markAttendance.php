@@ -2,34 +2,71 @@
 require_once "../database.php";
 session_start();
 
-$teacher_id = $_SESSION['teacher_id'] ?? null;
-$date = $_POST['date'] ?? null;
-
-if (!$teacher_id || !$date) {
-  exit("Missing required fields");
+// ✅ Ensure student is logged in
+if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'student') {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unauthorized access.'
+    ]);
+    exit;
 }
 
-// Fetch all students assigned under this teacher
-$stmt = $pdo->prepare("
-  SELECT cs.student_id, cs.class_id
-  FROM class_students cs
-  JOIN class_schedules c ON cs.class_id = c.class_id
-  WHERE c.teacher_id = ?
-");
-$stmt->execute([$teacher_id]);
-$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$student_id = $_POST['student_id'] ?? null;
+$class_id   = $_POST['class_id'] ?? null;
 
-if (empty($students)) exit("No assigned students found.");
-
-// Insert or update attendance
-foreach ($students as $s) {
-  $insert = $pdo->prepare("
-    INSERT INTO attendance (student_id, class_id, attendance_date, status, marked_by)
-    VALUES (?, ?, ?, 'Present', ?)
-    ON DUPLICATE KEY UPDATE status = 'Present'
-  ");
-  $insert->execute([$s['student_id'], $s['class_id'], $date, $teacher_id]);
+if (!$student_id || !$class_id) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Missing student or class information.'
+    ]);
+    exit;
 }
 
-echo "✅ Attendance marked successfully for {$date}";
+try {
+    // Check if attendance already exists for this student & class today
+    $stmtCheck = $pdo->prepare("
+        SELECT attendance_id, status 
+        FROM attendance 
+        WHERE student_id = ? 
+          AND class_id = ? 
+          AND attendance_date = CURDATE()
+    ");
+    $stmtCheck->execute([$student_id, $class_id]);
+    $existing = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if ($existing) {
+        if ($existing['status'] === 'Pending' || $existing['status'] === 'Present') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Attendance already recorded.'
+            ]);
+            exit;
+        }
+
+        // Update existing record to Pending
+        $stmt = $pdo->prepare("
+            UPDATE attendance
+            SET status = 'Pending'
+            WHERE attendance_id = ?
+        ");
+        $stmt->execute([$existing['attendance_id']]);
+    } else {
+        // Insert new attendance record with Pending status
+        $stmt = $pdo->prepare("
+            INSERT INTO attendance (student_id, class_id, status, attendance_date)
+            VALUES (?, ?, 'Pending', CURDATE())
+        ");
+        $stmt->execute([$student_id, $class_id]);
+    }
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Attendance marked as Pending.'
+    ]);
+} catch (PDOException $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Database error: ' . $e->getMessage()
+    ]);
+}
 ?>
