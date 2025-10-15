@@ -176,7 +176,7 @@ if (trim($avatarInitials) === '') {
                                         data-class-id="<?= htmlspecialchars($sched['class_id'] ?? '') ?>"
                                         data-student-id="<?= htmlspecialchars($student_id) ?>"
                                     >
-                                        <i class="fa fa-user-check"></i> Mark Present
+                                        <i class="fa fa-user-check"></i> Present
                                     </button>
                                 </li>
                             <?php endforeach; ?>

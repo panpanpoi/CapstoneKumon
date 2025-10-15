@@ -25,6 +25,11 @@ $initials   = $_SESSION['initials'];   // LR
 </head>
 
 <body>
+    
+<button id="sidebarToggle" class="sidebar-toggle">
+        <div class="bar"></div>
+    </button>
+
 <div class="sidebar">
     <div class="logo">
         <h1>
@@ -34,7 +39,6 @@ $initials   = $_SESSION['initials'];   // LR
             </h1>
         <p>Practice Makes Possibilities</p>
     </div>
-    
 
     <div class="user-profile"> 
         <div class="user-avatar">
@@ -53,6 +57,7 @@ $initials   = $_SESSION['initials'];   // LR
         <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </div>
+<div class="overlay" id="overlay"></div>
 
 <div class="main-content">
      <!-- 🔹 Flash success message -->
@@ -66,5 +71,7 @@ $initials   = $_SESSION['initials'];   // LR
     <h2>Welcome back Teacher, <?= htmlspecialchars($user['Name']); ?>!</h2>
    
 </div>
+
+<script src="../scr/sidebarToggle.js"></script>
 </body>
 </html>

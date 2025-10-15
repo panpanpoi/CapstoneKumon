@@ -32,7 +32,7 @@ try {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Teacher PTC Scheduler</title>
+<title>Kumon Teacher PTC Scheduler</title>
 <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
 <link rel="stylesheet" href="../styles/kumonTeacher.css">

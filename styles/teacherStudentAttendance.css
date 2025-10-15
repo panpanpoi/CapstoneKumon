@@ -141,6 +141,19 @@ body {
 .confirmBtn i {
   margin-right: 4px;
 }
+#loadDateBtn {
+  background-color: #28a745;
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+#loadDateBtn:hover {
+  background-color: #1e7e34;
+}
 
 .disabledBtn {
   background-color: #f0f0f0;

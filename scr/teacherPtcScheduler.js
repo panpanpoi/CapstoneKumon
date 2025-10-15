@@ -46,7 +46,7 @@ async function fetchAndRenderSchedules() {
                         <form class="inline-note-form">
                             <input type="hidden" name="schedule_id" value="${schedule.schedule_id}">
                             <input type="text" name="note" placeholder="Add note..." required>
-                            <button type="submit" class="btn-note"><i class="fa fa-sticky-note"></i></button>
+                            <button type="submit" class="btn-note"></button>
                         </form>
                     </td>
                 `;
