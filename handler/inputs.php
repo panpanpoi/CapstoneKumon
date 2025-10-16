@@ -33,11 +33,30 @@ try {
     }
 
     // Insert base user record
-    $stmt = $pdo->prepare("
-        INSERT INTO users
-        (account_type, Name, middleName, Surname, Address, username, password, subject, mobileNumber)
-        VALUES (:account_type, :Name, :middleName, :Surname, :Address, '', '', :subject, :mobileNumber)
-    ");
+   $stmt = $pdo->prepare("
+    INSERT INTO users (
+        account_type, 
+        Name, 
+        middleName, 
+        Surname, 
+        Address, 
+        mobileNumber, 
+        username, 
+        password, 
+        subject
+    ) VALUES (
+        :account_type, 
+        :Name, 
+        :middleName, 
+        :Surname, 
+        :Address, 
+        :mobileNumber, 
+        '', 
+        '', 
+        :subject
+    )
+");
+
     $stmt->execute([
         ':account_type' => $accountType,
         ':Name'         => $firstName,

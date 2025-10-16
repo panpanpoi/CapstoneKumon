@@ -1,6 +1,5 @@
-// createAccount.js
 (() => {
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     const form = document.querySelector("form");
     const radios = document.querySelectorAll('input[name="account_type"]');
 
@@ -11,29 +10,33 @@
       teacherCodeField: document.getElementById("teacher-code-field"),
       fname: document.getElementById("fname"),
       lname: document.getElementById("lname"),
+      middleName: document.getElementById("middleName"),
       username: document.getElementById("username"),
       password: document.getElementById("password"),
       studentCode: document.getElementById("studentCode"),
       teacherCode: document.getElementById("teacherCode"),
     };
 
-    // Reset radios on load
-    radios.forEach(r => (r.checked = false));
+    // state counters (strings like "001")
+    let nextStudentCounter = "001";
+    let nextTeacherCounter = "001";
 
-    // Allow radios to be unselected
-    radios.forEach(radio => {
-      radio.addEventListener("mousedown", () => (radio.wasChecked = radio.checked));
-      radio.addEventListener("click", e => {
-        if (radio.wasChecked) {
-          radio.checked = false;
-          e.preventDefault();
-          toggleFields(null); // hide all if none selected
+    // fetch next counter for specific type: "student" or "teacher"
+    async function fetchNextId(type) {
+      try {
+        const res = await fetch(`../handler/getNextId.php?type=${encodeURIComponent(type)}`);
+        const data = await res.json();
+        if (data && data.success && data.next) {
+          if (type === "student") nextStudentCounter = data.next;
+          if (type === "teacher") nextTeacherCounter = data.next;
         }
-      });
-    });
+      } catch (err) {
+        console.error("Failed to fetch next id:", err);
+      }
+    }
 
-    // Toggle fields depending on account type
-    const toggleFields = type => {
+    // Toggle fields by account type and fetch the appropriate counter
+    async function toggleFields(type) {
       const isStudent = type === "student";
       const isTeacher = type === "teacher";
 
@@ -44,46 +47,42 @@
       if (fields.teacherCodeField) {
         fields.teacherCodeField.style.display = isTeacher ? "block" : "none";
       }
-    };
 
-    radios.forEach(radio =>
-      radio.addEventListener("change", () => toggleFields(radio.value))
-    );
+      if (isStudent) await fetchNextId("student");
+      if (isTeacher) await fetchNextId("teacher");
 
-        // --- Preview generator ---
-      const updatePreview = () => {
+      updatePreview();
+    }
+
+    // Preview generator uses the type-specific counter
+    function updatePreview() {
       const lname = fields.lname?.value.trim().toLowerCase() || "";
       const year = new Date().getFullYear();
       const selected = document.querySelector('input[name="account_type"]:checked')?.value;
 
-      // numeric code placeholder for preview (backend generates real)
-      const counter = "001";
-      const numericCode = `${year}${counter}`;
+      let numericCode;
+      if (selected === "student") numericCode = `${year}${nextStudentCounter}`;
+      else if (selected === "teacher") numericCode = `${year}${nextTeacherCounter}`;
+      else numericCode = `${year}000`;
 
       switch (selected) {
         case "student":
-          if (fields.studentCode)
-            fields.studentCode.value = `KSTU${numericCode}`;
-          if (fields.username)
-            fields.username.value = `${lname}${numericCode}kumon`; // username = lname + numericCode + kumon
-          if (fields.password)
-            fields.password.value = `${lname}kumon${numericCode}`; // password = lname + kumon + numericCode
+          if (fields.studentCode) fields.studentCode.value = `KSTU${numericCode}`;
+          if (fields.username) fields.username.value = `${lname}${numericCode}kumon`.toLowerCase();
+          if (fields.password) fields.password.value = `${lname}kumon${numericCode}`.toLowerCase();
           if (fields.teacherCode) fields.teacherCode.value = "";
           break;
 
         case "teacher":
-          if (fields.teacherCode)
-            fields.teacherCode.value = `KTEA${numericCode}`;
-          if (fields.username)
-            fields.username.value = `${lname}${numericCode}kumon`;
-          if (fields.password)
-            fields.password.value = `${lname}kumon${numericCode}`;
+          if (fields.teacherCode) fields.teacherCode.value = `KTEA${numericCode}`;
+          if (fields.username) fields.username.value = `${lname}${numericCode}kumon`.toLowerCase();
+          if (fields.password) fields.password.value = `${lname}kumon${numericCode}`.toLowerCase();
           if (fields.studentCode) fields.studentCode.value = "";
           break;
 
         case "admin":
-          if (fields.username) fields.username.value = `${lname}admin`;
-          if (fields.password) fields.password.value = `${lname}kumon`;
+          if (fields.username) fields.username.value = `${lname}admin`.toLowerCase();
+          if (fields.password) fields.password.value = `${lname}kumon`.toLowerCase();
           if (fields.studentCode) fields.studentCode.value = "";
           if (fields.teacherCode) fields.teacherCode.value = "";
           break;
@@ -94,24 +93,54 @@
           if (fields.studentCode) fields.studentCode.value = "";
           if (fields.teacherCode) fields.teacherCode.value = "";
       }
-    };
+    }
 
+    // initial radio state reset
+    radios.forEach(r => (r.checked = false));
 
+    // radio behavior: allow deselect, and fetch counter for chosen type
+    radios.forEach(radio => {
+      radio.addEventListener("mousedown", () => (radio.wasChecked = radio.checked));
+      radio.addEventListener("click", async (e) => {
+        if (radio.wasChecked) {
+          radio.checked = false;
+          e.preventDefault();
+          await toggleFields(null);
+        } else {
+          // when selecting, toggleFields will fetch the counter for this type
+          await toggleFields(radio.value);
+        }
+        radio.wasChecked = radio.checked;
+      });
+    });
+
+    // update preview while typing
     if (form) form.addEventListener("input", updatePreview);
 
-    // Lock preview fields
+    // make preview fields readonly
     [fields.username, fields.password, fields.studentCode, fields.teacherCode].forEach(
       el => el && (el.readOnly = true)
     );
 
-    // Sidebar toggle
-    document.querySelectorAll(".subnavbtn").forEach(btn =>
-      btn.addEventListener("click", () => {
-        const content = btn.nextElementSibling;
-        const caret = btn.querySelector(".caret-icon");
-        content?.classList.toggle("show");
-        caret?.classList.toggle("rotate");
-      })
-    );
+    // enforce lowercase before submit
+    if (form) {
+      form.addEventListener("submit", () => {
+        if (fields.username) fields.username.value = fields.username.value.toLowerCase();
+        if (fields.password) fields.password.value = fields.password.value.toLowerCase();
+      });
+    }
+
+    // detect redirect with success message (optional: element class .alert-success)
+    const successAlert = document.querySelector(".alert-success, .success-message");
+    if (successAlert) {
+      const selectedType = document.querySelector('input[name="account_type"]:checked')?.value;
+      if (selectedType === "student" || selectedType === "teacher") {
+        await fetchNextId(selectedType);
+        updatePreview();
+      }
+    }
+
+    // If you want an initial preview with no selection, call updatePreview once
+    updatePreview();
   });
 })();

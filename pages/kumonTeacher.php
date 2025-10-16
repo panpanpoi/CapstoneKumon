@@ -30,7 +30,7 @@ $initials   = $_SESSION['initials'];   // LR
         <div class="bar"></div>
     </button>
 
-<div class="sidebar">
+<aside class="sidebar">
     <div class="logo">
         <h1>
             <a href="kumonTeacher.php">
@@ -56,7 +56,7 @@ $initials   = $_SESSION['initials'];   // LR
         <li><a href="teacherPtcScheduler.php" class="<?= $currentPage == 'teacherPtcScheduler.php' ? 'active' : '' ?>"><i class="fa fa-calendar"></i> PTC Schedule</a></li>
         <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
     </ul>
-</div>
+</aside>
 <div class="overlay" id="overlay"></div>
 
 <div class="main-content">

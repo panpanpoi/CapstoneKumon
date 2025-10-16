@@ -105,3 +105,15 @@ form button:hover {
         padding: 20px;
     }
 }
+/* Sentence case for name inputs */
+#fname,
+#lname,
+#middleName {
+  text-transform: capitalize;
+}
+
+/* Always lowercase for username and password */
+#username,
+#password {
+  text-transform: lowercase;
+}

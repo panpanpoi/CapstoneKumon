@@ -32,6 +32,11 @@ $currentPage = basename(__FILE__);
 
 <body>
   <div class="dashboard">
+    <!-- Toggle Button -->
+    <button id="sidebarToggle" class="sidebar-toggle">
+        <div class="bar"></div>
+    </button>
+  
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
@@ -62,7 +67,7 @@ $currentPage = basename(__FILE__);
           <h1 class="section-header"><i class="fa-solid fa-users"></i> My Classes</h1>
         </div>
       </header>
-
+    <div class="overlay" id="overlay"></div>
       <main class="main_panel">
         <section class="class-section">
           <div class="section-header">
@@ -113,7 +118,7 @@ $currentPage = basename(__FILE__);
 
       <div class="modal-body">
         <label for="studentSelect">Select Student</label>
-        <select id="studentSelect"><option value="">-- Select Student --</option></select>
+        <select id="studentSelect"><option value="">-- Search by Name or Student ID --</option></select>
 
         <label for="levelSelect">Level</label>
         <select id="levelSelect">
@@ -123,7 +128,7 @@ $currentPage = basename(__FILE__);
             echo "<option value='" . htmlspecialchars($lvl, ENT_QUOTES) . "'>" . htmlspecialchars($lvl) . "</option>";
           }
           ?>
-        </select>
+        </select> 
 
         <label>Schedule 1</label>
         <div class="schedule-group">
@@ -181,6 +186,7 @@ $currentPage = basename(__FILE__);
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="../scr/kumonClass.js"></script>
   <script src="../scr/kumonClassRemove.js"></script>
+  <script src="../scr/sidebarToggle.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
