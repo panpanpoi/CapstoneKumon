@@ -78,10 +78,7 @@ $initials = $_SESSION['initials'];
         <!-- Header -->
         <div class="header">
             <div class="header-right">
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                </div>
+                
                 <div class="user-info">
                     <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
                     <div class="user-name"><?= htmlspecialchars($username) ?></div>

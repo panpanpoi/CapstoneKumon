@@ -117,29 +117,39 @@ table.payments-table tr:hover td {
   transition: background-color 0.2s ease;
 }
 
-/* ================== STATUS CELLS ================== */
-td.status-cell {
+/* =========================================================
+   💚 Verified Cell Animation
+   ========================================================= */
+.payment-status-cell {
+  transition: background-color 0.6s ease, color 0.6s ease;
+  border-radius: 6px;
+  padding: 6px 10px;
   font-weight: 600;
-  text-transform: capitalize;
-  color: #fff;
-  text-align: center;      /* center the text */
-  border-radius: 6px;      /* optional: rounded corners */
+  text-align: center;
 }
 
-/* Verified - green */
-td.status-cell.verified {
-  background-color: #28a745;
+.payment-status-cell.verified {
+  background-color: #c6f6d5; /* light green */
+  color: #1b5e20;            /* dark green text */
+  animation: fadeGreen 0.8s ease forwards;
 }
 
-/* Unverified - yellow */
-td.status-cell.unverified {
-  background-color: #ffc107;
-  color: #000; /* black text for contrast */
+.payment-status-cell.unverified {
+  background-color: #ffe0e0; /* light red */
+  color: #a00;
 }
 
-/* Optional: add hover effect */
-td.status-cell:hover {
-  opacity: 0.9;
+@keyframes fadeGreen {
+  0% {
+    background-color: #e8ffe8;
+    color: #1b5e20;
+    transform: scale(0.98);
+  }
+  100% {
+    background-color: #c6f6d5;
+    color: #1b5e20;
+    transform: scale(1);
+  }
 }
 
 
@@ -315,4 +325,25 @@ td.status-cell:hover {
     width: 90%;
     padding: 18px;
   }
+}
+
+.search-bar {
+  margin: 12px 0 20px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search-bar input {
+  padding: 8px 14px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 280px;
+  transition: all 0.2s ease;
+}
+
+.search-bar input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
 }

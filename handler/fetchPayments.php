@@ -50,6 +50,7 @@ try {
         $receiptPath = $row['receipt_path'] ?? null;
         $validReceipt = false;
 
+        // Validate receipt image
         if (!empty($receiptPath)) {
             $ext = strtolower(pathinfo($receiptPath, PATHINFO_EXTENSION));
             $validReceipt = in_array($ext, ['jpg', 'jpeg', 'png']);
@@ -59,12 +60,11 @@ try {
         }
 
         // 🔹 Auto-verify cash payments if not already verified
-        if (strtolower($row['payment_method']) === 'cash' && strtolower($row['payment_status']) !== 'verified') {
-            $updateStmt = $pdo->prepare("UPDATE payments SET payment_status = 'Verified' WHERE payment_id = :payment_id");
+        $paymentStatus = strtolower($row['payment_status'] ?? 'unverified');
+        if (strtolower($row['payment_method']) === 'cash' && $paymentStatus !== 'verified') {
+            $updateStmt = $pdo->prepare("UPDATE payments SET payment_status = 'verified' WHERE payment_id = :payment_id");
             $updateStmt->execute([':payment_id' => $row['payment_id']]);
-            $paymentStatus = 'Verified';
-        } else {
-            $paymentStatus = ucfirst($row['payment_status'] ?? 'Unverified');
+            $paymentStatus = 'verified';
         }
 
         return [
@@ -78,7 +78,7 @@ try {
             "reference_number" => $row['reference_number'] ?: "-",
             "remarks"          => $row['remarks'] ?: "",
             "status"           => $row['status'] ?? "active",
-            "payment_status"   => $paymentStatus,
+            "payment_status"   => $paymentStatus, // ✅ lowercase
             "receipt_path"     => $receiptPath,
             "valid_receipt"    => $validReceipt
         ];

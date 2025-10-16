@@ -30,24 +30,32 @@ body {
 /* Sidebar: Logo */
 .sidebar .logo {
   text-align: center;
-  padding: 15px;
+  padding: 16px 10px;
 }
 
-.sidebar .logo h1 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.sidebar .logo h1 a {
-  color: #00aaff;        /* Kumon blue */
+.sidebar .logo a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
 }
 
-.sidebar .logo p {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 4px;
+.sidebar .logo-img {
+  height: 45px; /* smaller height for compact look */
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+.sidebar .logo-img:hover {
+  transform: scale(1.05);
+}
+
+.sidebar .tagline {
+  font-size: 0.7rem;
+  color: #777;
+  margin-top: 6px;
+  font-style: italic;
+  letter-spacing: 0.3px;
 }
 
 /* Sidebar: User Profile */

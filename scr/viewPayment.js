@@ -6,12 +6,15 @@
   const verifyForm = document.getElementById("verifyForm");
   const showActive = document.getElementById("showActive");
   const showArchived = document.getElementById("showArchived");
+  const searchInput = document.getElementById("searchPayment");
 
   let currentStatus = "active";
+  let searchTimeout = null;
 
-  //  INIT 
+  // INIT
   loadPayments(currentStatus);
 
+  // Filters
   showActive.addEventListener("click", () => {
     currentStatus = "active";
     toggleFilterButton(showActive, showArchived);
@@ -29,7 +32,22 @@
     verifyForm.reset();
   });
 
-  //  LOAD PAYMENTS 
+  // 🔍 SEARCH EVENT
+  searchInput?.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const query = searchInput.value.trim();
+      if (query === "") {
+        loadPayments(currentStatus);
+      } else {
+        searchPayments(query, currentStatus);
+      }
+    }, 400); // Debounce typing
+  });
+
+  // ========================
+  // LOAD PAYMENTS
+  // ========================
   async function loadPayments(status) {
     paymentsContainer.innerHTML = `<p class="loading-text">Loading payments...</p>`;
 
@@ -40,6 +58,28 @@
       if (!data.success) throw new Error(data.error || "Failed to load payments");
       if (!data.payments || data.payments.length === 0) {
         paymentsContainer.innerHTML = `<p class="empty-text">No ${status} payments found.</p>`;
+        return;
+      }
+
+      renderPaymentsTable(data.payments, status);
+    } catch (err) {
+      paymentsContainer.innerHTML = `<p class="error-text">Error: ${err.message}</p>`;
+    }
+  }
+
+  // ========================
+  //  SEARCH PAYMENTS
+  // ========================
+  async function searchPayments(query, status) {
+    paymentsContainer.innerHTML = `<p class="loading-text">Searching payments...</p>`;
+
+    try {
+      const res = await fetch(`../handler/searchPayments.php?query=${encodeURIComponent(query)}&status=${status}`);
+      const data = await res.json();
+
+      if (!data.success) throw new Error(data.error || "Search failed");
+      if (!data.payments || data.payments.length === 0) {
+        paymentsContainer.innerHTML = `<p class="empty-text">No results found for "${query}".</p>`;
         return;
       }
 

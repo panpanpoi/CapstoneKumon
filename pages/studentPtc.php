@@ -149,41 +149,55 @@ $avatarInitials = initials($fullName);
             <?php endif; ?>
         </section>
 
-        <!-- Completed PTC Meetings -->
+        <!-- ✅ Completed PTC Meetings -->
         <section class="section-card done-bookings">
-            <h3><i class="fas fa-calendar-check"></i> Completed PTC Meetings</h3>
-            <?php if(!empty($doneBookings)): ?>
-                <table>
-                    <thead><tr><th>Date</th><th>Teacher</th><th>Action</th></tr></thead>
-                    <tbody>
-                        <?php foreach($doneBookings as $b): ?>
-                        <tr>
-                            <td><?= date("F j, Y", strtotime($b['date'])) ?></td>
-                            <td><?= htmlspecialchars($b['teacherName']) ?></td>
-                            <td>
-                                <button class="btn-view-notes" data-schedule-id="<?= $b['schedule_id'] ?>">
-                                    <i class="fas fa-eye"></i> View Notes
-                                </button>
-                            </td>
-                        </tr>
-                        <tr id="notes-<?= $b['schedule_id'] ?>" class="notes-popup" style="display:none;">
-                            <td colspan="3">
-                                <strong>Teacher:</strong> <?= htmlspecialchars($b['teacherName']) ?><br>
-                                <strong>Date:</strong> <?= date("F j, Y", strtotime($b['date'])) ?><br>
-                                <ul>
-                                    <?php foreach($b['notes'] as $note): ?>
-                                        <li><?= htmlspecialchars($note['note']) ?> <small>(<?= $note['created_at'] ?>)</small></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                                <button class="close-popup" data-schedule-id="<?= $b['schedule_id'] ?>">Close</button>
-                            </td>
-                        </tr>
+        <h3><i class="fas fa-calendar-check"></i> Completed PTC Meetings</h3>
+
+        <?php if(!empty($doneBookings)): ?>
+            <div class="table-wrapper">
+            <table class="ptc-table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Teacher</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach($doneBookings as $b): ?>
+                <tr>
+                    <td><?= date("F j, Y", strtotime($b['date'])) ?></td>
+                    <td><?= htmlspecialchars($b['teacherName']) ?></td>
+                    <td>
+                    <button class="btn-view-notes" data-schedule-id="<?= $b['schedule_id'] ?>">
+                        <i class="fas fa-eye"></i> View Notes
+                    </button>
+                    </td>
+                </tr>
+                <tr id="notes-<?= $b['schedule_id'] ?>" class="notes-popup" style="display:none;">
+                    <td colspan="3">
+                    <div class="notes-box">
+                        <p><strong>Teacher:</strong> <?= htmlspecialchars($b['teacherName']) ?></p>
+                        <p><strong>Date:</strong> <?= date("F j, Y", strtotime($b['date'])) ?></p>
+                        <ul>
+                        <?php foreach($b['notes'] as $note): ?>
+                            <li>
+                            <?= htmlspecialchars($note['note']) ?>
+                            <small>(<?= $note['created_at'] ?>)</small>
+                            </li>
                         <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php else: ?>
-                <p>No completed PTC meetings yet.</p>
-            <?php endif; ?>
+                        </ul>
+                        <button class="close-popup" data-schedule-id="<?= $b['schedule_id'] ?>">Close</button>
+                    </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            </div>
+        <?php else: ?>
+            <p class="empty-state">No completed PTC meetings yet.</p>
+        <?php endif; ?>
         </section>
     </main>
 </div>

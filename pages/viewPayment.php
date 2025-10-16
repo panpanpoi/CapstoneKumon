@@ -87,12 +87,15 @@ $initials = $_SESSION['initials'];
 
         <!-- Dashboard Content -->
         <section class="dashboard-content">
-            <h2>💳 Payments List</h2>
+            <h2>Payments List</h2>
 
             <!-- Filter Buttons -->
             <div class="filter-bar">
                 <button id="showActive" class="btn-filter active">Active Payments</button>
                 <button id="showArchived" class="btn-filter">Archived Payments</button>
+            </div>
+            <div class="search-bar">
+            <input type="text" id="searchPayment" placeholder="Search by student name or ID..." />
             </div>
 
             <!-- Payments Table -->

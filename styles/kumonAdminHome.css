@@ -1,0 +1,140 @@
+/* =========================================================
+   🎓 KUMON ADMIN DASHBOARD (Scoped Theme)
+   Prevents Sidebar / Global CSS Conflicts
+   ========================================================= */
+
+/* Scope all styles to dashboard area only */
+.main-content,
+.dashboard-content,
+.stats-section {
+  all: unset;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* ========== MAIN CONTENT LAYOUT ========== */
+.main-content {
+  margin-left: 220px;
+  background: #121212;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+  padding: 0;
+}
+
+.dashboard-content {
+  padding: 32px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+
+/* ========== DASHBOARD CONTENT ========== */
+.dashboard-content h2 {
+  font-size: 1.4rem;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.dashboard-content p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+/* ========== STATS PANEL ========== */
+.stats-section {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
+
+.stats-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stats-section .section-header h3 {
+  font-size: 1rem;
+  color: #0077b6;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stats-section .section-header i {
+  color: #0077b6;
+}
+
+#last-updated {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* ========== GRID + CARDS ========== */
+.stats-section .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stats-section .stat-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9fbfd;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e3e9ef;
+  transition: 0.25s ease;
+}
+
+.stats-section .stat-card:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 119, 182, 0.12);
+}
+
+.stats-section .stat-card .icon {
+  font-size: 18px;
+  color: #0077b6;
+  min-width: 30px;
+  text-align: center;
+}
+
+.stats-section .stat-card h4 {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+.stats-section .stat-card p {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 2px 0 0;
+  color: #222;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+
+  .dashboard-content {
+    padding: 20px;
+  }
+
+  .stats-section .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .stats-section .stat-card {
+    padding: 12px;
+  }
+}
