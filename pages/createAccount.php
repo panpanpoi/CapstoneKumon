@@ -175,7 +175,40 @@ unset($_SESSION['success'], $_SESSION['error']);
         </main>
     </div>
 
-    <!-- External JS -->
+    
     <script src="../scr/createAccount.js"></script>
+    <script>
+(function () {
+  // Defensive wrapper so other script errors don't break this
+  try {
+    document.querySelectorAll(".subnavbtn").forEach(btn => {
+      // ensure it's not a submit button inside a form
+      if (btn.tagName.toLowerCase() === "button" && (!btn.type || btn.type === "submit")) {
+        btn.type = "button";
+      }
+
+      btn.addEventListener("click", () => {
+        try {
+          const content = btn.nextElementSibling;
+          const caret = btn.querySelector(".caret-icon");
+
+          // Toggle content visibility with a "show" class
+          if (content) {
+            const isShown = content.classList.toggle("show");
+          }
+
+          // rotate caret if present
+          if (caret) caret.classList.toggle("rotate");
+        } catch (innerErr) {
+          console.error("Subnav inner error:", innerErr);
+        }
+      });
+    });
+  } catch (err) {
+    console.error("Subnav initialization failed:", err);
+  }
+})();
+</script>
+
 </body>
 </html>
