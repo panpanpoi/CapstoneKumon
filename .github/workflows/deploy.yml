@@ -23,8 +23,11 @@ jobs:
           local-dir: ./
           timeout: 600
           exclude: |
-            **/.git*
-            **/.github*
+           exclude: |
+            **/.git**
+            **/.github/**
+            **/.gitignore
+            **/.gitattributes
             README.md
             **/node_modules/**
             **/.env
