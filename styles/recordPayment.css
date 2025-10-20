@@ -1,86 +1,137 @@
-/* SEARCH RESULTS DROPDOWN */
+/* =========================================================
+   💳 RECORD PAYMENT — Compact Centered Dark Theme
+   ========================================================= */
+
+/* Main layout */
+.dashboard-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: #1e1e1e;  /* Dark background */
+  box-sizing: border-box;
+}
+
+/* Centered form container */
+.payment-form-container {
+  background: #181818;
+  padding: 24px 28px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  width: 100%;
+  max-width: 480px;
+  border: 1px solid #222;
+}
+
+/* Title */
+.payment-form-container h2 {
+  font-size: 1.2rem;
+  color: #00aaff;
+  text-align: center;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+/* Labels */
+form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+/* Inputs & selects */
+form input,
+form select,
+form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background-color: #121212;
+  color: #eee;
+  font-size: 0.9rem;
+  transition: border 0.2s ease, background 0.2s ease;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #00aaff;
+  background-color: #1a1a1a;
+  outline: none;
+}
+
+/* Search dropdown */
 .search-results {
-  border: 1px solid #444;
-  max-height: 180px;
+  border: 1px solid #333;
+  max-height: 160px;
   overflow-y: auto;
-  background: #1e1e1e; /* Matches main admin dark theme */
+  background: #1c1c1c;
   position: absolute;
   width: 100%;
-  z-index: 999; /* Above other elements */
+  z-index: 999;
   color: #eee;
-  border-radius: 4px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 .search-results div {
   padding: 6px 10px;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .search-results div:hover {
-  background-color: #00aaff; /* Highlight on hover */
+  background-color: #00aaff;
   color: #fff;
 }
 
-/* SELECTED STUDENT INFO */
+/* Selected student text */
 .selected-student {
-  margin-top: 10px;
+  margin-top: 8px;
   color: #2ecc71;
   font-weight: bold;
+  font-size: 0.9rem;
 }
 
-/* CHANGE BUTTON */
+/* Change button */
 .change-btn {
   display: none;
-  margin-top: 5px;
+  margin-top: 6px;
   padding: 5px 10px;
   background-color: #3498db;
   color: #fff;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  transition: background 0.3s ease;
 }
 
 .change-btn:hover {
   background-color: #2980b9;
 }
 
-/* FORM STYLING */
-form label {
-  display: block;
-  margin-top: 12px;
-  font-weight: 500;
-  color: #ccc;
-}
-
-form input, form select, form textarea {
-  width: 100%;
-  padding: 8px 10px;
-  margin-top: 4px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  background-color: #121212;
-  color: #eee;
-}
-
-form input:focus, form select:focus, form textarea:focus {
-  border-color: #00aaff;
-  outline: none;
-}
-
-/* SUBMIT BUTTON */
+/* Submit button */
 form button[type="submit"] {
-  margin-top: 15px;
-  padding: 8px 16px;
+  margin-top: 18px;
+  padding: 10px 16px;
   background-color: #2ecc71;
   color: #fff;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
-  transition: background 0.3s ease;
+  border-radius: 6px;
+  width: 100%;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.1s ease;
 }
 
 form button[type="submit"]:hover {
   background-color: #27ae60;
+  transform: translateY(-1px);
 }
 
 form button:disabled {
@@ -88,14 +139,15 @@ form button:disabled {
   cursor: not-allowed;
 }
 
-/* POSITIONING HELPERS */
+/* Positioning helpers */
 #student_search, #results, .selected-student, .change-btn {
   position: relative;
   z-index: 10;
 }
 
-/* Ensure the form is visible beside sidebar */
-.dashboard-content {
-  position: relative;
-  z-index: 1;
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .payment-form-container {
+    padding: 18px 20px;
+  }
 }

@@ -1,7 +1,7 @@
 /* Main Form Layout */
 .main-content {
     padding: 30px;
-    background: #121212; /* Match sidebar dark tone */
+    background: #1e1e1e;  /* Dark background */
     min-height: 100vh;
     color: #fff;
 }

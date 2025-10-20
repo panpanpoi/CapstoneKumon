@@ -73,55 +73,87 @@ $initials = $_SESSION['initials'];
         </ul>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-right">
-                
-                <div class="user-info">
-                    <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
-                    <div class="user-name"><?= htmlspecialchars($username) ?></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dashboard / Page Content -->
-        <div class="dashboard-content" style="padding: 20px;">
-            <h2>Record a Payment</h2>
-
-            <form id="paymentForm" action="../handler/addPayment.php" method="POST">
-                <!-- Student Selection -->
-                <input type="hidden" id="student_id" name="student_id" required>
-                <input type="text" id="student_search" placeholder="Search student ID (EX:KSTU2025000)" required>
-                <div id="results" class="search-results"></div>
-                <div id="selectedStudent" class="selected-student"></div>
-                <button type="button" id="changeStudentBtn" class="change-btn">Change Student</button>
-
-                <!-- Payment Details -->
-                <label>Amount:</label>
-                <input type="number" step="0.01" name="amount" placeholder="Enter amount" required>
-
-                <label>Date:</label>
-                <input type="date" name="payment_date" required>
-
-                <label>Payment Method:</label>
-                <select name="payment_method" required>
-                    <option value="Cash">Cash</option>
-                    <option value="GCash">GCash</option>
-                    <option value="Bank">Bank</option>
-                </select>
-
-                <label>Reference Number:</label>
-                <input type="text" name="reference_number">
-
-                <label>Notes:</label>
-                <textarea name="remarks"></textarea>
-
-                <button type="submit" id="submitBtn" disabled>Save Payment</button>
-            </form>
-        </div>
+   <!-- MAIN CONTENT -->
+<main class="main-content">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
+        <div class="user-name"><?= htmlspecialchars($username) ?></div>
+      </div>
     </div>
+  </header>
+
+  <!-- Dashboard / Page Content -->
+  <section class="dashboard-content">
+    <div class="payment-form-container">
+      <h2><i class="fa-solid fa-credit-card"></i> Record a Payment</h2>
+
+      <form id="paymentForm" action="../handler/addPayment.php" method="POST">
+        <!-- Student Selection -->
+        <input type="hidden" id="student_id" name="student_id" required>
+
+        <label for="student_search">Search Student:</label>
+        <input 
+          type="text" 
+          id="student_search" 
+          placeholder="Enter student ID (e.g., KSTU2025000)" 
+          required
+        >
+        <div id="results" class="search-results"></div>
+        <div id="selectedStudent" class="selected-student"></div>
+        <button type="button" id="changeStudentBtn" class="change-btn">Change Student</button>
+
+        <!-- Payment Details -->
+        <label for="amount">Amount:</label>
+        <input 
+          type="number" 
+          step="0.01" 
+          id="amount" 
+          name="amount" 
+          placeholder="Enter amount" 
+          required
+        >
+
+        <label for="payment_date">Payment Date:</label>
+        <input 
+          type="date" 
+          id="payment_date" 
+          name="payment_date" 
+          required
+        >
+
+        <label for="payment_method">Payment Method:</label>
+        <select id="payment_method" name="payment_method" required>
+          <option value="Cash">Cash</option>
+          <option value="GCash">GCash</option>
+          <option value="Bank">Bank</option>
+        </select>
+
+        <label for="reference_number">Reference Number:</label>
+        <input 
+          type="text" 
+          id="reference_number" 
+          name="reference_number" 
+          placeholder="Enter reference number (if any)"
+        >
+
+        <label for="remarks">Notes / Remarks:</label>
+        <textarea 
+          id="remarks" 
+          name="remarks" 
+          placeholder="Add any remarks here..."
+        ></textarea>
+
+        <button type="submit" id="submitBtn" disabled>
+          <i class="fa-solid fa-floppy-disk"></i> Save Payment
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
+
 
     
     <script src="../scr/recordPayment.js"></script>

@@ -79,10 +79,6 @@ unset($_SESSION['success'], $_SESSION['error']);
     <div class="main-content">
         <div class="header">
             <div class="header-right">
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
-                </div>
                 <div class="user-info">
                     <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
                     <div class="user-name"><?= htmlspecialchars($username) ?></div>
@@ -109,7 +105,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <h3>Account Type</h3>
                     <label><input type="radio" name="account_type" value="student" required> Student</label>
                     <label><input type="radio" name="account_type" value="teacher"> Teacher</label>
-                    <label><input type="radio" name="account_type" value="admin"> Admin</label>
+                    <!-- <label><input type="radio" name="account_type" value="admin"> Admin</label> -->
                 </section>
 
                 <!-- Personal Info -->
