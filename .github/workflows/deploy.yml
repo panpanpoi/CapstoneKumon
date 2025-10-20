@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /htdocs/
           local-dir: ./
-          timeout: 600
+          timeout: 900
           dangerous-clean-slate: true
           exclude: |
             **/.git**
