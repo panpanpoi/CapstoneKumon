@@ -10,31 +10,31 @@
 </head>
 <body>
   <!-- Login Box -->
-  <div class="login-box">
-    <img src="../styles/KumonLogo.png" alt="Kumon Logo" class="login-logo">
+  <div class="login-container">
+    <div class="background-logo"></div> 
+    
+    <div class="login-box">
+      <img src="../styles/kumonLogo.png" alt="Kumon Logo" class="login-logo">
 
-    <!-- Error message -->
-    <?php if (isset($_GET['error'])): ?>
-      <p class="error-message"><?= htmlspecialchars($_GET['error']); ?></p>
-    <?php endif; ?>
+      <?php if (isset($_GET['error'])): ?>
+        <p class="error-message"><?= htmlspecialchars($_GET['error']); ?></p>
+      <?php endif; ?>
 
-    <form action="../handler/login.php" method="POST" novalidate>
-      <!-- Username -->
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" required>
+      <form action="../handler/login.php" method="POST" novalidate>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
 
-      <!-- Password -->
-      <label for="password">Password</label>
-      <div class="password-group">
-        <input type="password" id="password" name="password" required>
-        <button type="button" id="togglePassword" aria-label="Show password">
-          <i class="fa-solid fa-eye"></i>
-        </button>
-      </div>
+        <label for="password">Password</label>
+        <div class="password-group">
+          <input type="password" id="password" name="password" required>
+          <button type="button" id="togglePassword" aria-label="Show password">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
 
-      <!-- Submit -->
-      <button type="submit" class="login-btn">Login</button>
-    </form>
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
   </div>
 
   <!-- Password Toggle Script -->

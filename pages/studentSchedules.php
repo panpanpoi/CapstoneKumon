@@ -58,7 +58,7 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
       <li><a href="kumonStudent.php"><i class="fas fa-home"></i> Home</a></li>
       <li><a href="studentSchedules.php" class="active"><i class="fas fa-calendar-alt"></i> Schedule</a></li>
       <li><a href="studentPayments.php"><i class="fas fa-money-bill-wave"></i> Balance</a></li>
-      <li><a href="studentPTC.php"><i class="fas fa-comments"></i> PTC Meeting</a></li>
+      <li><a href="studentPtc.php"><i class="fas fa-comments"></i> PTC Meeting</a></li>
       <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
   </aside>

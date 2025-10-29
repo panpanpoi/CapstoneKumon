@@ -1,5 +1,4 @@
 <?php
-// handler/auth.php
 require_once "../database.php";
 
 if (!isset($_SESSION)) {
@@ -14,8 +13,11 @@ if (!isset($_SESSION['user_id'], $_SESSION['session_token'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch user info
-$stmt = $pdo->prepare("SELECT user_id, Name, Surname, account_type, session_token FROM users WHERE user_id = ?");
+$stmt = $pdo->prepare("
+    SELECT user_id, Name, Surname, account_type, session_token, password, mustChangePassword
+    FROM users 
+    WHERE user_id = ?
+");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -25,20 +27,26 @@ if (!$user) {
     exit;
 }
 
-// Verify session token
 if ($user['session_token'] !== $_SESSION['session_token']) {
     session_destroy();
     header("Location: ../login.php?error=You have been logged out because another session started.");
     exit;
 }
 
-// Set account type
-$_SESSION['account_type'] = strtolower($user['account_type']);
+// ✅ Force password change if default or flagged
+$defaultPasswords = ['password', 'password123', 'default', '123456', 'changeme'];
+$isDefault = in_array($user['password'], $defaultPasswords);
 
-// Set display name
+if ($isDefault || $user['mustChangePassword'] == 1) {
+    if (basename($_SERVER['PHP_SELF']) !== 'forceChangePassword.php') {
+        header("Location: ../pages/forceChangePassword.php");
+        exit;
+    }
+}
+
+$_SESSION['account_type'] = strtolower($user['account_type']);
 $_SESSION['username'] = $user['Name'] . " " . $user['Surname'];
 
-// Generate initials
 function getInitials($name) {
     $parts = explode(" ", trim($name));
     $initials = "";
@@ -51,7 +59,6 @@ function getInitials($name) {
 }
 $_SESSION['initials'] = getInitials($_SESSION['username']);
 
-// Set role-specific IDs
 switch ($_SESSION['account_type']) {
     case 'teacher':
         if (empty($_SESSION['teacher_id'])) {
@@ -75,3 +82,4 @@ switch ($_SESSION['account_type']) {
         $_SESSION['is_admin'] = true;
         break;
 }
+?>

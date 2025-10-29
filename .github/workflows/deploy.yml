@@ -1,9 +1,8 @@
 name: Deploy to InfinityFree
 
+# ✅ Manual trigger only — no auto-deploy on push
 on:
-  push:
-    branches:
-      - main  
+  workflow_dispatch:
 
 jobs:
   ftp-deploy:

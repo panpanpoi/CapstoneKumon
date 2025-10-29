@@ -12,7 +12,7 @@ try {
     // Collect and sanitize inputs
     $accountType   = trim($_POST['account_type'] ?? '');
     $firstName     = trim($_POST['fname'] ?? '');
-    $middleName    = trim($_POST['mname'] ?? '');  // only in users table
+    $middleName    = trim($_POST['mname'] ?? '');
     $lastName      = trim($_POST['lname'] ?? '');
     $contactNumber = trim($_POST['contact'] ?? '');
     $street        = trim($_POST['street'] ?? '');
@@ -32,31 +32,32 @@ try {
         throw new Exception("Please select a plan for the student.");
     }
 
-    // Insert base user record
-   $stmt = $pdo->prepare("
-    INSERT INTO users (
-        account_type, 
-        Name, 
-        middleName, 
-        Surname, 
-        Address, 
-        mobileNumber, 
-        username, 
-        password, 
-        subject
-    ) VALUES (
-        :account_type, 
-        :Name, 
-        :middleName, 
-        :Surname, 
-        :Address, 
-        :mobileNumber, 
-        '', 
-        '', 
-        :subject
-    )
-");
-
+    // Insert base user record (temporarily blank username/password)
+    $stmt = $pdo->prepare("
+        INSERT INTO users (
+            account_type, 
+            Name, 
+            middleName, 
+            Surname, 
+            Address, 
+            mobileNumber, 
+            username, 
+            password, 
+            subject,
+            mustChangePassword
+        ) VALUES (
+            :account_type, 
+            :Name, 
+            :middleName, 
+            :Surname, 
+            :Address, 
+            :mobileNumber, 
+            '', 
+            '', 
+            :subject,
+            1
+        )
+    ");
     $stmt->execute([
         ':account_type' => $accountType,
         ':Name'         => $firstName,
@@ -71,18 +72,11 @@ try {
 
     // Student
     if ($accountType === "student") {
-        // Get the latest code for the current year
         $stmt = $pdo->prepare("SELECT MAX(studentCode) FROM students WHERE studentCode LIKE ?");
         $stmt->execute(["KSTU$year%"]);
         $lastCode = $stmt->fetchColumn();
 
-        if ($lastCode) {
-            $lastNumber = (int)substr($lastCode, 8); // after "KSTU2025"
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
-        }
-
+        $nextNumber = $lastCode ? ((int)substr($lastCode, 8) + 1) : 1;
         $studentCode = "KSTU$year" . str_pad($nextNumber, 3, "0", STR_PAD_LEFT);
 
         $monthly_fee = match($plan) {
@@ -107,13 +101,12 @@ try {
             ':level'       => $level
         ]);
 
-        // Username & Password
         $numericCode   = str_replace("KSTU", "", $studentCode);
         $username      = strtolower($lastName) . $numericCode . "kumon";
         $passwordPlain = strtolower($lastName) . "kumon" . $numericCode;
         $password      = password_hash($passwordPlain, PASSWORD_DEFAULT);
 
-        $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE user_id = ?");
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ?, mustChangePassword = 1 WHERE user_id = ?");
         $stmt->execute([$username, $password, $user_id]);
 
         $_SESSION['success'] = "Student created!<br>
@@ -128,13 +121,7 @@ try {
         $stmt->execute(["KTEA$year%"]);
         $lastCode = $stmt->fetchColumn();
 
-        if ($lastCode) {
-            $lastNumber = (int)substr($lastCode, 8);
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
-        }
-
+        $nextNumber = $lastCode ? ((int)substr($lastCode, 8) + 1) : 1;
         $teacherCode = "KTEA$year" . str_pad($nextNumber, 3, "0", STR_PAD_LEFT);
 
         $stmt = $pdo->prepare("
@@ -153,7 +140,7 @@ try {
         $passwordPlain = strtolower($lastName) . "kumon" . $numericCode;
         $password      = password_hash($passwordPlain, PASSWORD_DEFAULT);
 
-        $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE user_id = ?");
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ?, mustChangePassword = 1 WHERE user_id = ?");
         $stmt->execute([$username, $password, $user_id]);
 
         $_SESSION['success'] = "Teacher created!<br>
@@ -168,7 +155,7 @@ try {
         $passwordPlain = strtolower($lastName) . "kumon";
         $password      = password_hash($passwordPlain, PASSWORD_DEFAULT);
 
-        $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ? WHERE user_id = ?");
+        $stmt = $pdo->prepare("UPDATE users SET username = ?, password = ?, mustChangePassword = 1 WHERE user_id = ?");
         $stmt->execute([$username, $password, $user_id]);
 
         $_SESSION['success'] = "Admin created!<br>

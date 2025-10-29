@@ -159,3 +159,34 @@ input:focus {
     padding: 2rem;
   }
 }
+/* =========================================
+   🌐 BIG BACKGROUND LOGO BEHIND LOGIN PANEL
+   ========================================= */
+.login-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #a6c1ee 0%, #fbc2eb 100%);
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+/* Faded logo behind login box */
+.background-logo {
+  position: absolute;
+  inset: 0;
+  background: url("../styles/kumonLogo.png") center center no-repeat;
+  background-size: 800px auto; /* 🖼 Adjust logo size */
+  opacity: 0.08; /* 👻 Faint watermark effect */
+  z-index: 0;
+  filter: blur(0.5px); /* Slight blur for soft edges */
+}
+
+/* Keep login box above logo */
+.login-box {
+  position: relative;
+  z-index: 1;
+}

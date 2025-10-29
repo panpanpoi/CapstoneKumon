@@ -3,13 +3,13 @@ require_once "../handler/auth.php";
 
 // ✅ Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
-    header("Location: ../loginform.php");
+    header("Location: loginform.php");
     exit;
 }
 
-$username = $_SESSION['username'];   // Full name
-$userRole = ucfirst($_SESSION['account_type']); // Admin
-$initials = $_SESSION['initials'];   // Initials
+$username = $_SESSION['username'];
+$userRole = ucfirst($_SESSION['account_type']);
+$initials = $_SESSION['initials'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +24,7 @@ $initials = $_SESSION['initials'];   // Initials
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Sidebar  -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <a href="kumonAdmin.php">
@@ -80,8 +80,6 @@ $initials = $_SESSION['initials'];   // Initials
 
         <div class="dashboard-content" style="padding: 20px;">
             <h2>User List</h2>
-
-            <!-- Flash messages -->
             <div id="flashMessage"></div>
 
             <!-- Filters -->
@@ -120,50 +118,78 @@ $initials = $_SESSION['initials'];   // Initials
     <!-- Floating Edit Panel -->
     <div id="editPanel" class="edit-panel">
         <div class="edit-panel-content">
-            <span class="close-btn">&times;</span>
-            <h2>Edit User</h2>
-
             <form id="editUserForm">
-                <input type="hidden" id="edit_user_id" name="user_id">
+                <input type="hidden" name="user_id">
 
-                <label>Name:</label>
-                <input type="text" id="edit_name" name="Name" required>
+                <h3 class="panel-title">Edit User Account</h3>
 
-                <label>Surname:</label>
-                <input type="text" id="edit_surname" name="Surname" required>
-
-                <label>Address:</label>
-                <input type="text" id="edit_address" name="Address">
-
-                <label>Mobile Number:</label>
-                <input type="text" id="edit_mobile" name="mobileNumber">
-
-                <label>Account Type:</label>
-                <select id="edit_account_type" name="account_type" required>
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="admin">Admin</option>
-                </select>
-
-                <div class="password-section">
-                    <label>Change Password:</label>
-                    <div class="password-toggle">
-                        <input type="checkbox" id="change_password" name="change_password">
-                        <label for="change_password">Enable password change</label>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="Name" required>
                     </div>
-                    <div class="password-fields" style="display: none;">
-                        <input type="password" id="new_password" name="new_password" placeholder="New Password" minlength="6">
-                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" minlength="6">
-                        <small class="password-help">Password must be at least 6 characters long.</small>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="Surname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" name="Address">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" name="mobileNumber">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Account Type</label>
+                        <select name="account_type" required>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
                     </div>
                 </div>
 
-                <button type="submit">Save</button>
-            </form>
+                <hr>
+
+                <!-- Password Section -->
+                <div class="password-section">
+                    <label class="checkbox-inline small-checkbox">
+                        <input type="checkbox" id="change_password" name="change_password">
+                        Change Password
+                    </label>
+
+                    <div class="password-fields" style="display:none;">
+                        <div class="form-row">
+                            <div class="form-group password-group">
+                                <label>New Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" name="new_password" id="new_password">
+                                    <i class="fa fa-eye toggle-password" data-target="new_password"></i>
+                                </div>
+                            </div>
+                            <div class="form-group password-group">
+                                <label>Confirm Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" name="confirm_password" id="confirm_password">
+                                    <i class="fa fa-eye toggle-password" data-target="confirm_password"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                     <div class="form-actions">
+                         <button type="submit" id="saveUserButton" class="btn-primary">Save Changes</button>
+                     </div>
+                 </form>
+     
+                 <!-- FA Close Button positioned at top right -->
+                 <button class="close-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </div>
 
-    
+    <script src="../scr/adminSidebar.js"></script>
     <script src="../scr/accountList.js"></script>
 </body>
 </html>

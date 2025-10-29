@@ -1,24 +1,35 @@
 <?php
 session_start();
-require_once "../database.php"; 
+require_once "../database.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
+    // Validate input
     if (!$username || !$password) {
         header("Location: ../pages/loginForm.php?error=Please fill in all fields");
         exit;
     }
 
+    // Fetch user
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
     $stmt->execute(['username' => $username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Verify credentials
     if ($user && password_verify($password, $user['password'])) {
-        // Check if user account is active
+
+        // Check if account is active
         if (strtolower($user['status']) !== 'active') {
             header("Location: ../pages/loginForm.php?error=Your account is not active");
+            exit;
+        }
+
+        // Check if the user must change password first
+        if ($user['mustChangePassword'] == 1) {
+            $_SESSION['temp_user_id'] = $user['user_id'];
+            header("Location: ../pages/forceChangePassword.php");
             exit;
         }
 
@@ -30,13 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             'id'    => $user['user_id']
         ]);
 
-        // Store user information in session
+        // Store session data
         $_SESSION['session_token'] = $sessionToken;
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['account_type'] = strtolower($user['account_type']);
         $_SESSION['username'] = $user['username'];
-
-        // Set welcome message
         $_SESSION['flash_success'] = "Welcome back, " . ucfirst($_SESSION['account_type']) . "!";
 
         // Redirect based on user role
@@ -69,7 +78,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // Invalid username or password
+    // Invalid credentials
     header("Location: ../pages/loginForm.php?error=Invalid username or password");
     exit;
 }
+

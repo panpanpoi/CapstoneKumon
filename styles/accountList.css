@@ -1,33 +1,47 @@
-/*  Account List Table Styling  */
-table {
-  border-collapse: collapse;
+/* ================================
+   ACCOUNT LIST TABLE STYLING (Modernized)
+   Colors Retained from Original
+================================ */
+
+/* Table Wrapper */
+.table-container {
   width: 100%;
+  overflow-x: auto;
   margin-top: 20px;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  font-family: Verdana, Arial, sans-serif; 
 }
 
-/* Table Head */
+/* Base Table */
+#userTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  font-family: Verdana, Arial, sans-serif;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Table Header */
 #userTable th {
-  background: #007BFF;
-  color: #fff !important;   
+  background: #007BFF; /* Retained main blue */
+  color: #fff !important;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 14px;
   padding: 12px 15px;
+  letter-spacing: 0.5px;
   text-align: center;
 }
 
-/* Table Body Cells */
+/* Table Body */
 #userTable td {
   padding: 12px 15px;
   text-align: center;
   font-size: 14px;
-  color: #000 !important;   
+  color: #000 !important;
+  border-bottom: 1px solid #eee;
+  transition: background 0.3s ease;
 }
 
 /* Zebra Stripes */
@@ -35,30 +49,43 @@ table {
   background: #fafafa;
 }
 
-/* Hover Effect */
+/* Hover Row Effect */
 #userTable tr:hover {
   background: #f1f7ff;
-  color: #000 !important;  
+  color: #000;
 }
 
-/* Flash Message */
+/* ================================
+   FLASH MESSAGE
+================================ */
 #flashMessage {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #155724;
-  background: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 6px;
-  display: none;
-}
-
-/* Search Input */
-#searchInput {
   margin-top: 15px;
   padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  display: none;
+  text-align: center;
+  transition: opacity 0.3s ease;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+#flashMessage.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+
+/* ================================
+   SEARCH INPUT
+================================ */
+#searchInput {
+  display: block;
   width: 50%;
+  padding: 10px 15px;
+  margin-top: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
   outline: none;
@@ -70,68 +97,118 @@ table {
   box-shadow: 0 0 5px rgba(0,123,255,0.4);
 }
 
-
-/*  Action Buttons */
-.btn-edit {
-  background: #ffc107;
-  color: #000;
+/* ================================
+   BUTTON STYLES
+================================ */
+.btn-edit,
+.btn-delete,
+.btn-restore,
+.btn-filter {
+  display: inline-block;
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-size: 13px;
   font-weight: bold;
+  cursor: pointer;
   transition: background 0.3s, transform 0.2s;
 }
 
+/* Edit Button */
+.btn-edit {
+  background: #ffc107;
+  color: #000;
+}
 .btn-edit:hover {
   background: #e0a800;
   transform: scale(1.05);
 }
 
+/* Delete Button */
 .btn-delete {
   background: #dc3545;
   color: #fff;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background 0.3s, transform 0.2s;
 }
-
 .btn-delete:hover {
   background: #c82333;
   transform: scale(1.05);
 }
+
+/* Restore Button */
 .btn-restore {
   background: #28a745;
   color: #fff;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background 0.3s, transform 0.2s;
 }
 .btn-restore:hover {
   background: #218838;
   transform: scale(1.05);
 }
-.btn-filter{
+
+/* Filter Button */
+.btn-filter {
   background: #17a2b8;
   color: #fff;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background 0.3s, transform 0.2s;
 }
 .btn-filter:hover {
   background: #138496;
   transform: scale(1.05);
 }
+
+/* ================================
+   PAGINATION
+================================ */
+#pagination {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.page-btn {
+  background: #f8f9fa;
+  color: #007bff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.page-btn.active {
+  background: #007bff;
+  color: #fff;
+  font-weight: 600;
+  border-color: #007bff;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+================================ */
+@media (max-width: 768px) {
+  #searchInput {
+    width: 100%;
+  }
+
+  #userTable th,
+  #userTable td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .btn-edit,
+  .btn-delete,
+  .btn-restore,
+  .btn-filter {
+    font-size: 12px;
+    padding: 5px 9px;
+  }
+}
+
+
