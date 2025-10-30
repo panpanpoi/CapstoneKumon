@@ -1,29 +1,29 @@
 /* =========================================================
-   💳 RECORD PAYMENT — Compact Centered Dark Theme
+   💳 RECORD PAYMENT — Dark Theme + Drawer Integration
    ========================================================= */
 
-/* Main layout */
+/* ===============================
+   Page & Form Layout
+   =============================== */
 .dashboard-content {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  background: #1e1e1e;  /* Dark background */
+  background: #1e1e1e;
   box-sizing: border-box;
 }
 
-/* Centered form container */
 .payment-form-container {
   background: #181818;
   padding: 24px 28px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
   width: 100%;
   max-width: 480px;
   border: 1px solid #222;
 }
 
-/* Title */
 .payment-form-container h2 {
   font-size: 1.2rem;
   color: #00aaff;
@@ -32,7 +32,9 @@
   font-weight: 600;
 }
 
-/* Labels */
+/* ===============================
+   Form Elements
+   =============================== */
 form label {
   display: block;
   margin-top: 10px;
@@ -41,7 +43,6 @@ form label {
   font-size: 0.9rem;
 }
 
-/* Inputs & selects */
 form input,
 form select,
 form textarea {
@@ -64,40 +65,9 @@ form textarea:focus {
   outline: none;
 }
 
-/* Search dropdown */
-.search-results {
-  border: 1px solid #333;
-  max-height: 160px;
-  overflow-y: auto;
-  background: #1c1c1c;
-  position: absolute;
-  width: 100%;
-  z-index: 999;
-  color: #eee;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
-
-.search-results div {
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.search-results div:hover {
-  background-color: #00aaff;
-  color: #fff;
-}
-
-/* Selected student text */
-.selected-student {
-  margin-top: 8px;
-  color: #2ecc71;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-/* Change button */
+/* ===============================
+   Buttons
+   =============================== */
 .change-btn {
   display: none;
   margin-top: 6px;
@@ -115,7 +85,6 @@ form textarea:focus {
   background-color: #2980b9;
 }
 
-/* Submit button */
 form button[type="submit"] {
   margin-top: 18px;
   padding: 10px 16px;
@@ -139,15 +108,191 @@ form button:disabled {
   cursor: not-allowed;
 }
 
-/* Positioning helpers */
-#student_search, #results, .selected-student, .change-btn {
-  position: relative;
-  z-index: 10;
+/* ===============================
+   Selected Student Info
+   =============================== */
+#selectedStudent {
+  margin-top: 10px;
+  color: #2ecc71;
+  font-weight: 500;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
-/* Responsive tweaks */
+/* ===============================
+   Drawer Styling (wa-drawer)
+   =============================== */
+.drawer-placement-bottom::part(base) {
+  background: linear-gradient(180deg, #1b1b1b 0%, #111 100%);
+  color: #f1f1f1;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.75);
+  border-top: 1px solid #2a2a2a;
+  animation: drawerSlideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+/* Smooth slide-up animation */
+@keyframes drawerSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.drawer-content {
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Drawer header with mini close (×) icon */
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.drawer-header h3 {
+  color: #00aaff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.drawer-close:hover {
+  color: #ff4d4d;
+  transform: scale(1.1);
+}
+
+/* Search input styling */
+#studentSearchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #141414;
+  color: #eee;
+  font-size: 0.9rem;
+  transition: border 0.2s ease, background 0.2s ease, box-shadow 0.2s;
+}
+
+#studentSearchInput:focus {
+  border-color: #00aaff;
+  background-color: #1a1a1a;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 170, 255, 0.4);
+}
+
+/* ===============================
+   Search Results
+   =============================== */
+#studentList {
+  margin-top: 10px;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  background: #131313;
+  overflow-y: auto;
+  max-height: 240px;
+  padding: 6px;
+}
+
+.student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.search-item {
+  background: #1c1c1c;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #2a2a2a;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.search-item:hover {
+  background: #00aaff;
+  color: #fff;
+  transform: translateY(-1px);
+  border-color: #00aaff;
+  box-shadow: 0 0 6px rgba(0, 170, 255, 0.4);
+}
+
+.search-item b {
+  color: #00aaff;
+}
+
+.search-item:hover b {
+  color: #fff;
+}
+
+/* Ledger Section */
+#studentLedger {
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px solid #2a2a2a;
+}
+
+#studentLedger h4 {
+  color: #00aaff;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+#ledgerContent {
+  font-size: 0.85rem;
+  background: #101010;
+  padding: 8px;
+  border-radius: 6px;
+  color: #ccc;
+  border: 1px solid #222;
+  min-height: 50px;
+}
+
+/* ===============================
+   Scrollbar
+   =============================== */
+#studentList::-webkit-scrollbar {
+  width: 6px;
+}
+#studentList::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 3px;
+}
+#studentList::-webkit-scrollbar-thumb:hover {
+  background-color: #00aaff;
+}
+
+/* Responsive Compact */
 @media (max-width: 480px) {
-  .payment-form-container {
-    padding: 18px 20px;
+  .drawer-content {
+    padding: 0.8rem;
+  }
+  .drawer-header h3 {
+    font-size: 0.9rem;
+  }
+  .drawer-close {
+    font-size: 1rem;
   }
 }
