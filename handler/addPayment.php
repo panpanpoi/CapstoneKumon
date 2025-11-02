@@ -3,12 +3,13 @@ session_start();
 require_once "../database.php"; // connect to database
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $student_id       = $_POST['student_id']       ?? null;
-    $amount           = $_POST['amount']           ?? null;
-    $payment_date     = $_POST['payment_date']     ?? null;
-    $payment_method   = $_POST['payment_method']   ?? null;
-    $reference_number = $_POST['reference_number'] ?? null;
-    $remarks          = $_POST['remarks']          ?? null;
+    $student_id        = $_POST['student_id']        ?? null;
+    $amount            = $_POST['amount']            ?? null;
+    $payment_date      = $_POST['payment_date']      ?? null;
+    $payment_method    = $_POST['payment_method']    ?? null;
+    $reference_number  = $_POST['reference_number']  ?? null;
+    $tfMonthCovered    = $_POST['tfMonthCovered']    ?? null; // ✅ NEW FIELD
+    $remarks           = $_POST['remarks']           ?? null;
 
     // ✅ Required field check
     if (!$student_id || !$amount || !$payment_date || !$payment_method) {
@@ -18,30 +19,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     try {
+        // ✅ Check if this month was already paid for
+        $check = $pdo->prepare("
+            SELECT COUNT(*) FROM payments 
+            WHERE student_id = :student_id AND tf_month_covered = :tfMonthCovered
+        ");
+        $check->execute([
+            ':student_id' => $student_id,
+            ':tfMonthCovered' => $tfMonthCovered
+        ]);
+        $alreadyPaid = $check->fetchColumn();
+
+        if ($alreadyPaid > 0) {
+            $_SESSION['error'] = "⚠️ Payment for {$tfMonthCovered} already exists for this student.";
+            header("Location: ../pages/recordPayment.php");
+            exit;
+        }
+
         // ✅ Compute due date (30 days after payment date)
         $dueDateObj = new DateTime($payment_date);
         $dueDateObj->modify('+30 days');
         $due_date = $dueDateObj->format('Y-m-d');
 
-        // ✅ Insert payment with computed due date
+        // ✅ Insert payment
         $stmt = $pdo->prepare("
             INSERT INTO payments 
-                (student_id, amount, payment_date, due_date, payment_method, reference_number, remarks) 
+                (student_id, amount, payment_date, due_date, payment_method, reference_number, tf_month_covered, remarks) 
             VALUES 
-                (:student_id, :amount, :payment_date, :due_date, :payment_method, :reference_number, :remarks)
+                (:student_id, :amount, :payment_date, :due_date, :payment_method, :reference_number, :tfMonthCovered, :remarks)
         ");
 
         $stmt->execute([
-            ':student_id'       => $student_id,
-            ':amount'           => $amount,
-            ':payment_date'     => $payment_date,
-            ':due_date'         => $due_date,
-            ':payment_method'   => $payment_method,
-            ':reference_number' => $reference_number ?: null,
-            ':remarks'          => $remarks ?: null
+            ':student_id'        => $student_id,
+            ':amount'            => $amount,
+            ':payment_date'      => $payment_date,
+            ':due_date'          => $due_date,
+            ':payment_method'    => $payment_method,
+            ':reference_number'  => $reference_number ?: null,
+            ':tfMonthCovered'    => $tfMonthCovered ?: null,
+            ':remarks'           => $remarks ?: null
         ]);
 
-        $_SESSION['success'] = "✅ Payment recorded successfully! (Next due: {$due_date})";
+        $_SESSION['success'] = "✅ Payment for {$tfMonthCovered} recorded successfully! (Next due: {$due_date})";
         header("Location: ../pages/recordPayment.php");
         exit;
 
@@ -51,3 +70,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 }
+?>

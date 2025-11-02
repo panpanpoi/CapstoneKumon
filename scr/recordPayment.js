@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const referenceGroup = document.querySelector(".reference-group");
   const studentLedger = document.getElementById("studentLedger");
   const confirmStudentBtn = document.getElementById("confirmStudentBtn");
+  const tfMonthCovered = document.getElementById("tfMonthCovered");
+  const paymentDateInput = document.getElementById("payment_date");
   let selectedStudentId = null;
   let selectedStudentName = null;
 
@@ -119,6 +121,27 @@ document.addEventListener("DOMContentLoaded", () => {
     amountInput.value = parseFloat(student.monthlyFee || 0).toFixed(2);
     amountInput.focus();
 
+    // 🧾 Auto-fill TF Month Covered
+    const tfMonthInput = document.getElementById("tfMonthCovered");
+    if (tfMonthInput) {
+      const latestMonth = data.latestMonth;
+      let nextMonth = "";
+
+      if (latestMonth) {
+        // Parse latest month (e.g. "October 2025")
+        const [monthName, year] = latestMonth.split(" ");
+        const date = new Date(`${monthName} 1, ${year}`);
+        date.setMonth(date.getMonth() + 1);
+        nextMonth = date.toLocaleString("en-US", { month: "long", year: "numeric" });
+      } else {
+        // If no previous payment, start from current month
+        const now = new Date();
+        nextMonth = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+      }
+
+      tfMonthInput.value = nextMonth;
+    }
+
     // Populate ledger section
     if (ledger.length === 0) {
       ledgerContent.innerHTML = `<p style="color:#888;">No previous payments found.</p>`;
@@ -133,9 +156,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update payment summary
     const monthsPaid = data.monthsPaid || 0;
-    document.getElementById("monthsPaid").textContent = `${monthsPaid} / 12`;
     document.getElementById("paymentStatus").textContent = monthsPaid >= 12 ? "Complete" : "Pending";
     document.getElementById("paymentSummary").style.display = "block";
+
+    // 🧩 Auto-fill TF-Month Covered
+    if (tfMonthCovered) {
+      if (ledger.length > 0) {
+        // Sort ledger by date to find the latest one
+        const latestPayment = ledger.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        const latestDate = new Date(latestPayment.date);
+        // Next month after the latest payment
+        latestDate.setMonth(latestDate.getMonth() + 1);
+        const monthName = latestDate.toLocaleString("en-US", { month: "long" });
+        tfMonthCovered.value = `${monthName} ${latestDate.getFullYear()}`;
+      } else {
+        // If no previous payments, default to current month
+        const today = new Date();
+        const monthName = today.toLocaleString("en-US", { month: "long" });
+        tfMonthCovered.value = `${monthName} ${today.getFullYear()}`;
+      }
+    }
 
     // Show change button
     changeBtn.style.display = "inline-block";
@@ -156,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
     changeBtn.style.display = "none";
     submitBtn.disabled = true;
     amountInput.value = "";
+    if (tfMonthCovered) tfMonthCovered.value = "";
     ledgerContent.innerHTML = "Select a student to view details.";
     studentLedger.style.display = "none";
     confirmStudentBtn.disabled = true;
@@ -177,6 +218,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize on page load
   toggleReferenceField();
+
+  // 🧩 Update TF-Month Covered when payment date changes
+  paymentDateInput?.addEventListener("change", () => {
+    if (!tfMonthCovered) return;
+    const selectedDate = new Date(paymentDateInput.value);
+    if (isNaN(selectedDate)) return;
+
+    const monthName = selectedDate.toLocaleString("en-US", { month: "long" });
+    tfMonthCovered.value = `${monthName} ${selectedDate.getFullYear()}`;
+  });
 
   // === CONFIRM BEFORE SUBMIT WITH STUDENT CHECK ===
   const form = document.getElementById("paymentForm");

@@ -117,6 +117,10 @@ $initials = $_SESSION['initials'];
 
             <label for="amount">Amount:</label>
             <input type="number" step="0.01" id="amount" name="amount" placeholder="Enter amount" required>
+            <div class="form-group">
+              <label for="tfMonthCovered">TF Month Covered</label>
+              <input type="text" id="tfMonthCovered" name="tfMonthCovered" readonly>
+            </div>
 
             <label for="payment_date">Payment Date:</label>
             <input type="date" id="payment_date" name="payment_date" required>
@@ -166,9 +170,6 @@ $initials = $_SESSION['initials'];
 
       <!-- Payment Summary -->
       <div class="payment-summary" id="paymentSummary" style="display:none;">
-        <div class="info">
-          <strong>Months Paid:</strong> <span id="monthsPaid">0 / 12</span>
-        </div>
         <div class="info">
           <strong>Status:</strong> <span id="paymentStatus">Pending</span>
         </div>

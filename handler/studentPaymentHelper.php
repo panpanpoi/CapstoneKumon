@@ -70,6 +70,18 @@ try {
         $ledgerStmt->execute([$id]);
         $ledger = $ledgerStmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // ✅ Get last paid month (based on tf_month_covered)
+        $latestMonthStmt = $pdo->prepare("
+            SELECT tf_month_covered
+            FROM payments
+            WHERE student_id = :id
+            AND tf_month_covered IS NOT NULL
+            ORDER BY STR_TO_DATE(CONCAT('01 ', tf_month_covered), '%d %M %Y') DESC
+            LIMIT 1
+        ");
+        $latestMonthStmt->execute([':id' => $id]);
+        $latestMonth = $latestMonthStmt->fetchColumn();
+
         // --- Calculate months paid ---
         $totalPaid = 0;
         foreach ($ledger as $payment) {
@@ -77,11 +89,13 @@ try {
         }
         $monthsPaid = floor($totalPaid / $student['monthlyFee']);
 
-        echo json_encode([
+        $response = [
             'student' => $student,
             'ledger' => $ledger,
-            'monthsPaid' => $monthsPaid
-        ]);
+            'monthsPaid' => $monthsPaid,
+            'latestMonth' => $latestMonth ?: null  // ✅ added here
+        ];
+        echo json_encode($response);
         exit;
     }
 
