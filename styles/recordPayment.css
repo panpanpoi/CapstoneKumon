@@ -1,298 +1,111 @@
-/* =========================================================
-   💳 RECORD PAYMENT — Dark Theme + Drawer Integration
-   ========================================================= */
+/* RECORD PAYMENT — Form & Panel (Dark Admin Theme) */
 
-/* ===============================
-   Page & Form Layout
-   =============================== */
-.dashboard-content {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  background: #1e1e1e;
-  box-sizing: border-box;
-}
-
-.payment-form-container {
-  background: #181818;
-  padding: 24px 28px;
+/* --- Panels --- */
+.panel {
+  background: #121212;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-  width: 100%;
-  max-width: 480px;
-  border: 1px solid #222;
-}
-
-.payment-form-container h2 {
-  font-size: 1.2rem;
-  color: #00aaff;
-  text-align: center;
-  margin-bottom: 18px;
-  font-weight: 600;
-}
-
-/* ===============================
-   Form Elements
-   =============================== */
-form label {
-  display: block;
-  margin-top: 10px;
-  font-weight: 500;
-  color: #ccc;
-  font-size: 0.9rem;
-}
-
-form input,
-form select,
-form textarea {
-  width: 100%;
-  padding: 8px 10px;
-  margin-top: 4px;
-  border: 1px solid #333;
-  border-radius: 6px;
-  background-color: #121212;
-  color: #eee;
-  font-size: 0.9rem;
-  transition: border 0.2s ease, background 0.2s ease;
-}
-
-form input:focus,
-form select:focus,
-form textarea:focus {
-  border-color: #00aaff;
-  background-color: #1a1a1a;
-  outline: none;
-}
-
-/* ===============================
-   Buttons
-   =============================== */
-.change-btn {
-  display: none;
-  margin-top: 6px;
-  padding: 5px 10px;
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  transition: background 0.3s ease;
-}
-
-.change-btn:hover {
-  background-color: #2980b9;
-}
-
-form button[type="submit"] {
-  margin-top: 18px;
-  padding: 10px 16px;
-  background-color: #2ecc71;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
-  width: 100%;
-  font-weight: 600;
-  transition: background 0.3s ease, transform 0.1s ease;
-}
-
-form button[type="submit"]:hover {
-  background-color: #27ae60;
-  transform: translateY(-1px);
-}
-
-form button:disabled {
-  background-color: #555;
-  cursor: not-allowed;
-}
-
-/* ===============================
-   Selected Student Info
-   =============================== */
-#selectedStudent {
-  margin-top: 10px;
-  color: #2ecc71;
-  font-weight: 500;
-  background: #111;
-  border: 1px solid #2a2a2a;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-}
-
-/* ===============================
-   Drawer Styling (wa-drawer)
-   =============================== */
-.drawer-placement-bottom::part(base) {
-  background: linear-gradient(180deg, #1b1b1b 0%, #111 100%);
-  color: #f1f1f1;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.75);
-  border-top: 1px solid #2a2a2a;
-  animation: drawerSlideUp 0.3s ease-out;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
-/* Smooth slide-up animation */
-@keyframes drawerSlideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.payment-panel {
+  max-width: 380px;
+  margin: 20px auto 0 auto;
+  padding-top: 20px;
 }
 
-.drawer-content {
-  padding: 1rem 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-/* Drawer header with mini close (×) icon */
-.drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  padding-bottom: 6px;
+.panel-header {
+  background: #1a1a1a;
+  padding: 12px 18px;
   border-bottom: 1px solid #2a2a2a;
 }
 
-.drawer-header h3 {
+.panel-header h2 {
   color: #00aaff;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
 }
 
-.drawer-close {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.2s ease;
+.panel-body {
+  padding: 16px 18px;
 }
 
-.drawer-close:hover {
-  color: #ff4d4d;
-  transform: scale(1.1);
+/* --- Form Elements --- */
+.panel-body label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #dcdcdc;
+  font-size: 0.85rem;
 }
 
-/* Search input styling */
-#studentSearchInput {
+.panel-body input,
+.panel-body select,
+.panel-body textarea {
   width: 100%;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 8px 10px;
   border: 1px solid #333;
-  background-color: #141414;
-  color: #eee;
-  font-size: 0.9rem;
-  transition: border 0.2s ease, background 0.2s ease, box-shadow 0.2s;
-}
-
-#studentSearchInput:focus {
-  border-color: #00aaff;
-  background-color: #1a1a1a;
-  outline: none;
-  box-shadow: 0 0 6px rgba(0, 170, 255, 0.4);
-}
-
-/* ===============================
-   Search Results
-   =============================== */
-#studentList {
-  margin-top: 10px;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  background: #131313;
-  overflow-y: auto;
-  max-height: 240px;
-  padding: 6px;
-}
-
-.student-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.search-item {
-  background: #1c1c1c;
-  padding: 10px 12px;
   border-radius: 6px;
-  border: 1px solid #2a2a2a;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s ease;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  transition: 0.2s ease;
 }
 
-.search-item:hover {
+.panel-body input:focus,
+.panel-body select:focus,
+.panel-body textarea:focus {
+  border-color: #00aaff;
+  box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.25);
+  outline: none;
+}
+
+/* --- Buttons --- */
+button,
+.panel-body button[type="submit"] {
   background: #00aaff;
   color: #fff;
-  transform: translateY(-1px);
-  border-color: #00aaff;
-  box-shadow: 0 0 6px rgba(0, 170, 255, 0.4);
-}
-
-.search-item b {
-  color: #00aaff;
-}
-
-.search-item:hover b {
-  color: #fff;
-}
-
-/* Ledger Section */
-#studentLedger {
-  margin-top: 14px;
-  padding-top: 8px;
-  border-top: 1px solid #2a2a2a;
-}
-
-#studentLedger h4 {
-  color: #00aaff;
-  margin-bottom: 6px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-#ledgerContent {
-  font-size: 0.85rem;
-  background: #101010;
-  padding: 8px;
+  border: none;
+  padding: 8px 18px;
   border-radius: 6px;
-  color: #ccc;
-  border: 1px solid #222;
-  min-height: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-/* ===============================
-   Scrollbar
-   =============================== */
-#studentList::-webkit-scrollbar {
-  width: 6px;
-}
-#studentList::-webkit-scrollbar-thumb {
-  background-color: #333;
-  border-radius: 3px;
-}
-#studentList::-webkit-scrollbar-thumb:hover {
-  background-color: #00aaff;
+button:hover {
+  background: #0090dd;
+  transform: translateY(-1px);
 }
 
-/* Responsive Compact */
-@media (max-width: 480px) {
-  .drawer-content {
-    padding: 0.8rem;
-  }
-  .drawer-header h3 {
-    font-size: 0.9rem;
-  }
-  .drawer-close {
-    font-size: 1rem;
-  }
+button:disabled {
+  background: #2d2d2d;
+  cursor: not-allowed;
+}
+
+/* --- Alerts --- */
+.alert {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.alert-error {
+  background: rgba(255, 59, 59, 0.1);
+  border: 1px solid rgba(255, 59, 59, 0.3);
+  color: #ff6b6b;
+}
+
+.alert-success {
+  background: rgba(0, 170, 255, 0.1);
+  border: 1px solid rgba(0, 170, 255, 0.3);
+  color: #00aaff;
 }

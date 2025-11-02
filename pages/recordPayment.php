@@ -22,17 +22,18 @@ $initials = $_SESSION['initials'];
   <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
   <link rel="stylesheet" href="../styles/kumonAdmin.css">
   <link rel="stylesheet" href="../styles/recordPayment.css">
+  <link rel="stylesheet" href="../styles/paymentDrawer.css">
 
-    <script 
-      data-fa-kit-code="38c11e3f20" 
-      type="module" 
-      src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/webawesome.loader.js">
-    </script>
-    <link 
-      rel="stylesheet" 
-      href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/styles/webawesome.css">
-
-  </head>
+  <!-- WebAwesome (for icons & drawer/buttons) -->
+  <script 
+    data-fa-kit-code="38c11e3f20" 
+    type="module" 
+    src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/webawesome.loader.js">
+  </script>
+  <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.0.0/dist-cdn/styles/webawesome.css">
+</head>
 <body>
   <!-- SIDEBAR -->
   <div class="sidebar">
@@ -83,63 +84,102 @@ $initials = $_SESSION['initials'];
     </header>
 
     <section class="dashboard-content">
-      <div class="payment-form-container">
-        <h2><i class="fa-solid fa-credit-card"></i> Record a Payment</h2>
+      <div class="panel payment-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-credit-card"></i> Record a Payment</h2>
+        </div>
 
-        <form id="paymentForm" action="../handler/addPayment.php" method="POST">
-          <input type="hidden" id="student_id" name="student_id" required>
+        <div class="panel-body">
+          <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-error">
+              <i class="fa fa-exclamation-triangle"></i> <?= htmlspecialchars($_SESSION['error']) ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+          <?php endif; ?>
 
-          <!-- DRAWER TRIGGER -->
-          <wa-button id="openDrawerBtn" variant="brand">
-            <i class="fa fa-search"></i> Search Student
-          </wa-button>
+          <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success">
+              <i class="fa fa-check-circle"></i> <?= htmlspecialchars($_SESSION['success']) ?>
+            </div>
+            <?php unset($_SESSION['success']); ?>
+          <?php endif; ?>
 
-          <div id="selectedStudent" class="selected-student"></div>
-          <wa-button id="changeStudentBtn" variant="neutral" style="display:none;">Change Student</wa-button>
+          <form id="paymentForm" action="../handler/addPayment.php" method="POST">
+            <input type="hidden" id="student_id" name="student_id" required>
 
-          <label for="amount">Amount:</label>
-          <input type="number" step="0.01" id="amount" name="amount" placeholder="Enter amount" required>
+            <!-- DRAWER TRIGGER -->
+            <wa-button id="openDrawerBtn" variant="brand" size="small">
+              <i class="fa fa-search"></i> Search Student
+            </wa-button>
 
-          <label for="payment_date">Payment Date:</label>
-          <input type="date" id="payment_date" name="payment_date" required>
+            <div id="selectedStudent" class="selected-student"></div>
+            <wa-button id="changeStudentBtn" variant="neutral" size="small" style="display:none;">Change Student</wa-button>
 
-          <label for="payment_method">Payment Method:</label>
-          <select id="payment_method" name="payment_method" required>
-            <option value="Cash">Cash</option>
-            <option value="GCash">GCash</option>
-            <option value="Bank">Bank</option>
-          </select>
+            <label for="amount">Amount:</label>
+            <input type="number" step="0.01" id="amount" name="amount" placeholder="Enter amount" required>
 
-          <label for="reference_number">Reference Number:</label>
-          <input type="text" id="reference_number" name="reference_number" placeholder="Enter reference number (if any)">
+            <label for="payment_date">Payment Date:</label>
+            <input type="date" id="payment_date" name="payment_date" required>
 
-          <label for="remarks">Notes / Remarks:</label>
-          <textarea id="remarks" name="remarks" placeholder="Add any remarks here..."></textarea>
+            <label for="payment_method">Payment Method:</label>
+            <select id="payment_method" name="payment_method" required>
+              <option value="Cash">Cash</option>
+              <option value="GCash">GCash</option>
+              <option value="Bank">Bank</option>
+            </select>
 
-          <button type="submit" id="submitBtn" disabled>
-            <i class="fa-solid fa-floppy-disk"></i> Save Payment
-          </button>
-        </form>
+            <div class="reference-group">
+              <label for="reference_number">Reference Number:</label>
+              <input type="text" id="reference_number" name="reference_number" placeholder="Enter reference number (if any)">
+            </div>
+
+            <label for="remarks">Notes / Remarks:</label>
+            <textarea id="remarks" name="remarks" placeholder="Add any remarks here..."></textarea>
+
+            <button type="submit" id="submitBtn" disabled>
+              <i class="fa-solid fa-floppy-disk"></i> Save Payment
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   </main>
 
   <!-- STUDENT SEARCH DRAWER -->
-  <wa-drawer label="Search Student" placement="bottom" class="drawer-placement-bottom">
-    <div class="drawer-content" style="padding: 15px; max-height: 60vh; overflow-y: auto;">
-      <h3 style="margin-bottom: 10px;">Find Student</h3>
-      <wa-input id="studentSearchInput" placeholder="Search by name or student code" clearable></wa-input>
-      <div id="studentList" style="margin-top: 15px; border: 1px solid #ddd; border-radius: 8px; overflow-y: auto; max-height: 250px; padding: 5px;">
+  <wa-drawer label="Search Student"  class="custom-drawer">
+    <div class="drawer-inner">
+      <div class="drawer-header">
+        <h3>Find Student</h3>
+      </div>
+
+      <input id="studentSearchInput" type="text" placeholder="Search by name or student code" class="drawer-input">
+
+      <div id="studentList" class="drawer-list">
         <p style="text-align:center; color:#666; margin:10px 0;">Start typing to search...</p>
       </div>
-      <div id="studentLedger" style="margin-top: 20px;">
-        <h4>Student Ledger</h4>
-        <div id="ledgerContent" style="font-size: 14px; color: #333;">Select a student to view their details.</div>
+
+      <!-- Student Ledger -->
+      <div id="studentLedger" style="display:none;">
+        <h4>Payment Ledger</h4>
+        <div id="ledgerContent">Select a student to view details.</div>
+      </div>
+
+      <!-- Payment Summary -->
+      <div class="payment-summary" id="paymentSummary" style="display:none;">
+        <div class="info">
+          <strong>Months Paid:</strong> <span id="monthsPaid">0 / 12</span>
+        </div>
+        <div class="info">
+          <strong>Status:</strong> <span id="paymentStatus">Pending</span>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button id="confirmStudentBtn" disabled>
+          <i class="fa fa-check"></i> Select Student
+        </button>
       </div>
     </div>
-    <wa-button slot="footer" variant="neutral" data-drawer="close">
-      <i class="fa fa-times"></i> Close
-    </wa-button>
   </wa-drawer>
 
   <!-- Scripts -->

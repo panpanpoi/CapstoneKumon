@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === ELEMENTS ===
   const drawer = document.querySelector("wa-drawer");
   const openDrawerBtn = document.getElementById("openDrawerBtn");
-  const closeDrawerBtn = drawer.querySelector("[data-drawer='close']");
+  const closeDrawerBtn = drawer?.querySelector("[data-drawer='close']");
   const searchInput = document.getElementById("studentSearchInput");
   const studentList = document.getElementById("studentList");
   const ledgerContent = document.getElementById("ledgerContent");
@@ -12,18 +12,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const changeBtn = document.getElementById("changeStudentBtn");
   const submitBtn = document.getElementById("submitBtn");
   const amountInput = document.getElementById("amount");
+  const paymentMethod = document.getElementById("payment_method");
+  const referenceGroup = document.querySelector(".reference-group");
+  const studentLedger = document.getElementById("studentLedger");
+  const confirmStudentBtn = document.getElementById("confirmStudentBtn");
+  let selectedStudentId = null;
+  let selectedStudentName = null;
 
   let searchTimeout;
 
   // === OPEN DRAWER ===
   openDrawerBtn?.addEventListener("click", () => {
-    drawer.open = true;
-    searchInput.focus();
+    if (drawer) drawer.open = true;
+    searchInput?.focus();
   });
 
-  // === CLOSE DRAWER ===
-  closeDrawerBtn?.addEventListener("click", () => {
-    drawer.open = false;
+  // === CONFIRM STUDENT SELECTION ===
+  confirmStudentBtn?.addEventListener("click", () => {
+    if (selectedStudentId && selectedStudentName) {
+      selectStudent(selectedStudentId, selectedStudentName);
+    }
+    if (drawer) drawer.open = false;
   });
 
   // === SEARCH STUDENT ===
@@ -42,29 +51,36 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!resp.ok) throw new Error("Network error");
         const data = await resp.json();
 
-        if (!data.length) {
+        if (!Array.isArray(data) || !data.length) {
           studentList.innerHTML = `<p style="text-align:center;color:#666;">No students found.</p>`;
           ledgerContent.innerHTML = `Select a student to view details.`;
           return;
         }
 
-        studentList.innerHTML = data
-          .map(
-            (s) => `
-              <div class="search-item" data-id="${s.student_id}">
-                <b>[${s.studentCode}]</b> ${s.full_name || `${s.Firstname} ${s.Lastname}`}<br>
-                <span style="font-size:13px;color:#555;">Plan: ${s.plan} — Level: ${s.level}</span>
-              </div>`
-          )
-          .join("");
+        studentList.innerHTML = data.map(s => {
+          const name = s.full_name || `${s.Firstname || ""} ${s.Lastname || ""}`;
+          return `
+            <div class="search-item" data-id="${s.student_id}" data-name="${name}">
+              <b>[${s.studentCode}]</b> ${name}<br>
+              <span style="font-size:13px;color:#555;">Plan: ${s.plan || "N/A"} — ₱${parseFloat(s.monthlyFee || 0).toFixed(2)}</span>
+            </div>
+          `;
+        }).join("");
 
-        studentList.querySelectorAll(".search-item").forEach((item) => {
+        // Add click handlers to show ledger
+        studentList.querySelectorAll(".search-item").forEach(item => {
           item.addEventListener("click", async () => {
             const id = item.dataset.id;
-            await selectStudent(id);
-            drawer.open = false;
+            const name = item.dataset.name;
+            selectedStudentId = id;
+            selectedStudentName = name;
+            await selectStudent(id, name);
+            studentLedger.style.display = "block";
+            confirmStudentBtn.disabled = false;
+            // Don't close drawer automatically
           });
         });
+
       } catch (err) {
         console.error(err);
         studentList.innerHTML = `<p style="color:red;text-align:center;">Search failed.</p>`;
@@ -73,53 +89,65 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===============================
-  // 🧠 When selecting a student
+  // 🧠 SELECT STUDENT
   // ===============================
-  async function selectStudent(studentId) {
-    try {
-      const res = await fetch(`../handler/studentPaymentHelper.php?action=plan&id=${studentId}`);
-      const data = await res.json();
+  async function selectStudent(studentId, name = "") {
+  try {
+    const res = await fetch(`../handler/studentPaymentHelper.php?action=plan&id=${studentId}`);
+    const data = await res.json();
 
-      if (data.error) {
-        alert(data.error);
-        return;
-      }
-
-      const student = data.student;
-      const ledger = data.ledger || [];
-
-      // Display selected student
-      const studentInfo = `
-        <b>${student.full_name}</b><br>
-        [${student.studentCode}] — Level ${student.level}<br>
-        Plan: ${student.plan} — ₱${parseFloat(student.monthlyFee).toFixed(2)}
-      `;
-
-      selectedStudent.innerHTML = studentInfo;
-      studentIdField.value = student.student_id;
-      submitBtn.disabled = false;
-
-      // Populate ledger section
-      if (ledger.length === 0) {
-        ledgerContent.innerHTML = `<p style="color:#888;">No previous payments found.</p>`;
-      } else {
-        ledgerContent.innerHTML = ledger
-          .map(
-            (entry) => `
-              <div style="padding:8px; border-bottom:1px solid #ccc;">
-                <b>${entry.date}</b> — ₱${parseFloat(entry.amount).toFixed(2)}<br>
-                <small>${entry.remarks || "No remarks"}</small>
-              </div>`
-          )
-          .join("");
-      }
-
-      changeBtn.style.display = "inline-block";
-    } catch (err) {
-      console.error(err);
-      alert("Error fetching student details.");
+    if (data.error) {
+      alert(data.error);
+      return;
     }
+
+    const student = data.student;
+    const ledger = Array.isArray(data.ledger) ? data.ledger : [];
+
+    const studentName = student.full_name || name || "Unnamed Student";
+
+    selectedStudent.innerHTML = `
+      <b>${studentName}</b><br>
+      [${student.studentCode || "N/A"}]<br>
+      Plan: ${student.plan || "N/A"} — ₱${parseFloat(student.monthlyFee || 0).toFixed(2)}
+    `;
+
+    studentIdField.value = student.student_id || "";
+    submitBtn.disabled = false;
+
+    // 🧮 Auto-fill and focus amount input
+    amountInput.value = parseFloat(student.monthlyFee || 0).toFixed(2);
+    amountInput.focus();
+
+    // Populate ledger section
+    if (ledger.length === 0) {
+      ledgerContent.innerHTML = `<p style="color:#888;">No previous payments found.</p>`;
+    } else {
+      ledgerContent.innerHTML = ledger.map(entry => `
+        <div style="padding:8px; border-bottom:1px solid #ccc;">
+          <b>${entry.date || "N/A"}</b> — ₱${parseFloat(entry.amount || 0).toFixed(2)} (${entry.payment_method || "N/A"})<br>
+          <small>${entry.remarks || "No remarks"}</small>
+        </div>
+      `).join("");
+    }
+
+    // Update payment summary
+    const monthsPaid = data.monthsPaid || 0;
+    document.getElementById("monthsPaid").textContent = `${monthsPaid} / 12`;
+    document.getElementById("paymentStatus").textContent = monthsPaid >= 12 ? "Complete" : "Pending";
+    document.getElementById("paymentSummary").style.display = "block";
+
+    // Show change button
+    changeBtn.style.display = "inline-block";
+
+    // Do not automatically close drawer here, let user confirm
+
+  } catch (err) {
+    console.error(err);
+    alert("Error fetching student details.");
   }
+}
+
 
   // === CHANGE STUDENT ===
   changeBtn?.addEventListener("click", () => {
@@ -128,27 +156,35 @@ document.addEventListener("DOMContentLoaded", () => {
     changeBtn.style.display = "none";
     submitBtn.disabled = true;
     amountInput.value = "";
+    ledgerContent.innerHTML = "Select a student to view details.";
+    studentLedger.style.display = "none";
+    confirmStudentBtn.disabled = true;
+    selectedStudentId = null;
+    selectedStudentName = null;
   });
 
-  // === CONFIRM BEFORE SUBMIT ===
+  // === TOGGLE REFERENCE FIELD ===
+  const toggleReferenceField = () => {
+    if (paymentMethod.value.toLowerCase() === "cash") {
+      referenceGroup.style.display = "none";
+      document.getElementById("reference_number").value = "";
+    } else {
+      referenceGroup.style.display = "block";
+    }
+  };
+
+  paymentMethod?.addEventListener("change", toggleReferenceField);
+
+  // Initialize on page load
+  toggleReferenceField();
+
+  // === CONFIRM BEFORE SUBMIT WITH STUDENT CHECK ===
   const form = document.getElementById("paymentForm");
   form?.addEventListener("submit", (e) => {
-    const student = selectedStudent.innerText || "Not selected";
-    const amount = form.amount.value;
-    const date = form.payment_date.value;
-    const method = form.payment_method.value;
-    const ref = form.reference_number.value || "N/A";
-    const remarks = form.remarks.value || "N/A";
-
-    const confirmMsg =
-      `Are you sure you want to save this payment?\n\n` +
-      `Student: ${student}\n` +
-      `Amount: ₱${amount}\n` +
-      `Date: ${date}\n` +
-      `Method: ${method}\n` +
-      `Reference #: ${ref}\n` +
-      `Remarks: ${remarks}`;
-
-    if (!confirm(confirmMsg)) e.preventDefault();
+    if (!studentIdField.value) {
+      alert("Please select a student before submitting the payment.");
+      e.preventDefault();
+      return;
+    }
   });
 });

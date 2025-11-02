@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ]);
 
         $_SESSION['success'] = "✅ Payment recorded successfully! (Next due: {$due_date})";
-        header("Location: ../pages/viewPayment.php");
+        header("Location: ../pages/recordPayment.php");
         exit;
 
     } catch (PDOException $e) {

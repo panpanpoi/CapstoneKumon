@@ -58,9 +58,10 @@ try {
         }
 
         // --- Get student ledger ---
-        $ledgerQuery = "SELECT 
+        $ledgerQuery = "SELECT
                             payment_date AS date,
                             amount,
+                            payment_method,
                             remarks
                         FROM payments
                         WHERE student_id = ?
@@ -69,9 +70,17 @@ try {
         $ledgerStmt->execute([$id]);
         $ledger = $ledgerStmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // --- Calculate months paid ---
+        $totalPaid = 0;
+        foreach ($ledger as $payment) {
+            $totalPaid += $payment['amount'];
+        }
+        $monthsPaid = floor($totalPaid / $student['monthlyFee']);
+
         echo json_encode([
             'student' => $student,
-            'ledger' => $ledger
+            'ledger' => $ledger,
+            'monthsPaid' => $monthsPaid
         ]);
         exit;
     }
