@@ -1,86 +1,72 @@
 <?php
-header("Content-Type: application/json");
-require_once "../database.php";
+require_once __DIR__ . '/../database.php';
+header('Content-Type: application/json');
 
-// Start session safely
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// 🔒 Ensure student is logged in
-if (empty($_SESSION['student_id'])) {
-    http_response_code(401);
-    echo json_encode(["success" => false, "error" => "Unauthorized access."]);
-    exit;
-}
-
-$student_id = (int)$_SESSION['student_id'];
-
-// Only allow POST requests
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    http_response_code(405);
-    echo json_encode(["success" => false, "error" => "Invalid request method."]);
-    exit;
-}
-
-// Validate inputs
-$payment_id = $_POST['payment_id'] ?? null;
-$receipt    = $_FILES['receipt'] ?? null;
-
-if (!$payment_id || !$receipt) {
-    echo json_encode(["success" => false, "error" => "Missing payment ID or receipt file."]);
-    exit;
-}
-
-// File validation
-$uploadDir = "../uploads/receipts/";
-if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
-    echo json_encode(["success" => false, "error" => "Failed to create upload directory."]);
-    exit;
-}
-
-$fileTmp  = $receipt['tmp_name'];
-$fileName = basename($receipt['name']);
-$fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-$allowed  = ["jpg", "jpeg", "png", "pdf"];
-
-if (!in_array($fileExt, $allowed)) {
-    echo json_encode(["success" => false, "error" => "Invalid file type. Only JPG, PNG, and PDF are allowed."]);
-    exit;
-}
-
-// Generate safe unique filename
-$newFileName = sprintf("receipt_%d_%d.%s", $student_id, time(), $fileExt);
-$destPath = $uploadDir . $newFileName;
-
-// Move uploaded file
-if (!move_uploaded_file($fileTmp, $destPath)) {
-    echo json_encode(["success" => false, "error" => "File upload failed. Please try again."]);
-    exit;
-}
-
-// Save to database and set payment status to pending review
 try {
-    $relativePath = "uploads/receipts/" . $newFileName;
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method.');
+    }
 
+    if (empty($_POST['payment_id']) || empty($_FILES['receipt'])) {
+        throw new Exception('Missing payment ID or receipt file.');
+    }
+
+    $payment_id = (int)$_POST['payment_id'];
+    $file = $_FILES['receipt'];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception('File upload failed.');
+    }
+
+    // ✅ Validate file type
+    $allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!in_array($file['type'], $allowedTypes)) {
+        throw new Exception('Invalid file type. Only JPG, PNG, or PDF allowed.');
+    }
+
+    // ✅ Create upload directory if needed
+    $uploadDir = __DIR__ . '/../uploads/receipts/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    // ✅ Generate unique filename
+    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $filename = 'receipt_' . $payment_id . '_' . time() . '.' . $ext;
+    $filepath = $uploadDir . $filename;
+    $relativePath = 'uploads/receipts/' . $filename;
+
+    // ✅ Move uploaded file
+    if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+        throw new Exception('Failed to move uploaded file.');
+    }
+
+    // ✅ Update only if payment_status = 'unverified'
     $stmt = $pdo->prepare("
-        UPDATE payments
+        UPDATE payments 
         SET receipt_path = :path, payment_status = 'pending'
-        WHERE payment_id = :pid AND student_id = :sid
+        WHERE payment_id = :id
+          AND payment_status = 'unverified'
     ");
     $stmt->execute([
         ':path' => $relativePath,
-        ':pid'  => $payment_id,
-        ':sid'  => $student_id
+        ':id' => $payment_id
     ]);
+
+    if ($stmt->rowCount() === 0) {
+        throw new Exception('Upload not allowed. Payment is already pending, verified, or rejected.');
+    }
 
     echo json_encode([
-        "success" => true,
-        "message" => "Receipt uploaded successfully. Awaiting admin verification.",
-        "path"    => $relativePath
+        'success' => true,
+        'message' => 'Receipt uploaded successfully. Status is now Pending verification.'
     ]);
 
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "error" => "Database error: " . $e->getMessage()]);
+} catch (Exception $e) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
 }
+?>

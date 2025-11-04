@@ -106,20 +106,22 @@ $initials = $_SESSION['initials'];
     <div id="paymentsContainer" class="table-container">
       <table id="paymentsTable">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Student</th>
-            <th>Code</th>
-            <th>Amount</th>
-            <th>Payment Date</th>
-            <th>Method</th>
-            <th>Reference #</th>
-            <th>TF-Month Covered</th>
-            <th>Status</th>
-            <th>Receipt</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+        <tr>
+          <th>ID</th>
+          <th>Student</th>
+          <th>Code</th>
+          <th>Amount</th>
+          <th>Payment Date</th>
+          <th>Method</th>
+          <th>Reference #</th>
+          <th>TF-Month Covered</th>
+          <th>Due Date</th> <!-- ✅ Added -->
+          <th>Status</th>
+          <th>Receipt</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
         <tbody id="paymentsBody">
           <!-- Populated dynamically by viewPayment.js -->
         </tbody>

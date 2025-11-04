@@ -62,6 +62,20 @@ input:focus {
   border-color: #007bff;
 }
 
+/* Form validation styles */
+input:invalid {
+  border-color: #dc3545;
+}
+
+input:valid {
+  border-color: #28a745;
+}
+
+/* Override browser default validation */
+input:invalid:not(:focus) {
+  border-color: #ccc;
+}
+
 /*  PASSWORD GROUP  */
 .password-group {
   position: relative;

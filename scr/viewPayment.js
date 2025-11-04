@@ -182,13 +182,15 @@ document.addEventListener("DOMContentLoaded", () => {
           <th>Method</th>
           <th>Reference</th>
           <th>TF-Month Covered</th>
+          <th>Due Date</th> 
           <th>Status</th>
           <th>Receipt</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody></tbody>
-    `;
+      `;
+
     paymentsContainer.appendChild(table);
 
     const tbody = table.querySelector("tbody");
@@ -217,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${escapeHTML(payment.payment_method || "-")}</td>
         <td>${escapeHTML(payment.reference_number || "-")}</td>
         <td>${escapeHTML(payment.tf_month_covered || "-")}</td>
+        <td>${escapeHTML(payment.due_date || "-")}</td> <!-- ✅ Added -->
         <td class="status-cell ${statusClass}">${escapeHTML(payment.payment_status || "Unverified")}</td>
         <td>${renderReceipt(payment)}</td>
         <td>${renderActions(payment)}</td>

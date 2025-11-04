@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kumon Login</title>
     <link rel="icon" type="image/png" href="../styles/kumonIcon.png">
 
@@ -17,16 +18,16 @@
       <img src="../styles/kumonLogo.png" alt="Kumon Logo" class="login-logo">
 
       <?php if (isset($_GET['error'])): ?>
-        <p class="error-message"><?= htmlspecialchars($_GET['error']); ?></p>
+        <p class="error-message"><?php echo htmlspecialchars($_GET['error']); ?></p>
       <?php endif; ?>
 
-      <form action="../handler/login.php" method="POST" novalidate>
+      <form action="../handler/login.php" method="POST">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" required>
+        <input type="text" id="username" name="username" autocomplete="username">
 
         <label for="password">Password</label>
         <div class="password-group">
-          <input type="password" id="password" name="password" required>
+          <input type="password" id="password" name="password" autocomplete="current-password">
           <button type="button" id="togglePassword" aria-label="Show password">
             <i class="fa-solid fa-eye"></i>
           </button>
