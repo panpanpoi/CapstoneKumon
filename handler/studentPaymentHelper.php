@@ -31,73 +31,76 @@ try {
     }
 
     // ====================================================
-    // 💰 FETCH SELECTED STUDENT PLAN + LEDGER
-    // ====================================================
-    if ($action === 'plan') {
-        $id = $_GET['id'] ?? '';
-        if ($id === '') {
-            throw new Exception('Missing student ID');
+        // 💰 FETCH SELECTED STUDENT PLAN + LEDGER
+        // ====================================================
+        if ($action === 'plan') {
+            $id = $_GET['id'] ?? '';
+            if ($id === '') {
+                throw new Exception('Missing student ID');
+            }
+
+            // --- Get student details ---
+            $sql = "SELECT 
+                        student_id, 
+                        studentCode, 
+                        CONCAT(Firstname, ' ', Lastname) AS full_name,
+                        plan,
+                        monthlyFee,
+                        level
+                    FROM students
+                    WHERE student_id = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$student) {
+                throw new Exception('Student not found');
+            }
+
+            // --- Get student ledger ---
+            $ledgerQuery = "SELECT
+                                payment_date AS date,
+                                amount,
+                                payment_method,
+                                remarks
+                            FROM payments
+                            WHERE student_id = ?
+                            ORDER BY payment_date DESC";
+            $ledgerStmt = $pdo->prepare($ledgerQuery);
+            $ledgerStmt->execute([$id]);
+            $ledger = $ledgerStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // ✅ Get last paid month (clean + consistent)
+            $latestMonthStmt = $pdo->prepare("
+                SELECT 
+                    DATE_FORMAT(STR_TO_DATE(CONCAT('01 ', TRIM(tf_month_covered)), '%d %M %Y'), '%M %Y') AS formatted_month
+                FROM payments
+                WHERE student_id = :id
+                AND tf_month_covered IS NOT NULL
+                ORDER BY STR_TO_DATE(CONCAT('01 ', TRIM(tf_month_covered)), '%d %M %Y') DESC
+                LIMIT 1
+            ");
+            $latestMonthStmt->execute([':id' => $id]);
+            $latestMonth = $latestMonthStmt->fetchColumn();
+
+            // --- Calculate months paid ---
+            $totalPaid = 0;
+            foreach ($ledger as $payment) {
+                $totalPaid += $payment['amount'];
+            }
+            $monthsPaid = floor($totalPaid / ($student['monthlyFee'] ?: 1));
+
+            $response = [
+                'student' => $student,
+                'ledger' => $ledger,
+                'monthsPaid' => $monthsPaid,
+                'latestMonth' => $latestMonth ?: null
+            ];
+
+            echo json_encode($response);
+            exit;
         }
 
-        // --- Get student details ---
-        $sql = "SELECT 
-                    student_id, 
-                    studentCode, 
-                    CONCAT(Firstname, ' ', Lastname) AS full_name,
-                    plan,
-                    monthlyFee,
-                    level
-                FROM students
-                WHERE student_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $student = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$student) {
-            throw new Exception('Student not found');
-        }
-
-        // --- Get student ledger ---
-        $ledgerQuery = "SELECT
-                            payment_date AS date,
-                            amount,
-                            payment_method,
-                            remarks
-                        FROM payments
-                        WHERE student_id = ?
-                        ORDER BY payment_date DESC";
-        $ledgerStmt = $pdo->prepare($ledgerQuery);
-        $ledgerStmt->execute([$id]);
-        $ledger = $ledgerStmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // ✅ Get last paid month (based on tf_month_covered)
-        $latestMonthStmt = $pdo->prepare("
-            SELECT tf_month_covered
-            FROM payments
-            WHERE student_id = :id
-            AND tf_month_covered IS NOT NULL
-            ORDER BY STR_TO_DATE(CONCAT('01 ', tf_month_covered), '%d %M %Y') DESC
-            LIMIT 1
-        ");
-        $latestMonthStmt->execute([':id' => $id]);
-        $latestMonth = $latestMonthStmt->fetchColumn();
-
-        // --- Calculate months paid ---
-        $totalPaid = 0;
-        foreach ($ledger as $payment) {
-            $totalPaid += $payment['amount'];
-        }
-        $monthsPaid = floor($totalPaid / $student['monthlyFee']);
-
-        $response = [
-            'student' => $student,
-            'ledger' => $ledger,
-            'monthsPaid' => $monthsPaid,
-            'latestMonth' => $latestMonth ?: null  // ✅ added here
-        ];
-        echo json_encode($response);
-        exit;
-    }
 
     throw new Exception('Invalid or missing action.');
 

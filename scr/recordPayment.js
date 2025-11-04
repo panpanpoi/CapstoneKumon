@@ -121,26 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
     amountInput.value = parseFloat(student.monthlyFee || 0).toFixed(2);
     amountInput.focus();
 
-    // 🧾 Auto-fill TF Month Covered
-    const tfMonthInput = document.getElementById("tfMonthCovered");
-    if (tfMonthInput) {
-      const latestMonth = data.latestMonth;
-      let nextMonth = "";
-
-      if (latestMonth) {
-        // Parse latest month (e.g. "October 2025")
-        const [monthName, year] = latestMonth.split(" ");
-        const date = new Date(`${monthName} 1, ${year}`);
-        date.setMonth(date.getMonth() + 1);
-        nextMonth = date.toLocaleString("en-US", { month: "long", year: "numeric" });
-      } else {
-        // If no previous payment, start from current month
-        const now = new Date();
-        nextMonth = now.toLocaleString("en-US", { month: "long", year: "numeric" });
-      }
-
-      tfMonthInput.value = nextMonth;
-    }
 
     // Populate ledger section
     if (ledger.length === 0) {
@@ -161,20 +141,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🧩 Auto-fill TF-Month Covered
     if (tfMonthCovered) {
-      if (ledger.length > 0) {
-        // Sort ledger by date to find the latest one
-        const latestPayment = ledger.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-        const latestDate = new Date(latestPayment.date);
-        // Next month after the latest payment
-        latestDate.setMonth(latestDate.getMonth() + 1);
-        const monthName = latestDate.toLocaleString("en-US", { month: "long" });
-        tfMonthCovered.value = `${monthName} ${latestDate.getFullYear()}`;
-      } else {
-        // If no previous payments, default to current month
-        const today = new Date();
-        const monthName = today.toLocaleString("en-US", { month: "long" });
-        tfMonthCovered.value = `${monthName} ${today.getFullYear()}`;
+      const latestMonth = (data.latestMonth || "").trim();
+      let nextMonth = "";
+
+      if (latestMonth) {
+        try {
+          // Match "Month YYYY" pattern exactly (e.g., "January 2026")
+          const match = latestMonth.match(/^([A-Za-z]+)\s+(\d{4})$/);
+          if (match) {
+            const [, monthName, yearStr] = match;
+            const year = parseInt(yearStr, 10);
+            const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+
+            if (!isNaN(monthIndex) && !isNaN(year)) {
+              const date = new Date(year, monthIndex, 1);
+              date.setMonth(date.getMonth() + 1); // move to next month
+              nextMonth = date.toLocaleString("en-US", { month: "long", year: "numeric" });
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to parse latestMonth:", latestMonth, e);
+        }
       }
+
+      // 🩹 Fallback to current month if parsing failed or no previous payment
+      if (!nextMonth) {
+        const now = new Date();
+        nextMonth = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+      }
+
+      console.log("➡️ Next TF-Month Covered:", nextMonth);
+      tfMonthCovered.value = nextMonth;
     }
 
     // Show change button
@@ -221,13 +218,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 🧩 Update TF-Month Covered when payment date changes
   paymentDateInput?.addEventListener("change", () => {
-    if (!tfMonthCovered) return;
-    const selectedDate = new Date(paymentDateInput.value);
-    if (isNaN(selectedDate)) return;
+  if (!tfMonthCovered) return;
+  if (tfMonthCovered.value.trim() !== "") return; // ✅ don't override existing value
 
-    const monthName = selectedDate.toLocaleString("en-US", { month: "long" });
-    tfMonthCovered.value = `${monthName} ${selectedDate.getFullYear()}`;
-  });
+  const selectedDate = new Date(paymentDateInput.value);
+  if (isNaN(selectedDate)) return;
+
+  const monthName = selectedDate.toLocaleString("en-US", { month: "long" });
+  tfMonthCovered.value = `${monthName} ${selectedDate.getFullYear()}`;
+});
+
 
   // === CONFIRM BEFORE SUBMIT WITH STUDENT CHECK ===
   const form = document.getElementById("paymentForm");

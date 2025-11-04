@@ -45,10 +45,10 @@ $initials = $_SESSION['initials'];
     </div>
 
     <div class="user-profile">
-      <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
+      <div class="user-avatar"><?php echo htmlspecialchars($initials); ?></div>
       <div class="user-details">
-        <div class="username"><?= htmlspecialchars($username) ?></div>
-        <div class="user-role"><?= htmlspecialchars($userRole) ?></div>
+        <div class="username"><?php echo htmlspecialchars($username); ?></div>
+        <div class="user-role"><?php echo htmlspecialchars($userRole); ?></div>
       </div>
     </div>
 
@@ -77,8 +77,8 @@ $initials = $_SESSION['initials'];
     <header class="header">
       <div class="header-right">
         <div class="user-info">
-          <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
-          <div class="user-name"><?= htmlspecialchars($username) ?></div>
+          <div class="user-avatar"><?php echo htmlspecialchars($initials); ?></div>
+          <div class="user-name"><?php echo htmlspecialchars($username); ?></div>
         </div>
       </div>
     </header>
@@ -92,14 +92,14 @@ $initials = $_SESSION['initials'];
         <div class="panel-body">
           <?php if (isset($_SESSION['error'])): ?>
             <div class="alert alert-error">
-              <i class="fa fa-exclamation-triangle"></i> <?= htmlspecialchars($_SESSION['error']) ?>
+              <i class="fa fa-exclamation-triangle"></i> <?php echo htmlspecialchars($_SESSION['error']); ?>
             </div>
             <?php unset($_SESSION['error']); ?>
           <?php endif; ?>
 
           <?php if (isset($_SESSION['success'])): ?>
             <div class="alert alert-success">
-              <i class="fa fa-check-circle"></i> <?= htmlspecialchars($_SESSION['success']) ?>
+              <i class="fa fa-check-circle"></i> <?php echo htmlspecialchars($_SESSION['success']); ?>
             </div>
             <?php unset($_SESSION['success']); ?>
           <?php endif; ?>

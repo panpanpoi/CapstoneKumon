@@ -36,10 +36,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        // ✅ Compute due date (30 days after payment date)
-        $dueDateObj = new DateTime($payment_date);
-        $dueDateObj->modify('+30 days');
-        $due_date = $dueDateObj->format('Y-m-d');
+        // ✅ Compute due date based on TF-Month Covered (preferred)
+        if ($tfMonthCovered) {
+            $tfDateObj = DateTime::createFromFormat('F Y', $tfMonthCovered);
+            if ($tfDateObj) {
+                $tfDateObj->modify('+1 month');
+                $due_date = $tfDateObj->format('Y-m-01'); // or 'Y-m-05'
+            } else {
+                // fallback
+                $dueDateObj = new DateTime($payment_date);
+                $dueDateObj->modify('+30 days');
+                $due_date = $dueDateObj->format('Y-m-d');
+            }
+        } else {
+            // fallback if tfMonthCovered empty
+            $dueDateObj = new DateTime($payment_date);
+            $dueDateObj->modify('+30 days');
+            $due_date = $dueDateObj->format('Y-m-d');
+        }
+
 
         // ✅ Insert payment
         $stmt = $pdo->prepare("
@@ -60,9 +75,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':remarks'           => $remarks ?: null
         ]);
 
-        $_SESSION['success'] = "✅ Payment for {$tfMonthCovered} recorded successfully! (Next due: {$due_date})";
+        // ✅ Compute next due month for success message (next month after tfMonthCovered)
+        $tfMonthDate = DateTime::createFromFormat('F Y', $tfMonthCovered);
+        if ($tfMonthDate) {
+            $tfMonthDate->modify('+1 month');
+            $next_due_month = $tfMonthDate->format('F Y');
+        } else {
+            $next_due_month = 'Unknown';
+        }
+
+        $_SESSION['success'] = "✅ Payment for {$tfMonthCovered} recorded successfully! (Next due: {$next_due_month})";
         header("Location: ../pages/recordPayment.php");
         exit;
+
 
     } catch (PDOException $e) {
         $_SESSION['error'] = "Error saving payment: " . $e->getMessage();
