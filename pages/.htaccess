@@ -1,0 +1,17 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Allow access to this folder
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+
+# Ensure PHP files are handled properly
+<IfModule mod_php.c>
+    <FilesMatch "\.php$">
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes

@@ -1,12 +1,12 @@
 <?php
 require_once "../database.php";
 
-if (!isset($_SESSION)) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // Check for active session
-if (!isset($_SESSION['user_id'], $_SESSION['session_token'])) {
+if (empty($_SESSION['user_id']) || empty($_SESSION['session_token'])) {
     header("Location: ../pages/loginform.php");
     exit;
 }
@@ -21,21 +21,16 @@ $stmt = $pdo->prepare("
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$user) {
+// --- Session Validation ---
+if (!$user || $user['session_token'] !== $_SESSION['session_token']) {
     session_destroy();
-    header("Location: ../login.php");
+    header("Location: ../pages/loginform.php?error=Session expired. Please log in again.");
     exit;
 }
 
-if ($user['session_token'] !== $_SESSION['session_token']) {
-    session_destroy();
-    header("Location: ../login.php?error=You have been logged out because another session started.");
-    exit;
-}
-
-// ✅ Force password change if default or flagged
+// --- Password Policy Check ---
 $defaultPasswords = ['password', 'password123', 'default', '123456', 'changeme'];
-$isDefault = in_array($user['password'], $defaultPasswords);
+$isDefault = in_array($user['password'], $defaultPasswords, true);
 
 if ($isDefault || $user['mustChangePassword'] == 1) {
     if (basename($_SERVER['PHP_SELF']) !== 'forceChangePassword.php') {
@@ -44,28 +39,23 @@ if ($isDefault || $user['mustChangePassword'] == 1) {
     }
 }
 
+// --- Session Data Population ---
 $_SESSION['account_type'] = strtolower($user['account_type']);
 $_SESSION['username'] = $user['Name'] . " " . $user['Surname'];
 
 function getInitials($name) {
-    $parts = explode(" ", trim($name));
-    $initials = "";
-    foreach ($parts as $p) {
-        if ($p !== "") {
-            $initials .= strtoupper(substr($p, 0, 1));
-        }
-    }
-    return $initials;
+    $parts = preg_split('/\s+/', trim($name));
+    return strtoupper(substr($parts[0] ?? '', 0, 1) . substr(end($parts) ?? '', 0, 1));
 }
 $_SESSION['initials'] = getInitials($_SESSION['username']);
 
+// --- Role-based setup ---
 switch ($_SESSION['account_type']) {
     case 'teacher':
         if (empty($_SESSION['teacher_id'])) {
             $stmt = $pdo->prepare("SELECT teacher_id FROM teachers WHERE user_id = ?");
             $stmt->execute([$user_id]);
-            $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
-            $_SESSION['teacher_id'] = $teacher['teacher_id'] ?? null;
+            $_SESSION['teacher_id'] = $stmt->fetchColumn();
         }
         break;
 
@@ -73,8 +63,7 @@ switch ($_SESSION['account_type']) {
         if (empty($_SESSION['student_id'])) {
             $stmt = $pdo->prepare("SELECT student_id FROM students WHERE user_id = ?");
             $stmt->execute([$user_id]);
-            $student = $stmt->fetch(PDO::FETCH_ASSOC);
-            $_SESSION['student_id'] = $student['student_id'] ?? null;
+            $_SESSION['student_id'] = $stmt->fetchColumn();
         }
         break;
 

@@ -43,26 +43,11 @@ $initials = $_SESSION['initials'];
 
         <ul class="nav-menu">
             <li><a href="kumonAdmin.php"><i class="fa fa-home"></i> Home</a></li>
-            <li class="subnav">
-                <button class="subnavbtn">
-                    <i class="fa fa-users"></i> User Management
-                    <i class="fa fa-caret-down caret-icon"></i>
-                </button>
-                <ul class="subnav-content">
-                    <li><a href="accountList.php" class="active"><i class="fa fa-users"></i> Account List</a></li>
-                    <li><a href="createAccount.php"><i class="fa fa-user-plus"></i> Create Account</a></li>
-                </ul>
-            </li>
-            <li class="subnav">
-                <button class="subnavbtn">
-                    <i class="fa fa-credit-card"></i> Payment Management
-                    <i class="fa fa-caret-down caret-icon"></i>
-                </button>
-                <ul class="subnav-content">
-                    <li><a href="recordPayment.php"><i class="fa fa-edit"></i> Record Payment</a></li>
-                    <li><a href="viewPayment.php"><i class="fa fa-list"></i> Payments List</a></li>
-                </ul>
-            </li>
+            <li><a href="accountList.php" class="active"><i class="fa fa-list"></i> Account List</a></li>
+            <li><a href="createAccount.php"><i class="fa fa-user-plus"></i> Create Account</a></li>
+            <li><a href="recordPayment.php"><i class="fa fa-edit"></i> Record Payment</a></li>
+            <li><a href="viewPayment.php"><i class="fa fa-list"></i> Payments List</a></li>
+            <li><a href="adminStudentDelegation.php"><i class="fa fa-user-tag"></i> Student Delegation</a></li>
             <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </div>
