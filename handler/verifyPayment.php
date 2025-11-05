@@ -4,28 +4,31 @@ require_once "auth.php";
 
 header('Content-Type: application/json');
 
-// Only admins
+// ✅ Only admins can verify or reject
 if ($_SESSION['account_type'] !== 'admin') {
-    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+    echo json_encode(['success' => false, 'error' => 'Unauthorized access.']);
     exit;
 }
 
+// ✅ Only POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'error' => 'Invalid request method.']);
     exit;
 }
 
-// Get POST data
+// ✅ Required fields
 $payment_id = $_POST['payment_id'] ?? null;
-$remarks    = trim($_POST['remarks'] ?? '');
+$reference_number = trim($_POST['reference_number'] ?? '');
+$remarks = trim($_POST['remarks'] ?? '');
+$action = $_POST['action'] ?? 'approve'; // 'approve' or 'reject'
 
 if (!$payment_id) {
-    echo json_encode(['success' => false, 'error' => 'Payment ID is required.']);
+    echo json_encode(['success' => false, 'error' => 'Missing payment ID.']);
     exit;
 }
 
 try {
-    // Fetch existing payment
+    // ✅ Fetch payment record
     $stmt = $pdo->prepare("SELECT payment_status, receipt_path FROM payments WHERE payment_id = :id");
     $stmt->execute([':id' => $payment_id]);
     $payment = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -35,45 +38,51 @@ try {
         exit;
     }
 
-    $receipt_path = $payment['receipt_path'];
-
-    // Handle receipt upload if present
-    if (isset($_FILES['receipt']) && $_FILES['receipt']['error'] === 0) {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        if (!in_array($_FILES['receipt']['type'], $allowedTypes)) {
-            echo json_encode(['success' => false, 'error' => 'Invalid file type. Only JPG/PNG allowed.']);
-            exit;
-        }
-
-        $uploadsDir = "../uploads/";
-        if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
-
-        $filename = uniqid() . "-" . basename($_FILES['receipt']['name']);
-        $targetFile = $uploadsDir . $filename;
-
-        if (!move_uploaded_file($_FILES['receipt']['tmp_name'], $targetFile)) {
-            echo json_encode(['success' => false, 'error' => 'Failed to upload file.']);
-            exit;
-        }
-
-        $receipt_path = "uploads/" . $filename;
+    // ✅ Ensure only pending/unverified can be acted on
+    if (!in_array($payment['payment_status'], ['pending', 'unverified'])) {
+        echo json_encode(['success' => false, 'error' => 'Only pending or unverified payments can be verified.']);
+        exit;
     }
 
-    // Update payment: mark as verified
-    $stmt = $pdo->prepare("UPDATE payments SET payment_status = 'verified', remarks = :remarks, receipt_path = :receipt WHERE payment_id = :id");
-    $stmt->execute([
-        ':remarks' => $remarks,
-        ':receipt' => $receipt_path,
-        ':id' => $payment_id
-    ]);
+    // ✅ Ensure receipt exists before approving
+    if ($action === 'approve' && empty($payment['receipt_path'])) {
+        echo json_encode(['success' => false, 'error' => 'Cannot approve payment without a receipt.']);
+        exit;
+    }
+
+    // ✅ Determine new status and message
+    // ✅ Determine new status and message
+        $newStatus = ($action === 'reject') ? 'rejected' : 'verified';
+        $successMsg = ($action === 'reject') 
+            ? 'Payment has been rejected.' 
+            : 'Payment verified successfully.';
+
+    // ✅ Update record
+    $stmt = $pdo->prepare("
+    UPDATE payments
+    SET
+        payment_status = :status,
+        reference_number = :reference_number,
+        remarks = :remarks,
+        verified_by = :verified_by,
+        verified_at = NOW()
+    WHERE payment_id = :id
+");
+$stmt->execute([
+    ':status' => $newStatus,
+    ':reference_number' => $reference_number,
+    ':remarks' => $remarks,
+    ':verified_by' => $_SESSION['username'], // ✅ stores admin name now
+    ':id' => $payment_id
+]);
 
     echo json_encode([
         'success' => true,
-        'message' => 'Payment verified successfully.',
-        'payment_status' => 'verified',
-        'receipt_path' => $receipt_path
+        'message' => $successMsg,
+        'payment_status' => $newStatus
     ]);
 
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'error' => 'Database error: '.$e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
 }
+?>

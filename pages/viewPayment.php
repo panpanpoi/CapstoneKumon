@@ -138,25 +138,40 @@ $initials = $_SESSION['initials'];
   </section>
 </main>
 
-<!-- VERIFY / APPROVE MODAL -->
-<div id="verifyModal" class="modal">
+  <div id="verifyModal" class="modal">
   <div class="modal-content">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <h3>Approve Payment</h3>
-    <form id="verifyForm" enctype="multipart/form-data">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>Verify Payment</h2>
+
+    <form id="verifyForm">
       <input type="hidden" name="payment_id" id="paymentId">
+      <input type="hidden" name="action" id="verifyAction" value="approve">
+
       <div class="form-group">
-        <label for="receipt">Upload Receipt:</label>
-        <input type="file" name="receipt" id="receipt" accept="image/*">
+        <label>Receipt:</label>
+        <div id="receiptPreview" class="receipt-preview"></div>
       </div>
+
       <div class="form-group">
-        <label for="remarks">Remarks:</label>
-        <textarea name="remarks" id="remarks" rows="3"></textarea>
+        <label for="reference_number">Reference Number:</label>
+        <input type="text" id="reference_number" name="reference_number" required>
       </div>
-      <button type="submit" class="btn-success"><i class="fa fa-check"></i> Approve</button>
+
+      <div class="form-group">
+        <label for="remarks">Remarks (optional):</label>
+        <textarea id="remarks" name="remarks" placeholder="Add remarks..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="verifyBtn" class="btn btn-success">Approve</button>
+        <button type="button" id="rejectBtn" class="btn btn-danger">Reject</button>
+        <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+      </div>
     </form>
   </div>
 </div>
+
+
 
 <!-- Scripts -->
 <script src="../scr/viewPayment.js"></script>
