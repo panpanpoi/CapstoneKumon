@@ -9,6 +9,24 @@ if ($_SESSION['account_type'] !== 'teacher') {
 }
 
 $teacher_id = $_SESSION['teacher_id'];
+
+// Fetch Active Schedules
+try {
+    $stmt = $pdo->prepare("
+        SELECT s.schedule_id, s.date, s.start_time, s.end_time,
+               b.student_id, CONCAT(st.Firstname,' ',st.Lastname) AS studentName,
+               CASE WHEN b.status='booked' THEN 'Booked' ELSE 'Open' END AS status
+        FROM ptc_schedules s
+        LEFT JOIN ptc_bookings b ON s.schedule_id = b.schedule_id
+        LEFT JOIN students st ON b.student_id = st.student_id
+        WHERE s.teacher_id = ?
+        ORDER BY s.date, s.start_time
+    ");
+    $stmt->execute([$teacher_id]);
+    $activeSchedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $activeSchedules = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +74,7 @@ $teacher_id = $_SESSION['teacher_id'];
     <div class="content">
 
         <!-- ===== Add New Schedule Form ===== -->
-        <form class="create-form">
+        <form method="POST" action="../handler/ptcSchedule.php" class="create-form">
             <h3><i class="fa fa-plus"></i> Add New Schedule</h3>
             <div class="form-row">
                 <div class="form-group">
@@ -72,9 +90,7 @@ $teacher_id = $_SESSION['teacher_id'];
                     <input type="time" name="end_time" id="end_time" required>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn-create">
-                        <i class="fa fa-plus"></i> Add Schedule
-                    </button>
+                    <button type="submit" name="create" class="btn-create"><i class="fa fa-plus"></i> Add Schedule</button>
                 </div>
             </div>
         </form>
@@ -93,22 +109,34 @@ $teacher_id = $_SESSION['teacher_id'];
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Dynamically populated by teacherPtcScheduler.js -->
+                    <?php foreach($activeSchedules as $s): ?>
+                    <tr>
+                        <td><?= date("F j, Y", strtotime($s['date'])) ?></td>
+                        <td><?= date("g:i A", strtotime($s['start_time'])) ?> - <?= date("g:i A", strtotime($s['end_time'])) ?></td>
+                        <td><?= htmlspecialchars($s['status']) ?></td>
+                        <td><?= htmlspecialchars($s['studentName'] ?? '-') ?></td>
+                        <td>
+                            <?php if($s['status'] === 'Open'): ?>
+                                <!-- Delete button only for open schedules -->
+                                <button class="btn-delete" data-schedule-id="<?= $s['schedule_id'] ?>"><i class="fa fa-trash"></i> Delete</button>
+                            <?php else: ?>
+                                <button class="btn-delete disabled" disabled title="Cannot delete booked schedule">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if(empty($activeSchedules)): ?>
+                    <tr><td colspan="5" style="text-align:center;">No active schedules found.</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        <!-- ===== Done Filter ===== -->
-        <div class="done-filter">
-            <h3><i class="fa fa-calendar-check"></i> Done PTC</h3>
-            <div class="filter-controls">
-                <label for="doneDatePicker">Filter by month:</label>
-                <input type="month" id="doneDatePicker">
-            </div>
-        </div>
-
         <!-- ===== Done PTC Table ===== -->
         <div class="schedule-section">
+            <h3><i class="fa fa-calendar-check"></i> Done PTC</h3>
             <table class="schedule-table done-bookings">
                 <thead>
                     <tr>
@@ -119,23 +147,39 @@ $teacher_id = $_SESSION['teacher_id'];
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Populated dynamically via JS -->
+                    <!-- Populate via JS or PHP similar to above -->
                 </tbody>
             </table>
-
-            <div class="done-controls">
-                <button id="donePrev">◀ Prev</button>
-                <span id="donePageLabel">Page 1</span>
-                <button id="doneNext">Next ▶</button>
-            </div>
         </div>
 
     </div>
 </main>
 </div>
 
-<!-- JS -->
-<script src="../scr/ptcSchedulerHelper.js" defer></script>
+<!-- ===== JS ===== -->
 <script src="../scr/teacherPtcScheduler.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".btn-delete").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const scheduleId = btn.dataset.id;
+            if(!scheduleId) return;
+
+            if(!confirm("Are you sure you want to delete this schedule?")) return;
+
+            try {
+                const resp = await fetch("../handler/ptcSchedule.php?delete=" + scheduleId, {
+                    method: "GET"
+                });
+                // Reload page after deletion
+                location.reload();
+            } catch(err) {
+                alert("Error deleting schedule.");
+                console.error(err);
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>
