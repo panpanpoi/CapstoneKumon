@@ -109,78 +109,92 @@ $currentPage = basename(__FILE__);
   </div>
 
   <!-- Add Student Modal -->
-  <div id="addStudentModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Add Student to Class</h3>
-        <button id="closeAddModal" class="close-btn">&times;</button>
-      </div>
+<div id="addStudentModal" class="modal">
+  <div class="modal-content">
+   <div class="modal-header">
+    <h3>Add Student to Class</h3>
+    <button id="closeAddModal" class="close-btn">&times;</button>
+   </div>
 
-      <div class="modal-body">
-        <label for="studentSelect">Select Student</label>
-        <select id="studentSelect"><option value="">-- Search by Name or Student ID --</option></select>
+   <div class="modal-body">
+    <input type="hidden" id="editMode" value="add">
+    <input type="hidden" id="editStudentId">
 
-        <label for="levelSelect">Level</label>
-        <select id="levelSelect">
-          <?php
-          $levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
-          foreach ($levels as $lvl) {
-            echo "<option value='" . htmlspecialchars($lvl, ENT_QUOTES) . "'>" . htmlspecialchars($lvl) . "</option>";
-          }
-          ?>
-        </select> 
-
-        <label>Schedule 1</label>
-        <div class="schedule-group">
-          <select id="schedule1_day">
-            <option value="">-- Select Day --</option>
-            <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-            <option>Thursday</option><option>Friday</option><option>Saturday</option>
-          </select>
-          <input type="time" id="schedule1_start">
-          <input type="time" id="schedule1_end">
-        </div>
-
-        <label>Schedule 2 (Optional)</label>
-        <div class="schedule-group">
-          <select id="schedule2_day">
-            <option value="">-- Select Day --</option>
-            <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-            <option>Thursday</option><option>Friday</option><option>Saturday</option>
-          </select>
-          <input type="time" id="schedule2_start">
-          <input type="time" id="schedule2_end">
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button id="closeModalBtn" class="btn btn-secondary">Cancel</button>
-        <button id="addStudentBtn" class="btn btn-primary">
-          <i class="fa fa-check"></i> Add Student
-        </button>
-      </div>
+    <div id="studentSelectWrapper">
+     <label for="studentSelect">Select Student</label>
+     <select id="studentSelect"><option value="">-- Search by Name or Student ID --</option></select>
     </div>
-  </div>
 
-  <!-- Remove Student Modal -->
-  <div id="removeStudentModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Remove Student</h3>
-        <button class="close-btn" id="closeRemoveModal">&times;</button>
-      </div>
-
-      <div class="modal-body">
-        <p>Are you sure you want to remove this student from the class?</p>
-        <p id="removeStudentName" style="font-weight: 600; color: #222;"></p>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="cancelRemoveBtn">Cancel</button>
-        <button class="btn-remove-danger" id="confirmRemoveBtn">Remove</button>
-      </div>
+    <div id="editStudentNameDisplay" style="display: none; margin-bottom: 15px;">
+     <label>Student</label>
+     <p style="font-size: 1.1rem; font-weight: 600; margin: 5px 0 0 0;"></p>
     </div>
+
+    <label for="levelSelect">Level</label>
+    <select id="levelSelect">
+     <?php
+     $levels = ['7A','6A','5A','4A','3A','2A','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O'];
+     foreach ($levels as $lvl) {
+      echo "<option value='" . htmlspecialchars($lvl, ENT_QUOTES) . "'>" . htmlspecialchars($lvl) . "</option>";
+     }
+     ?>
+    </select> 
+
+    <label>Schedule 1</label>
+    <div class="schedule-group">
+          <div class="schedule-input-wrapper schedule-day-wrapper">
+            <label for="schedule1_day">Day</label>
+            <select id="schedule1_day">
+              <option value="">-- Select Day --</option>
+              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+              <option>Thursday</option><option>Friday</option><option>Saturday</option>
+            </select>
+          </div>
+          
+          <div class="time-group">
+            <div class="schedule-input-wrapper schedule-time-wrapper">
+              <label for="schedule1_start">Start Time</label>
+              <input type="time" id="schedule1_start">
+            </div>
+            <div class="schedule-input-wrapper schedule-time-wrapper">
+              <label for="schedule1_end">End Time</label>
+              <input type="time" id="schedule1_end">
+            </div>
+          </div>
+    </div>
+
+    <label>Schedule 2 (Optional)</label>
+    <div class="schedule-group">
+          <div class="schedule-input-wrapper schedule-day-wrapper">
+            <label for="schedule2_day">Day</label>
+            <select id="schedule2_day">
+              <option value="">-- Select Day --</option>
+              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+              <option>Thursday</option><option>Friday</option><option>Saturday</option>
+            </select>
+          </div>
+          
+          <div class="time-group">
+            <div class="schedule-input-wrapper schedule-time-wrapper">
+              <label for="schedule2_start">Start Time</label>
+              <input type="time" id="schedule2_start">
+            </div>
+            <div class="schedule-input-wrapper schedule-time-wrapper">
+              <label for="schedule2_end">End Time</label>
+              <input type="time" id="schedule2_end">
+            </div>
+          </div>
+    </div>
+   </div>
+
+   <div class="modal-footer">
+    <button id="closeModalBtn" class="btn btn-secondary">Cancel</button>
+    <button id="addStudentBtn" class="btn btn-primary">
+     <i class="fa fa-check"></i> Add Student
+    </button>
+   </div>
   </div>
+ </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>

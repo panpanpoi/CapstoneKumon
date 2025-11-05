@@ -39,34 +39,75 @@ try {
             FROM class_schedules 
             WHERE class_id = ?
             ORDER BY schedule_id ASC
+            LIMIT 2 -- Your modal only supports 2 schedules
         ");
         $schedStmt->execute([$st['class_id']]);
         $schedules = $schedStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Format each schedule
+        // --- MODIFIED LOGIC ---
+        
         $schedFormatted = [];
         $days = [];
 
-        foreach ($schedules as $sch) {
+        // Initialize raw fields for the "Edit" modal
+        $schedule1_day = null;
+        $schedule1_start = null;
+        $schedule1_end = null;
+        $schedule2_day = null;
+        $schedule2_start = null;
+        $schedule2_end = null;
+
+        foreach ($schedules as $index => $sch) {
             $day = $sch['schedule_day'];
-            $start = date("h:i A", strtotime($sch['start_time']));
-            $end   = date("h:i A", strtotime($sch['end_time']));
-            $schedFormatted[] = "{$day} {$start}–{$end}";
+            
+            // Raw times from DB (e.g., "13:00:00")
+            $start_raw = $sch['start_time'];
+            $end_raw = $sch['end_time'];
+            
+            // 1. Format for display (e.g., "01:00 PM")
+            $start_display = date("h:i A", strtotime($start_raw));
+            $end_display = date("h:i A", strtotime($end_raw));
+            $schedFormatted[] = "{$day} {$start_display}–{$end_display}";
             $days[] = strtolower($day);
+
+            // 2. Format for <input type="time"> (e.g., "13:00")
+            $start_input = date("H:i", strtotime($start_raw));
+            $end_input = date("H:i", strtotime($end_raw));
+
+            // Assign to the correct schedule slot
+            if ($index == 0) { // First schedule
+                $schedule1_day = $day;
+                $schedule1_start = $start_input;
+                $schedule1_end = $end_input;
+            } else if ($index == 1) { // Second schedule
+                $schedule2_day = $day;
+                $schedule2_start = $start_input;
+                $schedule2_end = $end_input;
+            }
         }
+        // --- END MODIFIED LOGIC ---
 
         // Apply filter if needed
-        if ($filter_day !== 'all' && !in_array(strtolower($filter_day), $days)) {
+        if ($filter_day !== 'all' && !empty($days) && !in_array(strtolower($filter_day), $days)) {
             continue;
         }
-
+        
+        // Add all fields to the response
         $assigned[] = [
             "class_id"   => $st['class_id'],
             "student_id" => $st['student_id'],
             "studentCode"=> $st['studentCode'],
             "full_name"  => "{$st['Firstname']} {$st['Lastname']}",
             "level"      => $st['level'],
-            "schedules"  => implode(", ", $schedFormatted)
+            "schedules"  => implode(", ", $schedFormatted), // For table display
+
+            // NEW: Raw data for the "Edit" modal
+            "schedule1_day"   => $schedule1_day,
+            "schedule1_start" => $schedule1_start,
+            "schedule1_end"   => $schedule1_end,
+            "schedule2_day"   => $schedule2_day,
+            "schedule2_start" => $schedule2_start,
+            "schedule2_end"   => $schedule2_end
         ];
     }
 
@@ -77,3 +118,4 @@ try {
 } catch (Throwable $e) {
     jsonResponse(["success" => false, "message" => "Server error: " . $e->getMessage()]);
 }
+?>
