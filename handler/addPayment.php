@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $payment_date      = $_POST['payment_date']      ?? null;
     $payment_method    = $_POST['payment_method']    ?? null;
     $reference_number  = $_POST['reference_number']  ?? null;
-    $tfMonthCovered    = $_POST['tfMonthCovered']    ?? null; // ✅ NEW FIELD
+    $tfMonthCovered    = $_POST['tfMonthCovered']    ?? null;
     $remarks           = $_POST['remarks']           ?? null;
 
     // ✅ Required field check
@@ -36,32 +36,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit;
         }
 
-        // ✅ Compute due date based on TF-Month Covered (preferred)
+        // ✅ Compute due date based on TF-Month Covered
         if ($tfMonthCovered) {
             $tfDateObj = DateTime::createFromFormat('F Y', $tfMonthCovered);
             if ($tfDateObj) {
                 $tfDateObj->modify('+1 month');
-                $due_date = $tfDateObj->format('Y-m-01'); // or 'Y-m-05'
+                $due_date = $tfDateObj->format('Y-m-01');
             } else {
-                // fallback
                 $dueDateObj = new DateTime($payment_date);
                 $dueDateObj->modify('+30 days');
                 $due_date = $dueDateObj->format('Y-m-d');
             }
         } else {
-            // fallback if tfMonthCovered empty
             $dueDateObj = new DateTime($payment_date);
             $dueDateObj->modify('+30 days');
             $due_date = $dueDateObj->format('Y-m-d');
         }
 
-
-        // ✅ Insert payment
+        // ✅ Insert payment with payment_status explicitly set to 'unverified'
         $stmt = $pdo->prepare("
             INSERT INTO payments 
-                (student_id, amount, payment_date, due_date, payment_method, reference_number, tf_month_covered, remarks) 
+                (student_id, amount, payment_date, due_date, payment_method, reference_number, tf_month_covered, remarks, payment_status) 
             VALUES 
-                (:student_id, :amount, :payment_date, :due_date, :payment_method, :reference_number, :tfMonthCovered, :remarks)
+                (:student_id, :amount, :payment_date, :due_date, :payment_method, :reference_number, :tfMonthCovered, :remarks, :payment_status)
         ");
 
         $stmt->execute([
@@ -72,10 +69,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ':payment_method'    => $payment_method,
             ':reference_number'  => $reference_number ?: null,
             ':tfMonthCovered'    => $tfMonthCovered ?: null,
-            ':remarks'           => $remarks ?: null
+            ':remarks'           => $remarks ?: null,
+            ':payment_status'    => 'unverified' // ✅ explicitly set
         ]);
 
-        // ✅ Compute next due month for success message (next month after tfMonthCovered)
+        // ✅ Compute next due month for success message
         $tfMonthDate = DateTime::createFromFormat('F Y', $tfMonthCovered);
         if ($tfMonthDate) {
             $tfMonthDate->modify('+1 month');
@@ -87,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['success'] = "✅ Payment for {$tfMonthCovered} recorded successfully! (Next due: {$next_due_month})";
         header("Location: ../pages/recordPayment.php");
         exit;
-
 
     } catch (PDOException $e) {
         $_SESSION['error'] = "Error saving payment: " . $e->getMessage();
