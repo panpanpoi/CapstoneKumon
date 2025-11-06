@@ -150,4 +150,3 @@ foreach ($bookings as $b) {
     $b['notes'] = $stmtNotes->fetchAll(PDO::FETCH_ASSOC);
     $doneBookings[] = $b;
 }
-
