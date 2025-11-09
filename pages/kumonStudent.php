@@ -2,7 +2,7 @@
 if (!isset($_SESSION)) session_start();
 
 require_once "../database.php";
-require_once "../handler/auth.php";
+require_once "../api/auth.php";
 
 // Ensure student session ID exists
 $student_id = $_SESSION['student_id'] ?? null;
@@ -13,7 +13,7 @@ if (!$student_id) {
 }
 
 // Load dashboard data
-$dashboardData = require "../handler/studentDashboardData.php";
+$dashboardData = require "../api/studentDashboardData.php";
 
 $student         = $dashboardData['student'] ?? [];
 $current_level   = $dashboardData['current_level'] ?? 'N/A';
@@ -194,3 +194,5 @@ if (trim($avatarInitials) === '') {
 <script src="../scr/studentAttendance.js"></script>
 </body>
 </html>
+
+

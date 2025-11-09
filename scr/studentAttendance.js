@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("class_id", classId);
         formData.append("student_id", studentId);
 
-        const res = await fetch("../handler/markAttendance.php", {
+        const res = await fetch("../api/markAttendance.php", {
           method: "POST",
           body: formData
         });
@@ -45,3 +45,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+

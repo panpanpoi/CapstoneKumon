@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchAndRenderSchedules() {
     try {
-        const res = await fetch("../handler/ptcSchedule.php");
+        const res = await fetch("../api/ptcSchedule.php");
         const text = await res.text();
 
         if (text.startsWith("<!DOCTYPE") || text.startsWith("<html")) {
@@ -122,7 +122,7 @@ function initDynamicEvents() {
             if (!noteText) return;
 
             try {
-                const data = await postData("../handler/ptcSchedule.php", {
+                const data = await postData("../api/ptcSchedule.php", {
                     add_note: 1,
                     schedule_id: scheduleId,
                     note: noteText
@@ -152,7 +152,7 @@ function initDynamicEvents() {
 async function markScheduleDone(button, scheduleId) {
     try {
         setButtonLoading(button, true);
-        const data = await postData("../handler/ptcSchedule.php", {
+        const data = await postData("../api/ptcSchedule.php", {
             mark_done: 1,
             schedule_id: scheduleId
         });
@@ -177,7 +177,7 @@ async function markScheduleDone(button, scheduleId) {
 async function deleteSchedule(button, scheduleId) {
     try {
         setButtonLoading(button, true);
-        const data = await postData("../handler/ptcSchedule.php", {
+        const data = await postData("../api/ptcSchedule.php", {
             delete_schedule: 1,
             schedule_id: scheduleId
         });
@@ -276,3 +276,5 @@ function formatTime(time24) {
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+

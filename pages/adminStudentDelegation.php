@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once "../database.php";
-require_once "../handler/auth.php";
+require_once "../api/auth.php";
 
 // ✅ Ensure user is logged in and is an admin
 if (
@@ -200,3 +200,4 @@ unset($_SESSION['delegation_success'], $_SESSION['delegation_error']);
     <script src="../scr/adminStudentDelegation.js"></script>
 </body>
 </html>
+

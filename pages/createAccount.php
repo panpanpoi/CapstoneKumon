@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php"; 
+require_once "../api/auth.php"; 
 
 // Only allow admins
 if (!isset($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
@@ -83,7 +83,7 @@ unset($_SESSION['success'], $_SESSION['error']);
             <?php endif; ?>
 
             <!-- Account Form -->
-            <form action="../handler/inputs.php" method="POST" class="account-form">
+            <form action="../api/inputs.php" method="POST" class="account-form">
 
                 <!-- Account Type -->
                 <section id="accountType">
@@ -193,3 +193,5 @@ unset($_SESSION['success'], $_SESSION['error']);
 
 </body>
 </html>
+
+

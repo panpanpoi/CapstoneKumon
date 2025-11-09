@@ -14,3 +14,5 @@ session_destroy(); // destroy the session
 header("Location: loginform.php?message=Logged out successfully");
 exit;
 ?>
+
+

@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUnassignedStudents() {
         try {
             // Use the absolute path
-            const response = await fetch('../handler/fetchUnassignedStudents.php');
+            const response = await fetch('../api/fetchUnassignedStudents.php');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 student_id: parseInt(studentId)
             };
 
-            const response = await fetch("../handler/fetchDelegatedData.php", {
+            const response = await fetch("../api/fetchDelegatedData.php", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 student_ids: [parseInt(studentIdToDelegate)]
             };
 
-            const response = await fetch("../handler/fetchDelegatedData.php", {
+            const response = await fetch("../api/fetchDelegatedData.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(`../handler/fetchDelegatedData.php?teacher_id=${teacherId}`);
+            const response = await fetch(`../api/fetchDelegatedData.php?teacher_id=${teacherId}`);
             const data = await response.json();
 
             if (data.success) {
@@ -283,3 +283,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // <-- CHANGED: Fetch the unassigned list as soon as the page loads
     fetchUnassignedStudents();
 });
+

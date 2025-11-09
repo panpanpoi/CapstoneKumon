@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData(verifyForm);
 
     try {
-      const res = await fetch("../handler/verifyPayment.php", {
+      const res = await fetch("../api/verifyPayment.php", {
         method: "POST",
         body: formData,
       });
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.set("action", "reject");
 
     try {
-      const res = await fetch("../handler/verifyPayment.php", {
+      const res = await fetch("../api/verifyPayment.php", {
         method: "POST",
         body: formData,
       });
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadPayments() {
     paymentsContainer.innerHTML = `<p class="loading-text">Loading payments...</p>`;
     try {
-      const res = await fetch(`../handler/fetchPayments.php`);
+      const res = await fetch(`../api/fetchPayments.php`);
       const data = await res.json();
       if (!data.success) throw new Error(data.error || "Failed to load payments");
 
@@ -321,3 +321,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => (flashMessage.style.display = "none"), 3000);
   }
 });
+
+

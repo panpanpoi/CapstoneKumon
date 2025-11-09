@@ -21,7 +21,7 @@
         <p class="error-message"><?php echo htmlspecialchars($_GET['error']); ?></p>
       <?php endif; ?>
 
-      <form action="../handler/login.php" method="POST">
+      <form action="../api/login.php" method="POST">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" autocomplete="username">
 
@@ -53,3 +53,5 @@
   </script>
 </body>
 </html>
+
+

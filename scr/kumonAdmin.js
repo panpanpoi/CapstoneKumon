@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadPaymentStats() {
   try {
-    const res = await fetch("../handler/paymentStats.php");
+    const res = await fetch("../api/paymentStats.php");
     const data = await res.json();
 
     if (data.success) {
@@ -51,3 +51,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+

@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php"; 
+require_once "../api/auth.php"; 
 
 // 🔒 Admin-only access
 if ($_SESSION['account_type'] !== 'admin') {
@@ -122,3 +122,5 @@ $initials = $_SESSION['initials'];
   <script src="../scr/kumonAdmin.js"></script>
 </body>
 </html>
+
+

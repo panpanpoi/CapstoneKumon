@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php";
+require_once "../api/auth.php";
 // Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
     header("Location: ../loginform.php");
@@ -73,7 +73,7 @@ $initials = $_SESSION['initials'];
     <!-- Action Buttons -->
     <div class="action-bar">
       <!-- Import Payments -->
-      <form action="../handler/importPayments.php" method="POST" enctype="multipart/form-data" class="import-form">
+      <form action="../api/importPayments.php" method="POST" enctype="multipart/form-data" class="import-form">
         <label><i class="fa fa-file-import"></i> Import CSV:</label>
         <input type="file" name="csv_file" accept=".csv" required>
         <button type="submit" class="btn-import">
@@ -82,7 +82,7 @@ $initials = $_SESSION['initials'];
       </form>
 
       <!-- Export Payments -->
-      <form action="../handler/exportPayments.php" method="GET" class="export-form">
+      <form action="../api/exportPayments.php" method="GET" class="export-form">
         <label for="month"><i class="fa fa-calendar"></i> Export Month:</label>
         <input type="month" id="month" name="month" value="<?= date('Y-m') ?>" required>
         <button type="submit" class="btn-export">
@@ -168,3 +168,5 @@ $initials = $_SESSION['initials'];
 <script src="../scr/adminSidebar.js"></script>
 </body>
 </html>
+
+

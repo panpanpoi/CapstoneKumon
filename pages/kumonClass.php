@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php";
+require_once "../api/auth.php";
 require_once "../database.php";
 
 // Only allow teachers
@@ -210,3 +210,5 @@ $currentPage = basename(__FILE__);
   </script>
 </body>
 </html>
+
+

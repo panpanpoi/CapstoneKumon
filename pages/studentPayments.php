@@ -2,7 +2,7 @@
 if (!isset($_SESSION)) session_start();
 
 require_once "../database.php";
-require_once "../handler/auth.php"; // ensures valid student session
+require_once "../api/auth.php"; // ensures valid student session
 
 $student_id = $_SESSION['student_id'] ?? null;
 
@@ -118,3 +118,5 @@ $avatarInitials = strtoupper(substr($student['Firstname'], 0, 1) . substr($stude
 <script src="../scr/studentPayment.js"></script>
 </body>
 </html>
+
+

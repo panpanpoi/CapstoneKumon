@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!selectedStudentId) return;
 
       try {
-        const response = await fetch("../handler/classStudentHandler.php", {
+        const response = await fetch("../api/classStudentHandler.php", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
@@ -78,3 +78,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log(" kumonClassRemove.js initialized successfully");
 });
+
+

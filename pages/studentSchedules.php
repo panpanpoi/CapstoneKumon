@@ -2,8 +2,8 @@
 if (!isset($_SESSION)) session_start();
 
 require_once "../database.php";
-require_once "../handler/auth.php";
-require_once "../handler/studentScheduleData.php"; // sets $weekly_schedule
+require_once "../api/auth.php";
+require_once "../api/studentScheduleData.php"; // sets $weekly_schedule
 
 $student_id = $_SESSION['student_id'] ?? null;
 if (!$student_id) {
@@ -101,3 +101,5 @@ $daysOfWeek = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 <script src="../scr/sidebarToggle.js"></script>
 </body>
 </html>
+
+

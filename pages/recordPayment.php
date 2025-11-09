@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php"; 
+require_once "../api/auth.php"; 
 
 // Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
@@ -96,7 +96,7 @@ $initials = $_SESSION['initials'];
             <?php unset($_SESSION['success']); ?>
           <?php endif; ?>
 
-          <form id="paymentForm" action="../handler/addPayment.php" method="POST">
+          <form id="paymentForm" action="../api/addPayment.php" method="POST">
             <input type="hidden" id="student_id" name="student_id" required>
 
             <!-- DRAWER TRIGGER -->
@@ -180,3 +180,5 @@ $initials = $_SESSION['initials'];
   <script src="../scr/recordPayment.js"></script>
 </body>
 </html>
+
+

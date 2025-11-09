@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     searchTimeout = setTimeout(async () => {
       try {
-        const resp = await fetch(`../handler/studentPaymentHelper.php?action=list&q=${encodeURIComponent(query)}`);
+        const resp = await fetch(`../api/studentPaymentHelper.php?action=list&q=${encodeURIComponent(query)}`);
         if (!resp.ok) throw new Error("Network error");
         const data = await resp.json();
 
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===============================
   async function selectStudent(studentId, name = "") {
   try {
-    const res = await fetch(`../handler/studentPaymentHelper.php?action=plan&id=${studentId}`);
+    const res = await fetch(`../api/studentPaymentHelper.php?action=plan&id=${studentId}`);
     const data = await res.json();
 
     if (data.error) {
@@ -239,3 +239,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+

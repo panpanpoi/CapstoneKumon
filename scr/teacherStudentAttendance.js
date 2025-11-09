@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("attendance_id", attendanceId);
         formData.append("status", "Present"); // Confirm as Present
 
-        const res = await fetch("../handler/confirmAttendance.php", {
+        const res = await fetch("../api/confirmAttendance.php", {
           method: "POST",
           body: formData
         });
@@ -59,3 +59,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+

@@ -1,7 +1,7 @@
 // accountList.js (Modern + Fixed)
 document.addEventListener("DOMContentLoaded", () => {
   (() => {
-    const API = "../handler/";
+    const API = "../api/";
     const ROWS_PER_PAGE = 10;
     let currentArchived = 0;
     let currentPage = 1;
@@ -372,3 +372,5 @@ document.querySelectorAll(".toggle-password").forEach((eye) => {
     loadData("", 0, 1);
   })();
 });
+
+

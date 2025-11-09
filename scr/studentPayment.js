@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(
-        `../handler/fetchStudentPayment.php?student_id=${studentId}&month=${month}&year=${year}`
+        `../api/fetchStudentPayment.php?student_id=${studentId}&month=${month}&year=${year}`
       );
       const data = await response.json();
 
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.textContent = "Uploading...";
 
         try {
-          const response = await fetch("../handler/UploadReceipt.php", {
+          const response = await fetch("../api/UploadReceipt.php", {
             method: "POST",
             body: formData,
           });
@@ -175,3 +175,5 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Initial load
   fetchPayments(currentMonth, currentYear);
 });
+
+

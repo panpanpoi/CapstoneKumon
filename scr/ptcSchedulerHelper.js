@@ -69,3 +69,5 @@ window.formatTimeRange = formatTimeRange;
 window.formatDate = formatDate;
 window.createRow = createRow;
 window.showAlert = showAlert;
+
+

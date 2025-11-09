@@ -109,7 +109,7 @@ window.initKumonClass = () => {
  async function fetchAssignedStudents(filterDay = "all") {
   console.log("📦 fetchAssignedStudents() called →", filterDay);
   try {
-   const res = await fetch(`../handler/fetchAssignedStudent.php?day=${filterDay}`, {
+   const res = await fetch(`../api/fetchAssignedStudent.php?day=${filterDay}`, {
     credentials: "include"
    });
    const data = await res.json();
@@ -183,7 +183,7 @@ window.initKumonClass = () => {
  async function fetchAvailableStudents() {
   console.log("📚 fetchAvailableStudents() called");
   try {
-   const res = await fetch("../handler/fetchAllStudent.php", { credentials: "include" });
+   const res = await fetch("../api/fetchAllStudent.php", { credentials: "include" });
    const data = await res.json();
    console.log("📘 Available students response:", data);
 
@@ -276,7 +276,7 @@ window.initKumonClass = () => {
       }
 
    console.log(`🚀 Sending ${mode} student request...`);
-   const res = await fetch("../handler/classStudentHandler.php", {
+   const res = await fetch("../api/classStudentHandler.php", {
     method: "POST",
     body: formData,
     credentials: "include"
@@ -346,7 +346,7 @@ window.initKumonClass = () => {
         const formData = new FormData();
         formData.append("action", "remove");
         formData.append("student_id", id);
-        const res = await fetch("../handler/classStudentHandler.php", { method: "POST", body: formData, credentials: "include" });
+        const res = await fetch("../api/classStudentHandler.php", { method: "POST", body: formData, credentials: "include" });
         const result = await res.json();
         alert(result.message || (result.success ? "Removed" : "Failed"));
         fetchAssignedStudents(dayFilter?.value || "all");
@@ -376,3 +376,4 @@ window.initKumonClass = () => {
  fetchAvailableStudents();
  console.log("✅ initKumonClass() setup complete");
 };
+

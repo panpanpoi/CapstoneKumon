@@ -24,7 +24,7 @@
     // fetch next counter for specific type: "student" or "teacher"
     async function fetchNextId(type) {
       try {
-        const res = await fetch(`../handler/getNextId.php?type=${encodeURIComponent(type)}`);
+        const res = await fetch(`../api/getNextId.php?type=${encodeURIComponent(type)}`);
         const data = await res.json();
         if (data && data.success && data.next) {
           if (type === "student") nextStudentCounter = data.next;
@@ -144,3 +144,5 @@
     updatePreview();
   });
 })();
+
+

@@ -1,5 +1,5 @@
 <?php
-require_once "../handler/auth.php"; 
+require_once "../api/auth.php"; 
 
 // ✅ Only allow admins
 if ($_SESSION['account_type'] !== 'admin') {
@@ -178,3 +178,5 @@ $initials = $_SESSION['initials'];
     <script src="../scr/accountList.js"></script>
 </body>
 </html>
+
+

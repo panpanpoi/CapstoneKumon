@@ -1,7 +1,7 @@
 <?php
 if (!isset($_SESSION)) session_start();
 require_once "../database.php";
-require_once "../handler/auth.php";
+require_once "../api/auth.php";
 
 if ($_SESSION['account_type'] !== 'teacher') {
     header("Location: ../login.php");
@@ -74,7 +74,7 @@ try {
     <div class="content">
 
         <!-- ===== Add New Schedule Form ===== -->
-        <form method="POST" action="../handler/ptcSchedule.php" class="create-form">
+        <form method="POST" action="../api/ptcSchedule.php" class="create-form">
             <h3><i class="fa fa-plus"></i> Add New Schedule</h3>
             <div class="form-row">
                 <div class="form-group">
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(!confirm("Are you sure you want to delete this schedule?")) return;
 
             try {
-                const resp = await fetch("../handler/ptcSchedule.php?delete=" + scheduleId, {
+                const resp = await fetch("../api/ptcSchedule.php?delete=" + scheduleId, {
                     method: "GET"
                 });
                 // Reload page after deletion
@@ -183,3 +183,5 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
+

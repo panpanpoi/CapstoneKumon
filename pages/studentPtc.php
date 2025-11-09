@@ -4,8 +4,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../database.php';
-require_once __DIR__ . '/../handler/auth.php'; // ensures logged-in + session
-require_once __DIR__ . '/../handler/studentPtcHandler.php';
+require_once __DIR__ . '/../api/auth.php'; // ensures logged-in + session
+require_once __DIR__ . '/../api/studentPtcHandler.php';
 
 // Fetch Student Information for Sidebar 
 $student_id = $_SESSION['student_id'] ?? null;
@@ -111,7 +111,7 @@ $avatarInitials = initials($fullName);
                     <strong>Time:</strong> <?= date("g:i A", strtotime($currentBooking['startTime'])) ?> - <?= date("g:i A", strtotime($currentBooking['endTime'])) ?><br>
                     <strong>Teacher:</strong> <?= htmlspecialchars($currentBooking['teacherName']) ?>
                 </p>
-                <form method="POST" action="../handler/studentPtcHandler.php" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                <form method="POST" action="../api/studentPtcHandler.php" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
                     <input type="hidden" name="booking_id" value="<?= htmlspecialchars($currentBooking['booking_id']) ?>">
                     <button type="submit" name="cancel" class="cancel-btn"><i class="fas fa-times"></i> Cancel Booking</button>
                 </form>
@@ -135,7 +135,7 @@ $avatarInitials = initials($fullName);
                                 <td><?= date("g:i A", strtotime($slot['startTime'])) ?> - <?= date("g:i A", strtotime($slot['endTime'])) ?></td>
                                 <td><?= htmlspecialchars($slot['teacherName']) ?></td>
                                 <td>
-                                    <form method="POST" action="../handler/studentPtcHandler.php">
+                                    <form method="POST" action="../api/studentPtcHandler.php">
                                         <input type="hidden" name="schedule_id" value="<?= htmlspecialchars($slot['schedule_id']) ?>">
                                         <button type="submit" name="book" class="btn" <?= $currentBooking?'disabled':'' ?>>Book</button>
                                     </form>
@@ -206,3 +206,4 @@ $avatarInitials = initials($fullName);
 <script src="../scr/studentPtc.js"></script>
 </body>
 </html>
+

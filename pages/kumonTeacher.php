@@ -1,5 +1,5 @@
 <?php 
-require_once "../handler/auth.php"; 
+require_once "../api/auth.php"; 
 // ✅ Only allow admins
 if ($_SESSION['account_type'] !== 'teacher') {
     header("Location: loginform.php");
@@ -75,3 +75,5 @@ $initials   = $_SESSION['initials'];   // LR
 <script src="../scr/sidebarToggle.js"></script>
 </body>
 </html>
+
+

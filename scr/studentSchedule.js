@@ -67,3 +67,5 @@ document.addEventListener("DOMContentLoaded", () => {
   weekBtn.addEventListener("click", renderWeekView);
   todayBtn.addEventListener("click", renderTodayView);
 });
+
+
