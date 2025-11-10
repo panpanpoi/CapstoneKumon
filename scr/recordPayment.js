@@ -18,9 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmStudentBtn = document.getElementById("confirmStudentBtn");
   const tfMonthCovered = document.getElementById("tfMonthCovered");
   const paymentDateInput = document.getElementById("payment_date");
+
+  // --- NEW ELEMENTS ---
+  const paymentSummary = document.getElementById("paymentSummary");
+  const summaryMonthCovered = document.getElementById("summaryMonthCovered");
+  // --------------------
+
   let selectedStudentId = null;
   let selectedStudentName = null;
-
   let searchTimeout;
 
   // === OPEN DRAWER ===
@@ -32,7 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // === CONFIRM STUDENT SELECTION ===
   confirmStudentBtn?.addEventListener("click", () => {
     if (selectedStudentId && selectedStudentName) {
-      selectStudent(selectedStudentId, selectedStudentName);
+      // The selectStudent function was already called on click, 
+      // but we ensure the main form state is set.
+      studentIdField.value = selectedStudentId;
+      submitBtn.disabled = false;
     }
     if (drawer) drawer.open = false;
   });
@@ -74,12 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
           item.addEventListener("click", async () => {
             const id = item.dataset.id;
             const name = item.dataset.name;
+            
+            // Set global vars for confirm button
             selectedStudentId = id;
             selectedStudentName = name;
-            await selectStudent(id, name);
+            
+            // Fetch and populate details
+            await selectStudent(id, name); 
+            
             studentLedger.style.display = "block";
             confirmStudentBtn.disabled = false;
-            // Don't close drawer automatically
           });
         });
 
@@ -91,58 +103,60 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===============================
-  // 🧠 SELECT STUDENT
+  // 🧠 SELECT STUDENT (Main function for fetching details)
   // ===============================
   async function selectStudent(studentId, name = "") {
-  try {
-    const res = await fetch(`../api/studentPaymentHelper.php?action=plan&id=${studentId}`);
-    const data = await res.json();
+    try {
+      const res = await fetch(`../api/studentPaymentHelper.php?action=plan&id=${studentId}`);
+      const data = await res.json();
 
-    if (data.error) {
-      alert(data.error);
-      return;
-    }
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
 
-    const student = data.student;
-    const ledger = Array.isArray(data.ledger) ? data.ledger : [];
+      const student = data.student;
+      const ledger = Array.isArray(data.ledger) ? data.ledger : [];
 
-    const studentName = student.full_name || name || "Unnamed Student";
+      const studentName = student.full_name || name || "Unnamed Student";
 
-    selectedStudent.innerHTML = `
-      <b>${studentName}</b><br>
-      [${student.studentCode || "N/A"}]<br>
-      Plan: ${student.plan || "N/A"} — ₱${parseFloat(student.monthlyFee || 0).toFixed(2)}
-    `;
+      // --- Update MAIN FORM ---
+      selectedStudent.innerHTML = `
+        <b>${studentName}</b><br>
+        [${student.studentCode || "N/A"}]<br>
+        Plan: ${student.plan || "N/A"} — ₱${parseFloat(student.monthlyFee || 0).toFixed(2)}
+      `;
+      studentIdField.value = student.student_id || "";
+      submitBtn.disabled = false;
+      amountInput.value = parseFloat(student.monthlyFee || 0).toFixed(2);
+      amountInput.focus();
+      changeBtn.style.display = "inline-block";
+      // ------------------------
 
-    studentIdField.value = student.student_id || "";
-    submitBtn.disabled = false;
 
-    // 🧮 Auto-fill and focus amount input
-    amountInput.value = parseFloat(student.monthlyFee || 0).toFixed(2);
-    amountInput.focus();
+      // --- Update DRAWER ---
+      // Populate ledger section
+      if (ledger.length === 0) {
+        ledgerContent.innerHTML = `<p style="color:#888;">No previous payments found.</p>`;
+      } else {
+        ledgerContent.innerHTML = ledger.map(entry => `
+          <div class="ledger-item">
+            <div class="ledger-line">
+              <span class="ledger-month">${entry.tfMonthCovered || "Month N/A"}</span>
+              <span class="badge badge-paid">Paid</span>
+            </div>
+            <div class="ledger-details">
+              ₱${parseFloat(entry.amount || 0).toFixed(2)} (${entry.payment_method || "N/A"})
+              <span style="color: #888;">— Paid on: ${entry.date || 'N/A'}</span>
+            </div>
+            <small class="ledger-remarks">${entry.remarks || "No remarks"}</small>
+          </div>
+        `).join("");
+      }
 
-
-    // Populate ledger section
-    if (ledger.length === 0) {
-      ledgerContent.innerHTML = `<p style="color:#888;">No previous payments found.</p>`;
-    } else {
-      ledgerContent.innerHTML = ledger.map(entry => `
-        <div style="padding:8px; border-bottom:1px solid #ccc;">
-          <b>${entry.date || "N/A"}</b> — ₱${parseFloat(entry.amount || 0).toFixed(2)} (${entry.payment_method || "N/A"})<br>
-          <small>${entry.remarks || "No remarks"}</small>
-        </div>
-      `).join("");
-    }
-
-    // Update payment summary
-    const monthsPaid = data.monthsPaid || 0;
-    document.getElementById("paymentStatus").textContent = monthsPaid >= 12 ? "Complete" : "Pending";
-    document.getElementById("paymentSummary").style.display = "block";
-
-    // 🧩 Auto-fill TF-Month Covered
-    if (tfMonthCovered) {
-      const latestMonth = (data.latestMonth || "").trim();
+      // 🧩 Calculate Next Month Due (for both form and summary)
       let nextMonth = "";
+      const latestMonth = (data.latestMonth || "").trim();
 
       if (latestMonth) {
         try {
@@ -170,20 +184,26 @@ document.addEventListener("DOMContentLoaded", () => {
         nextMonth = now.toLocaleString("en-US", { month: "long", year: "numeric" });
       }
 
-      console.log("➡️ Next TF-Month Covered:", nextMonth);
-      tfMonthCovered.value = nextMonth;
+      // Auto-fill TF-Month Covered in the MAIN FORM
+      if (tfMonthCovered) {
+        console.log("➡️ Next TF-Month Covered:", nextMonth);
+        tfMonthCovered.value = nextMonth;
+      }
+
+      // Update DRAWER Summary
+      if (paymentSummary) {
+        paymentSummary.style.display = "block";
+      }
+      if (summaryMonthCovered) {
+        summaryMonthCovered.textContent = nextMonth;
+      }
+      // ---------------------
+
+    } catch (err) {
+      console.error(err);
+      alert("Error fetching student details.");
     }
-
-    // Show change button
-    changeBtn.style.display = "inline-block";
-
-    // Do not automatically close drawer here, let user confirm
-
-  } catch (err) {
-    console.error(err);
-    alert("Error fetching student details.");
   }
-}
 
 
   // === CHANGE STUDENT ===
@@ -194,8 +214,12 @@ document.addEventListener("DOMContentLoaded", () => {
     submitBtn.disabled = true;
     amountInput.value = "";
     if (tfMonthCovered) tfMonthCovered.value = "";
+    
+    // Reset drawer state
     ledgerContent.innerHTML = "Select a student to view details.";
     studentLedger.style.display = "none";
+    if(paymentSummary) paymentSummary.style.display = "none";
+    if(summaryMonthCovered) summaryMonthCovered.textContent = "---";
     confirmStudentBtn.disabled = true;
     selectedStudentId = null;
     selectedStudentName = null;
@@ -212,22 +236,19 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   paymentMethod?.addEventListener("change", toggleReferenceField);
-
-  // Initialize on page load
-  toggleReferenceField();
+  toggleReferenceField(); // Initialize on page load
 
   // 🧩 Update TF-Month Covered when payment date changes
   paymentDateInput?.addEventListener("change", () => {
-  if (!tfMonthCovered) return;
-  if (tfMonthCovered.value.trim() !== "") return; // ✅ don't override existing value
+    if (!tfMonthCovered) return;
+    if (tfMonthCovered.value.trim() !== "") return; // ✅ don't override existing value
 
-  const selectedDate = new Date(paymentDateInput.value);
-  if (isNaN(selectedDate)) return;
+    const selectedDate = new Date(paymentDateInput.value);
+    if (isNaN(selectedDate)) return;
 
-  const monthName = selectedDate.toLocaleString("en-US", { month: "long" });
-  tfMonthCovered.value = `${monthName} ${selectedDate.getFullYear()}`;
-});
-
+    const monthName = selectedDate.toLocaleString("en-US", { month: "long" });
+    tfMonthCovered.value = `${monthName} ${selectedDate.getFullYear()}`;
+  });
 
   // === CONFIRM BEFORE SUBMIT WITH STUDENT CHECK ===
   const form = document.getElementById("paymentForm");
@@ -239,5 +260,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
-

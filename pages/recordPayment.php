@@ -156,16 +156,17 @@ $initials = $_SESSION['initials'];
 
       <!-- Student Ledger -->
       <div id="studentLedger" style="display:none;">
-        <h4>Payment Ledger</h4>
+        <h4>Payment History</h4>
         <div id="ledgerContent">Select a student to view details.</div>
       </div>
 
       <!-- Payment Summary -->
       <div class="payment-summary" id="paymentSummary" style="display:none;">
-        <div class="info">
-          <strong>Status:</strong> <span id="paymentStatus">Pending</span>
-        </div>
+      <div class="info">
+        <strong> Next Month Due:</strong> 
+        <span id="summaryMonthCovered">---</span>
       </div>
+    </div>
 
       <div class="drawer-footer">
         <button id="confirmStudentBtn" disabled>

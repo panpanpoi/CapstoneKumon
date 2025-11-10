@@ -1,12 +1,52 @@
-/* PAYMENT DRAWER — Compact Left Drawer (Dark Admin Theme) */
+/*
+========================================
+PAYMENT DRAWER STYLES
+========================================
+*/
 
-/* Drawer Base */
+/* === 1. THEME VARIABLES === */
+/*
+ * Define all theme colors and values here for easy updates.
+*/
+:root {
+  /* Colors */
+  --color-brand: #00aaff;
+  --color-brand-hover: #0090ff;
+  --color-brand-dark: #0072e0;
+  --color-danger: #ff4d4d;
+
+  --color-bg-base: rgba(20, 20, 20, 0.97);
+  --color-bg-dark: #101010;
+  --color-bg-medium: #151515;
+  --color-bg-light: #181818;
+  --color-bg-summary: #0f0f0f;
+  --color-bg-summary-border: #1f1f1f;
+
+  --color-text-primary: #eaeaea;
+  --color-text-secondary: #aaa;
+  --color-text-muted: #999;
+  --color-text-bright: #f0f0f0;
+  --color-text-on-brand: #fff;
+
+  --color-border-dark: #222;
+  --color-border-medium: #2a2a2a;
+  --color-border-light: #333;
+
+  /* Sizing */
+  --border-radius-s: 6px;
+  --border-radius-m: 8px;
+  --border-radius-l: 12px;
+}
+
+
+/* === 2. DRAWER CORE LAYOUT === */
+
 .drawer-placement-left::part(base) {
-  background: rgba(20, 20, 20, 0.97);
+  background: var(--color-bg-base);
   backdrop-filter: blur(10px);
-  color: #eaeaea;
-  border-right: 1px solid #2a2a2a;
-  border-radius: 0 12px 12px 0;
+  color: var(--color-text-primary);
+  border-right: 1px solid var(--color-border-medium);
+  border-radius: 0 var(--border-radius-l) var(--border-radius-l) 0;
   box-shadow: 3px 0 15px rgba(0, 0, 0, 0.6);
   animation: drawerSlideLeft 0.3s ease-out;
   width: 340px;
@@ -16,35 +56,44 @@
   overflow: hidden;
 }
 
-/* Slide-in animation (left → right) */
+/* Slide-in animation */
 @keyframes drawerSlideLeft {
-  from { transform: translateX(-100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-/* Drawer Inner Content */
+/* Inner scrolling container */
 .drawer-inner {
-  padding: 1rem;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  font-size: 0.9rem;
+  gap: 12px;
+  font-size: 14px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
 }
 
-/* Header */
+
+/* === 3. DRAWER COMPONENTS === */
+
+/* --- Header --- */
 .drawer-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border-medium);
 }
 
 .drawer-header h3 {
-  color: #00aaff;
-  font-size: 1rem;
+  color: var(--color-brand);
+  font-size: 16px;
   font-weight: 600;
   margin: 0;
 }
@@ -52,84 +101,138 @@
 .drawer-close {
   background: none;
   border: none;
-  color: #999;
-  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  font-size: 18px;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
 .drawer-close:hover {
-  color: #ff4d4d;
+  color: var(--color-danger);
   transform: scale(1.1);
 }
 
-/* Search Field */
+/* --- Search Field --- */
 #studentSearchInput {
   width: 100%;
-  padding: 7px 10px;
-  border-radius: 6px;
-  border: 1px solid #333;
-  background: #151515;
-  color: #eaeaea;
-  font-size: 0.85rem;
+  padding: 8px 10px;
+  border-radius: var(--border-radius-s);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-medium);
+  color: var(--color-text-primary);
+  font-size: 14px;
   transition: 0.2s ease;
 }
 
 #studentSearchInput:focus {
-  border-color: #00aaff;
+  border-color: var(--color-brand);
   box-shadow: 0 0 6px rgba(0, 170, 255, 0.35);
 }
 
-/* Student List */
+/* --- Student List --- */
 #studentList {
-  margin-top: 6px;
-  border: 1px solid #222;
-  border-radius: 8px;
-  background: #101010;
+  margin-top: 4px;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--border-radius-m);
+  background: var(--color-bg-dark);
   overflow-y: auto;
   max-height: 200px;
   padding: 4px;
 }
 
 .search-item {
-  background: #181818;
-  padding: 7px 9px;
-  border-radius: 6px;
+  background: var(--color-bg-light);
+  padding: 8px 10px;
+  border-radius: var(--border-radius-s);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   transition: 0.2s ease;
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .search-item b {
-  color: #00aaff;
+  color: var(--color-brand);
   font-weight: 500;
 }
 
 .search-item span {
-  font-size: 0.8rem;
-  color: #aaa;
+  font-size: 13px;
+  color: var(--color-text-secondary);
 }
 
 .search-item:hover {
-  background: #00aaff;
-  color: #fff;
+  background: var(--color-brand);
+  color: var(--color-text-on-brand);
   transform: translateY(-1px);
 }
 
-.search-item:hover b {
-  color: #fff;
+.search-item:hover b,
+.search-item:hover span {
+  color: var(--color-text-on-brand);
 }
 
-/* Payment Summary */
+/* --- Payment History / Ledger --- */
+/* --- Payment History / Ledger --- */
+#studentLedger {
+  margin-top: 10px;
+
+  /* --- ADD THESE LINES --- */
+  max-height: 280px; /* You can adjust this height */
+  overflow-y: auto;
+  padding: 0 8px; /* Adds spacing on the sides */
+  
+  /* Optional: A border to frame the list */
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--border-radius-m);
+}
+
+.ledger-item {
+  padding: 10px 4px 8px 4px;
+  border-bottom: 1px solid var(--color-border-medium);
+}
+
+.ledger-item:last-child {
+  border-bottom: none;
+}
+
+.ledger-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.ledger-month {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-bg-light);
+}
+
+.ledger-details {
+  font-size: 13px;
+  color: #595a5a;
+}
+
+.ledger-details span {
+  color: #464646; /* Specific muted color */
+}
+
+.ledger-remarks {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  padding-left: 2px;
+  font-style: italic;
+}
+
+/* --- Payment Summary --- */
 .payment-summary {
   margin-top: 12px;
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  border-radius: 6px;
+  background: var(--color-bg-summary);
+  border: 1px solid var(--color-bg-summary-border);
+  border-radius: var(--border-radius-s);
   padding: 10px;
-  font-size: 0.85rem;
+  font-size: 13px;
   color: #ccc;
 }
 
@@ -140,10 +243,10 @@
 }
 
 .payment-summary .info strong {
-  color: #00aaff;
+  color: var(--color-brand);
 }
 
-/* Footer */
+/* --- Footer --- */
 .drawer-footer {
   padding-top: 10px;
   display: flex;
@@ -157,25 +260,61 @@
 
 .drawer-footer wa-button {
   width: 100%;
-  font-size: 0.85rem;
+  font-size: 13px;
   padding: 6px 0;
 }
 
-/* Scrollbar */
+
+/* === 4. RE-USABLE COMPONENTS === */
+
+/* --- Badge Styles --- */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px; /* Standardized size */
+  font-weight: bold;
+  border-radius: 12px;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.badge-paid {
+  background-color: #28a745; /* Green */
+  color: #fff;
+}
+
+.badge-pending {
+  background-color: #ffc107; /* Yellow/Orange */
+  color: #333;
+}
+
+
+/* === 5. UTILITIES === */
+
+/* --- Scrollbar --- */
+.drawer-inner::-webkit-scrollbar,
 #studentList::-webkit-scrollbar {
   width: 6px;
 }
+
+.drawer-inner::-webkit-scrollbar-thumb,
 #studentList::-webkit-scrollbar-thumb {
-  background-color: #333;
+  background-color: var(--color-border-light);
   border-radius: 3px;
 }
+
+.drawer-inner::-webkit-scrollbar-thumb:hover,
 #studentList::-webkit-scrollbar-thumb:hover {
-  background-color: #00aaff;
+  background-color: var(--color-brand);
 }
 
-/* --- Compact Search Student Button (Dark Theme) --- */
+
+/* === 6. EXTERNAL ELEMENT STYLES === */
+
+/* --- 'Search Student' Button (from main page) --- */
 #openDrawerBtn {
-  margin: 0 !important;       /* remove all margins */
+  margin: 0 !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -183,21 +322,8 @@
   font-size: 11px;
 }
 
-.drawer-header, 
-.drawer-form {
-  margin: 0;
-  padding: 0;
-}
-
-.drawer-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* control spacing between elements */
-}
-
-
 #openDrawerBtn:hover {
-  background: linear-gradient(135deg, #0090ff, #0072e0);
+  background: linear-gradient(135deg, var(--color-brand-hover), var(--color-brand-dark));
   box-shadow: 0 2px 6px rgba(0, 144, 255, 0.35);
   transform: translateY(-1px);
 }
@@ -209,15 +335,17 @@
 
 /* Optional icon support */
 #openDrawerBtn i {
-  font-size: 0.8rem;
+  font-size: 12px;
   opacity: 0.85;
 }
 
-/* Responsive tweak */
+
+/* === 7. RESPONSIVE TWEAKS === */
+
 @media (max-width: 480px) {
   #openDrawerBtn {
     padding: 3px 6px;
-    font-size: 0.6rem;
+    font-size: 10px;
     letter-spacing: 0.3px;
   }
 }

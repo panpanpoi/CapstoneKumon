@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchWrapper = document.createElement("div");
     searchWrapper.className = "search-bar";
     searchWrapper.innerHTML = `
-      <input type="text" id="searchPayment" placeholder="🔍 Search by student name, code, or reference..." />
+      <input type="text" id="searchPayment" placeholder=" Search by student name, code, or reference..." />
       <button id="clearSearch" class="btn-clear"><i class="fa fa-times"></i></button>
     `;
     paymentsContainer.insertAdjacentElement("beforebegin", searchWrapper);
