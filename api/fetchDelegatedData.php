@@ -1,4 +1,10 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// ⭐ --- END OF DEBUGGING --- ⭐
+require_once "../api/auth.php";
 require_once "../database.php";
 if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -59,92 +65,117 @@ try {
         exit;
     }
 
+    // All create and delete operations are now handled with POST
     elseif ($method === 'POST') {
-        // 🟢 POST: Delegate a single student (Insertion only)
-        $input = json_decode(file_get_contents("php://input"), true);
-
-        // 1. Input Validation
-        if (
-            empty($input['teacher_id']) ||
-            !isset($input['student_ids']) ||
-            !is_array($input['student_ids']) ||
-            count($input['student_ids']) !== 1
-        ) {
-            http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Invalid delegation input. Expected exactly one student ID."]);
-            exit;
-        }
-
-        $teacher_id = (int)$input['teacher_id'];
-        $student_id = (int)$input['student_ids'][0];
-
-        // 2. Check if student is already assigned to ANY teacher
-        $check_assigned = $pdo->prepare("SELECT 1 FROM class_students WHERE student_id = ?");
-        $check_assigned->execute([$student_id]);
         
-        if ($check_assigned->rowCount() > 0) {
-            $message = "Student is already assigned to a teacher.";
-            http_response_code(409); // Conflict
-            echo json_encode(["success" => false, "message" => $message]);
-            exit;
-        }
-
-        // 3. Insert the new assignment
-        $insert = $pdo->prepare("
-            INSERT INTO class_students (teacher_id, student_id, level)
-            VALUES (?, ?, 'N/A')
-        ");
-        $insert->execute([$teacher_id, $student_id]);
-
-        $message = "Student successfully delegated to the class.";
-
-        echo json_encode([
-            "success" => true,
-            "message" => $message,
-            "teacher_id" => $teacher_id,
-            "student_id" => $student_id
-        ]);
-        exit;
-    }
-
-    elseif ($method === 'DELETE') {
-        // 🔴 DELETE: Unassign a single student (Deletion only)
         $input = json_decode(file_get_contents("php://input"), true);
-
-        // 1. Input Validation
-        if (empty($input['teacher_id']) || empty($input['student_id'])) {
+        
+        if ($input === null) {
             http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Invalid removal input: Missing teacher or student ID."]);
+            echo json_encode(["success" => false, "message" => "DEBUG: JSON payload was null. Check if JS is sending body."]);
             exit;
         }
 
-        $teacher_id = (int)$input['teacher_id'];
-        $student_id = (int)$input['student_id'];
+        // Get the 'action' from the JavaScript file
+        $action = $input['action'] ?? null;
 
-        // 2. Delete the student assignment
-        $delete = $pdo->prepare("
-            DELETE FROM class_students 
-            WHERE teacher_id = ? AND student_id = ?
-        ");
-        $delete->execute([$teacher_id, $student_id]);
+        if ($action === 'create') {
+            // 🟢 POST: Delegate a single student (Insertion logic)
+            
+            // 1. Input Validation
+            if (
+                empty($input['teacher_id']) ||
+                !isset($input['student_ids']) ||
+                !is_array($input['student_ids']) ||
+                count($input['student_ids']) !== 1
+            ) {
+                http_response_code(400);
+                echo json_encode([
+                    "success" => false, 
+                    "message" => "DEBUG: Invalid delegation input."
+                ]);
+                exit;
+            }
 
-        if ($delete->rowCount() > 0) {
+            $teacher_id = (int)$input['teacher_id'];
+            $student_id = (int)$input['student_ids'][0];
+
+            // 2. Check if student is already assigned to ANY teacher
+            $check_assigned = $pdo->prepare("SELECT 1 FROM class_students WHERE student_id = ?");
+            $check_assigned->execute([$student_id]);
+            
+            if ($check_assigned->rowCount() > 0) {
+                $message = "Student is already assigned to a teacher.";
+                http_response_code(409); // Conflict
+                echo json_encode(["success" => false, "message" => $message]);
+                exit;
+            }
+
+            // 3. Insert the new assignment
+            $insert = $pdo->prepare("
+                INSERT INTO class_students (teacher_id, student_id, level)
+                VALUES (?, ?, 'N/A')
+            ");
+            $insert->execute([$teacher_id, $student_id]);
+
+            $message = "Student successfully delegated to the class.";
+
             echo json_encode([
                 "success" => true,
-                "message" => "Student successfully unassigned.",
+                "message" => $message,
                 "teacher_id" => $teacher_id,
                 "student_id" => $student_id
             ]);
+            exit;
+
+        } elseif ($action === 'delete') {
+            // 🔴 POST (acting as DELETE): Unassign a single student (Deletion logic)
+            
+            // 1. Input Validation (from your old DELETE block)
+            if (empty($input['teacher_id']) || empty($input['student_id'])) {
+                http_response_code(400);
+                echo json_encode(["success" => false, "message" => "Invalid removal input: Missing teacher or student ID."]);
+                exit;
+            }
+
+            $teacher_id = (int)$input['teacher_id'];
+            $student_id = (int)$input['student_id'];
+
+            // 2. Delete the student assignment (from your old DELETE block)
+            $delete = $pdo->prepare("
+                DELETE FROM class_students 
+                WHERE teacher_id = ? AND student_id = ?
+            ");
+            $delete->execute([$teacher_id, $student_id]);
+
+            if ($delete->rowCount() > 0) {
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Student successfully unassigned.",
+                    "teacher_id" => $teacher_id,
+                    "student_id" => $student_id
+                ]);
+            } else {
+                http_response_code(404);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Assignment not found for this teacher and student.",
+                    "teacher_id" => $teacher_id,
+                    "student_id" => $student_id
+                ]);
+            }
+            exit;
+
         } else {
-            http_response_code(404);
+            // No action or an invalid action was provided
+            http_response_code(400);
             echo json_encode([
-                "success" => false,
-                "message" => "Assignment not found for this teacher and student.",
-                "teacher_id" => $teacher_id,
-                "student_id" => $student_id
+                "success" => false, 
+                "message" => "DEBUG: Invalid or missing 'action' property.",
+                "received_action" => $action
             ]);
+            exit;
         }
-        exit;
     }
 
     else {
@@ -155,7 +186,8 @@ try {
 
 } catch (PDOException $e) {
     http_response_code(500);
+    // ⭐ --- DEBUGGING --- ⭐
+    // This will now print the detailed SQL error message
     echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
     exit;
 }
-

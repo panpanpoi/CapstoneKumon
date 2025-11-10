@@ -101,7 +101,7 @@ $initials = $_SESSION['initials'];
 
             <!-- DRAWER TRIGGER -->
             <wa-button id="openDrawerBtn" variant="brand" size="small">
-              <i class="fa fa-search"></i> Search Student
+               Search Student
             </wa-button>
 
             <div id="selectedStudent" class="selected-student"></div>

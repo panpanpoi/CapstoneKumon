@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once "../database.php";
-require_once "../api/auth.php";
+require_once "../api/auth.php"; // This should be correct now
 
 // ✅ Ensure user is logged in and is an admin
 if (
@@ -67,6 +67,8 @@ try {
 $delegation_success = $_SESSION['delegation_success'] ?? null;
 $delegation_error   = $_SESSION['delegation_error'] ?? null;
 unset($_SESSION['delegation_success'], $_SESSION['delegation_error']);
+
+$js_version = time();
 ?>
 
 <!DOCTYPE html>
@@ -197,7 +199,6 @@ unset($_SESSION['delegation_success'], $_SESSION['delegation_error']);
     </main>
 
     <script src="../scr/adminSidebar.js"></script>
-    <script src="../scr/adminStudentDelegation.js"></script>
+    <script src="../scr/adminStudentDelegation.js?v=<?= $js_version ?>"></script>
 </body>
 </html>
-

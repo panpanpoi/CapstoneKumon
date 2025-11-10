@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isLoading = false;
     let currentTeacherData = { id: null, name: null, count: 0 };
-    // <-- CHANGED: Starts empty and is populated by a new fetch call.
     let localUnassignedStudents = [];
 
     const displayAlert = (type, message) => {
@@ -27,10 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // <-- NEW FUNCTION: Fetches the unassigned student list from its own handler
     async function fetchUnassignedStudents() {
         try {
-            // Use the absolute path
             const response = await fetch('../api/fetchUnassignedStudents.php');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -60,23 +57,28 @@ document.addEventListener('DOMContentLoaded', () => {
         isLoading = true;
 
         try {
+            // ⭐ --- START OF FIX --- ⭐
+            // We've changed the payload to include an 'action'
+            // so the PHP file knows what to do.
             const payload = {
+                action: 'delete', // This tells the PHP file to delete
                 teacher_id: currentTeacherData.id,
                 student_id: parseInt(studentId)
             };
 
+            // We now use "POST" instead of "DELETE", which InfinityFree allows.
             const response = await fetch("../api/fetchDelegatedData.php", {
-                method: "DELETE",
+                method: "POST", // CHANGED FROM "DELETE"
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
+            // ⭐ --- END OF FIX --- ⭐
 
             const data = await response.json();
 
             if (data.success) {
                 displayAlert('success', data.message || `Successfully unassigned ${studentName}.`);
                 
-                // <-- CHANGED: Re-fetch the unassigned list to ensure it's accurate
                 await fetchUnassignedStudents();
 
                 const newCount = parseInt(currentTeacherData.count) - 1;
@@ -87,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentTeacherData.count = newCount;
                 }
 
-                // Refetch the class details (this will re-render the form with the updated list)
                 await fetchTeacherClass(currentTeacherData.id, currentTeacherData.name, newCount, false);
             } else {
                 displayAlert('danger', data.message || `Failed to unassign ${studentName}.`);
@@ -104,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 🟢 Delegation Form Submission (POST)
     async function handleDelegationSubmit(event) {
         event.preventDefault();
-        // ... (rest of the form data logic) ...
         const form = event.target;
         const formData = new FormData(form);
         const studentIdToDelegate = formData.get('student_id');
@@ -117,7 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelector('.delegate-btn').disabled = true;
 
         try {
+           //add
             const payload = {
+                action: 'create', 
                 teacher_id: currentTeacherData.id,
                 student_ids: [parseInt(studentIdToDelegate)]
             };
@@ -133,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 displayAlert('success', data.message || `Delegated ${selectedStudentText} to ${currentTeacherData.name}.`);
                 
-                // <-- CHANGED: No re-fetch needed here, just filter the local list (faster)
                 localUnassignedStudents = localUnassignedStudents.filter(s => s.student_id != studentIdToDelegate);
 
                 const newCount = parseInt(currentTeacherData.count) + 1;
@@ -154,7 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
             displayAlert('danger', "Network error during delegation.");
         } finally {
             isLoading = false;
-            // Check if form still exists before enabling button
             const delegateBtn = form.querySelector('.delegate-btn');
             if (delegateBtn) {
                 delegateBtn.disabled = false;
@@ -185,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // --- (renderDelegationForm remains the same) ---
-    // This function will now dynamically use the `localUnassignedStudents` list
     const renderDelegationForm = (teacherId) => {
         if (!localUnassignedStudents.length)
             return '<p class="success-message">🎉 All students are currently delegated!</p>';
@@ -280,7 +279,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const alerts = document.querySelectorAll('.alert');
     if (alerts.length > 0) setTimeout(() => alerts.forEach(a => a.remove()), 5000);
 
-    // <-- CHANGED: Fetch the unassigned list as soon as the page loads
     fetchUnassignedStudents();
 });
-
