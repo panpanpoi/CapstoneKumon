@@ -56,10 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['success'] = "PTC booking confirmed.";
         }
 
-        // CANCEL
+        // --- [START] MODIFIED CANCEL LOGIC ---
         if (isset($_POST['cancel'], $_POST['booking_id'])) {
             $booking_id = (int) $_POST['booking_id'];
 
+            // Find the booking to make sure it belongs to this student and get the schedule_id
             $stmt = $pdo->prepare("
                 SELECT pb.booking_id, ps.schedule_id, ps.date, ps.startTime
                 FROM ptc_bookings pb
@@ -70,15 +71,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $booking = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$booking) throw new Exception("Invalid booking.");
 
+            // Check if the schedule is in the past
             $scheduleTime = new DateTime($booking['date'] . ' ' . $booking['startTime']);
             if ($scheduleTime < new DateTime()) throw new Exception("Cannot cancel past schedule.");
 
-            // Cancel
-            $pdo->prepare("UPDATE ptc_bookings SET status = 'cancelled' WHERE booking_id = ?")->execute([$booking_id]);
+            // 1. Delete the booking from ptc_bookings
+            $pdo->prepare("DELETE FROM ptc_bookings WHERE booking_id = ?")->execute([$booking_id]);
+            
+            // 2. Re-open the schedule in ptc_schedules
             $pdo->prepare("UPDATE ptc_schedules SET status = 'open' WHERE schedule_id = ?")->execute([$booking['schedule_id']]);
 
             $_SESSION['success'] = "PTC booking cancelled.";
         }
+        // --- [END] MODIFIED CANCEL LOGIC ---
 
         $pdo->commit();
     } catch (Exception $e) {
@@ -150,4 +155,3 @@ foreach ($bookings as $b) {
     $b['notes'] = $stmtNotes->fetchAll(PDO::FETCH_ASSOC);
     $doneBookings[] = $b;
 }
-
