@@ -48,12 +48,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const nextDueEl = document.getElementById("nextDue");
       if (totalPaidEl) totalPaidEl.textContent = `₱${data.total_paid.toFixed(2)}`;
       if (remainingBalanceEl) remainingBalanceEl.textContent = `₱${data.remaining_balance.toFixed(2)}`;
-      if (nextDueEl && data.next_due)
-        nextDueEl.textContent = new Date(data.next_due).toLocaleDateString("en-US", {
+      
+      // --- [START] MODIFIED DATE LOGIC ---
+      // Safely parse YYYY-MM-DD to avoid timezone errors
+      if (nextDueEl && data.next_due) {
+        const parts = data.next_due.split("-");
+        const nextDueDate = new Date(
+            parseInt(parts[0], 10),
+            parseInt(parts[1], 10) - 1, // JS months are 0-indexed
+            parseInt(parts[2], 10)
+        );
+        nextDueEl.textContent = nextDueDate.toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
         });
+      }
+      // --- [END] MODIFIED DATE LOGIC ---
 
       if (payments.length === 0) {
         paymentContainer.innerHTML = `<p class="no-data">No payment history found for ${new Date(
@@ -66,11 +77,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // 🧾 Render payment cards
       paymentContainer.innerHTML = payments
         .map((p) => {
-          const formattedDate = new Date(p.payment_date).toLocaleDateString("en-US", {
+          
+          // --- [START] MODIFIED DATE LOGIC ---
+          // Safely parse YYYY-MM-DD to avoid timezone errors
+          const dateParts = p.payment_date.split("-");
+          const pDate = new Date(
+               parseInt(dateParts[0], 10),
+               parseInt(dateParts[1], 10) - 1, // JS months 0-indexed
+               parseInt(dateParts[2], 10)
+          );
+          const formattedDate = pDate.toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
           });
+          // --- [END] MODIFIED DATE LOGIC ---
 
           const status = (p.payment_status || "unverified").toLowerCase();
           const method = (p.payment_method || "n/a").toLowerCase();
@@ -175,5 +196,3 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🚀 Initial load
   fetchPayments(currentMonth, currentYear);
 });
-
-

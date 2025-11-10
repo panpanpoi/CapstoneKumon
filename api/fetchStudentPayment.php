@@ -55,20 +55,46 @@ try {
     $remaining_balance = max($monthlyFee - $total_this_period, 0);
     $fully_paid = ($remaining_balance <= 0);
 
-    // 🧾 Get latest due date for this student's payments
-    $dueQuery = $pdo->prepare("
-        SELECT due_date 
-        FROM payments 
-        WHERE student_id = ? 
-        ORDER BY due_date DESC 
-        LIMIT 1
-    ");
-    $dueQuery->execute([$student_id]);
-    $latest = $dueQuery->fetch(PDO::FETCH_ASSOC);
+    // --- [START] Updated Next Due Date Logic ---
 
-    $next_due = $latest && !empty($latest['due_date'])
-        ? $latest['due_date']
-        : date('Y-m-d', strtotime("first day of next month"));
+    // 🧾 Calculate Next Due Date based on latest VERIFIED payment
+    $next_due_fallback = date('Y-m-d', strtotime("first day of next month"));
+    $next_due = $next_due_fallback;
+
+    // Filter for verified payments only
+    $verified_payments = array_filter($all_payments, function($p) {
+        return $p['payment_status'] === 'verified';
+    });
+
+    if (count($verified_payments) > 0) {
+        $covered_dates = [];
+        foreach ($verified_payments as $p) {
+            // Convert "Month YYYY" string (e.g., "March 2026") to a valid DateTime object
+            $date = date_create_from_format('F Y', $p['tf_month_covered']);
+            
+            if ($date) {
+                // Set to the first day of that month for comparison
+                $covered_dates[] = $date->modify('first day of this month');
+            }
+        }
+
+        if (count($covered_dates) > 0) {
+            // Find the latest (max) date from the verified payments
+            $latest_covered_date = max($covered_dates);
+            
+            // Add 1 month to get the next due date
+            $latest_covered_date->modify('+1 month');
+            
+            // Set the final next_due string, formatted as YYYY-MM-DD
+            $next_due = $latest_covered_date->format('Y-m-d');
+        }
+    } else {
+        // If no verified payments, just use the fallback
+        $next_due = $next_due_fallback;
+    }
+
+    // --- [END] Updated Next Due Date Logic ---
+
 
     // Notify rule (24th onward, if not fully paid)
     $shouldNotify = (date('j') >= 24 && !$fully_paid);
@@ -122,5 +148,3 @@ try {
     ]);
 }
 ?>
-
-

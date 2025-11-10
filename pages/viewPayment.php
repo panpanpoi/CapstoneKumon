@@ -73,13 +73,13 @@ $initials = $_SESSION['initials'];
     <!-- Action Buttons -->
     <div class="action-bar">
       <!-- Import Payments -->
-      <form action="../api/importPayments.php" method="POST" enctype="multipart/form-data" class="import-form">
+      <!-- <form action="../api/importPayments.php" method="POST" enctype="multipart/form-data" class="import-form">
         <label><i class="fa fa-file-import"></i> Import CSV:</label>
         <input type="file" name="csv_file" accept=".csv" required>
         <button type="submit" class="btn-import">
           <i class="fa fa-upload"></i> Import
         </button>
-      </form>
+      </form> -->
 
       <!-- Export Payments -->
       <form action="../api/exportPayments.php" method="GET" class="export-form">
