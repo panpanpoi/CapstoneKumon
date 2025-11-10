@@ -1,7 +1,7 @@
-console.log("✅ kumonClass.js loaded (v2 with Edit)");
+
 
 window.initKumonClass = () => {
-console.log("🚀 initKumonClass() STARTED");
+
 
 // Elements
 const openAddModal = document.getElementById("openAddModal");
@@ -104,13 +104,13 @@ addStudentModal?.addEventListener("click", (e) => { if (e.target === addStudentM
 
 // FETCH ASSIGNED STUDENTS
 async function fetchAssignedStudents(filterDay = "all") {
- console.log("📦 fetchAssignedStudents() called →", filterDay);
+ 
  try {
  const res = await fetch(`../api/fetchAssignedStudent.php?day=${filterDay}`, {
   credentials: "include"
  });
  const data = await res.json();
- console.log("📄 fetchAssignedStudents response:", data);
+ 
  assignedStudentsBody.innerHTML = "";
 
  if (data.success && Array.isArray(data.data) && data.data.length) {
@@ -178,11 +178,11 @@ async function fetchAssignedStudents(filterDay = "all") {
 
 // FETCH AVAILABLE STUDENTS (Unchanged)
 async function fetchAvailableStudents() {
- console.log("📚 fetchAvailableStudents() called");
+ 
  try {
  const res = await fetch("../api/fetchAllStudent.php", { credentials: "include" });
  const data = await res.json();
- console.log("📘 Available students response:", data);
+ 
 
  studentSelect.innerHTML = `<option value="">-- Select Student --</option>`;
 
@@ -206,7 +206,7 @@ async function fetchAvailableStudents() {
   placeholder: "Search or select a student...",
   maxOptions: 400
   });
-  console.log("✅ TomSelect initialized successfully");
+  
  } catch (err) {
   console.warn("⚠️ TomSelect initialization failed:", err);
   studentTomSelect = null;
@@ -221,7 +221,7 @@ async function fetchAvailableStudents() {
  // ==========================================================
 addStudentBtn?.addEventListener("click", async (e) => {
  e.preventDefault();
-  console.log("🟢 Add/Update Student button clicked");
+  
 
   const mode = editModeInput.value;
   const studentId_from_dropdown = studentTomSelect ? studentTomSelect.getValue() : studentSelect.value;
@@ -268,7 +268,7 @@ addStudentBtn?.addEventListener("click", async (e) => {
  formData.append("schedule2_start", s2Start);
  formData.append("schedule2_end", s2End);
 
- console.log(`🚀 Sending ${mode} student request...`);
+ 
  const res = await fetch("../api/classStudentHandler.php", {
   method: "POST",
   body: formData,
@@ -276,7 +276,7 @@ addStudentBtn?.addEventListener("click", async (e) => {
  });
 
  const data = await res.json();
- console.log(`📬 ${mode} student response:`, data);
+ 
 
  if (data.success) {
   alert(data.message);
@@ -305,7 +305,7 @@ assignedStudentsBody?.addEventListener("click", (e) => {
   // Check for EDIT button
   const editBtn = e.target.closest(".btn-edit");
   if (editBtn) {
-   console.log("✏️ Edit button clicked");
+   
    const studentData = {
      id: editBtn.dataset.studentId,
      name: editBtn.dataset.name,
@@ -324,7 +324,7 @@ assignedStudentsBody?.addEventListener("click", (e) => {
  // Check for REMOVE button
  const removeBtn = e.target.closest(".btn-remove");
  if (removeBtn) {
-  console.log("🗑️ Remove button clicked");
+  
   const id = removeBtn.dataset.id;
   const name = removeBtn.dataset.name || "";
   
@@ -359,13 +359,13 @@ assignedStudentsBody?.addEventListener("click", (e) => {
 
 // DAY FILTER (Unchanged)
 dayFilter?.addEventListener("change", () => {
- console.log("🔄 Day filter changed:", dayFilter.value);
+ 
  fetchAssignedStudents(dayFilter.value);
 });
 
 // INITIAL LOAD (Unchanged)
-console.log("🚀 Initial data loading...");
+
 fetchAssignedStudents();
 fetchAvailableStudents();
-console.log("✅ initKumonClass() setup complete");
+
 };

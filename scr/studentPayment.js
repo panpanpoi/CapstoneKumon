@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button.textContent = "Uploading...";
 
         try {
-          const response = await fetch("../api/UploadReceipt.php", {
+          const response = await fetch("../api/uploadReceipt.php", {
             method: "POST",
             body: formData,
           });
