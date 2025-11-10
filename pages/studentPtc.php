@@ -5,7 +5,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../api/auth.php'; // ensures logged-in + session
-require_once __DIR__ . '/../api/studentPtcHandler.php';
+// [NEW] This file now defines $currentBooking, $availableSchedules, $doneBookings, and $filter_year
+require_once __DIR__ . '/../api/studentPtcHandler.php'; 
 
 // Fetch Student Information for Sidebar 
 $student_id = $_SESSION['student_id'] ?? null;
@@ -111,10 +112,12 @@ $avatarInitials = initials($fullName);
                     <strong>Time:</strong> <?= date("g:i A", strtotime($currentBooking['startTime'])) ?> - <?= date("g:i A", strtotime($currentBooking['endTime'])) ?><br>
                     <strong>Teacher:</strong> <?= htmlspecialchars($currentBooking['teacherName']) ?>
                 </p>
-                <form method="POST" action="../api/studentPtcHandler.php" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                    <input type="hidden" name="booking_id" value="<?= htmlspecialchars($currentBooking['booking_id']) ?>">
-                    <button type="submit" name="cancel" class="cancel-btn"><i class="fas fa-times"></i> Cancel Booking</button>
-                </form>
+                
+                <!-- --- [MODIFIED] This is now a simple button, not a form --- -->
+                <button type="button" class="cancel-btn cancel-booking-btn" data-booking-id="<?= htmlspecialchars($currentBooking['booking_id']) ?>">
+                    <i class="fas fa-times"></i> Cancel Booking
+                </button>
+                
             <?php else: ?>
                 <p>No scheduled PTC meetings.</p>
             <?php endif; ?>
@@ -135,7 +138,8 @@ $avatarInitials = initials($fullName);
                                 <td><?= date("g:i A", strtotime($slot['startTime'])) ?> - <?= date("g:i A", strtotime($slot['endTime'])) ?></td>
                                 <td><?= htmlspecialchars($slot['teacherName']) ?></td>
                                 <td>
-                                    <form method="POST" action="../api/studentPtcHandler.php">
+                                    <!-- [MODIFIED] This form posts to the handler, preserving both filters -->
+                                    <form method="POST" action="../api/studentPtcHandler.php?filter_year=<?= $filter_year ?>&filter_month=<?= $filter_month ?>">
                                         <input type="hidden" name="schedule_id" value="<?= htmlspecialchars($slot['schedule_id']) ?>">
                                         <button type="submit" name="book" class="btn" <?= $currentBooking?'disabled':'' ?>>Book</button>
                                     </form>
@@ -149,61 +153,112 @@ $avatarInitials = initials($fullName);
             <?php endif; ?>
         </section>
 
-        <!-- ✅ Completed PTC Meetings -->
+        <!-- Completed PTC Meetings -->
         <section class="section-card done-bookings">
-        <h3><i class="fas fa-calendar-check"></i> Completed PTC Meetings</h3>
+            
+            <!-- --- [MODIFIED] Filter Row --- -->
+            <div class="card-header-row">
+                <h3><i class="fas fa-calendar-check"></i> Completed PTC Meetings</h3>
+                <form action="studentPtc.php" method="GET" class="filter-form">
+                    <label for="filter_month">Filter by:</label>
+                    <select name="filter_month" id="filter_month" onchange="this.form.submit()">
+                        <option value="all" <?= ($filter_month == 'all') ? 'selected' : '' ?>>All Months</option>
+                        <?php for ($m = 1; $m <= 12; $m++): 
+                            $month_name = date('F', mktime(0, 0, 0, $m, 10));
+                        ?>
+                            <option value="<?= $m ?>" <?= ($filter_month == $m) ? 'selected' : '' ?>>
+                                <?= $month_name ?>
+                            </option>
+                        <?php endfor; ?>
+                    </select>
 
-        <?php if(!empty($doneBookings)): ?>
-            <div class="table-wrapper">
-            <table class="ptc-table">
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Teacher</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php foreach($doneBookings as $b): ?>
-                <tr>
-                    <td><?= date("F j, Y", strtotime($b['date'])) ?></td>
-                    <td><?= htmlspecialchars($b['teacherName']) ?></td>
-                    <td>
-                    <button class="btn-view-notes" data-schedule-id="<?= $b['schedule_id'] ?>">
-                        <i class="fas fa-eye"></i> View Notes
-                    </button>
-                    </td>
-                </tr>
-                <tr id="notes-<?= $b['schedule_id'] ?>" class="notes-popup" style="display:none;">
-                    <td colspan="3">
-                    <div class="notes-box">
-                        <p><strong>Teacher:</strong> <?= htmlspecialchars($b['teacherName']) ?></p>
-                        <p><strong>Date:</strong> <?= date("F j, Y", strtotime($b['date'])) ?></p>
-                        <ul>
-                        <?php foreach($b['notes'] as $note): ?>
-                            <li>
-                            <?= htmlspecialchars($note['note']) ?>
-                            <small>(<?= $note['created_at'] ?>)</small>
-                            </li>
-                        <?php endforeach; ?>
-                        </ul>
-                        <button class="close-popup" data-schedule-id="<?= $b['schedule_id'] ?>">Close</button>
-                    </div>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
+                    <select name="filter_year" id="filter_year" onchange="this.form.submit()">
+                        <?php 
+                        $currentYear = date('Y');
+                        for ($y = $currentYear; $y >= $currentYear - 4; $y--): 
+                        ?>
+                            <option value="<?= $y ?>" <?= ($filter_year == $y) ? 'selected' : '' ?>>
+                                <?= $y ?>
+                            </option>
+                        <?php endfor; ?>
+                    </select>
+                </form>
             </div>
-        <?php else: ?>
-            <p class="empty-state">No completed PTC meetings yet.</p>
-        <?php endif; ?>
+            <!-- --- [END] Filter Row --- -->
+
+            <?php if(!empty($doneBookings)): ?>
+                <div class="table-wrapper">
+                    <table class="ptc-table">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Teacher</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach($doneBookings as $b): ?>
+                            <tr>
+                                <td><?= date("F j, Y", strtotime($b['date'])) ?></td>
+                                <td><?= htmlspecialchars($b['teacherName']) ?></td>
+                                <td>
+                                    <!-- This button will be targeted by studentPtc.js -->
+                                    <button class="btn-view-notes" data-schedule-id="<?= $b['schedule_id'] ?>">
+                                        <i class="fas fa-eye"></i> View Notes
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- [MOVED] The notes popup TR is no longer here -->
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <!-- [MODIFIED] Updated empty state message -->
+                <p class="empty-state">
+                    No completed PTC meetings found for 
+                    <?php 
+                        if ($filter_month !== 'all' && $filter_month !== '') {
+                            echo date('F', mktime(0, 0, 0, $filter_month, 10)) . " ";
+                        }
+                        echo $filter_year;
+                    ?>.
+                </p>
+            <?php endif; ?>
         </section>
     </main>
 </div>
 
+<!-- --- [NEW] Hidden divs for notes content (for the modal) --- -->
+<!-- This block is hidden and holds the content for the "View Notes" modal -->
+<div class="notes-storage" style="display: none;">
+    <?php foreach ($doneBookings as $b): ?>
+        <div id="notes-content-<?= $b['schedule_id'] ?>">
+            <div class="notes-box">
+                <p><strong>Teacher:</strong> <?= htmlspecialchars($b['teacherName']) ?></p>
+                <p><strong>Date:</strong> <?= date("F j, Y", strtotime($b['date'])) ?></p>
+                <hr style="border:0; border-top: 1px solid #eee; margin: 10px 0;">
+                
+                <?php if (empty($b['notes'])): ?>
+                    <p>No notes were added for this meeting.</p>
+                <?php else: ?>
+                    <ul class="notes-list">
+                    <?php foreach($b['notes'] as $note): ?>
+                        <li>
+                            <p><?= htmlspecialchars($note['note']) ?></p>
+                            <small>(<?= date("M j, Y, g:i A", strtotime($note['created_at'])) ?>)</small>
+                        </li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+<!-- --- [END] Hidden divs --- -->
+
+
 <script src="../scr/sidebarToggle.js"></script>
-<script src="../scr/studentPtc.js"></script>
+<script src="../scr/studentPtc.js"></script> 
 </body>
 </html>
-

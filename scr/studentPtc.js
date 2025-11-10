@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     /**
      * Shows a custom modal.
-     * @param {string} message The message to display.
+     * @param {string} contentHTML The HTML content to display.
      * @param {boolean} isConfirm If true, shows "Yes" and "No" buttons. If false, shows "OK".
      * @returns {Promise<boolean>} Resolves true if "Yes" or "OK" is clicked, false if "No" is clicked.
      */
-    function showModal(message, isConfirm = false) {
+    function showModal(contentHTML, isConfirm = false) {
         // Remove any existing modal
         const existingModal = document.getElementById('customModal');
         if (existingModal) {
@@ -18,36 +18,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create modal elements
         const overlay = document.createElement('div');
         overlay.id = 'customModal';
-        overlay.style = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: flex; align-items: center;
-            justify-content: center; z-index: 1000;
-        `;
-
+        overlay.className = 'custom-modal-overlay'; // For styling
+        
         const modalBox = document.createElement('div');
-        modalBox.style = `
-            background: white; padding: 25px; border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center;
-            max-width: 400px; width: 90%;
-        `;
+        modalBox.className = 'custom-modal-box'; // For styling
 
-        const messageP = document.createElement('p');
-        messageP.textContent = message;
-        messageP.style = 'margin: 0 0 20px; font-size: 1.1em; line-height: 1.5;';
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'custom-modal-content';
+        contentDiv.innerHTML = contentHTML; // Set inner HTML
         
         const buttonWrapper = document.createElement('div');
-        buttonWrapper.style = 'display: flex; justify-content: center; gap: 10px;';
+        buttonWrapper.className = 'custom-modal-buttons';
 
         const confirmBtn = document.createElement('button');
         confirmBtn.textContent = isConfirm ? 'Yes, Cancel' : 'OK';
-        confirmBtn.style = 'padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background: #d9534f; color: white;';
+        confirmBtn.className = 'modal-btn-confirm';
 
         const cancelBtn = document.createElement('button');
         cancelBtn.textContent = 'No';
-        cancelBtn.style = 'padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background: #f0f0f0;';
+        cancelBtn.className = 'modal-btn-cancel';
 
         // Append elements
-        modalBox.appendChild(messageP);
+        modalBox.appendChild(contentDiv);
         buttonWrapper.appendChild(confirmBtn);
         if (isConfirm) {
             buttonWrapper.appendChild(cancelBtn);
@@ -55,6 +47,54 @@ document.addEventListener('DOMContentLoaded', () => {
         modalBox.appendChild(buttonWrapper);
         overlay.appendChild(modalBox);
         document.body.appendChild(overlay);
+        
+        // Add styles (you can move this to your CSS file)
+        if (!document.getElementById('customModalStyles')) {
+            const style = document.createElement('style');
+            style.id = 'customModalStyles';
+            style.innerHTML = `
+                .custom-modal-overlay {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.6); display: flex; align-items: center;
+                    justify-content: center; z-index: 1000;
+                    opacity: 0; transition: opacity 0.2s ease-in-out;
+                }
+                .custom-modal-box {
+                    background: white; padding: 20px; border-radius: 8px;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                    max-width: 500px; width: 90%;
+                    transform: scale(0.9); transition: transform 0.2s ease-in-out;
+                }
+                .custom-modal-content {
+                    margin-bottom: 20px; font-size: 1.1em; line-height: 1.5;
+                    max-height: 60vh; overflow-y: auto;
+                }
+                .custom-modal-content p:first-child { margin-top: 0; }
+                .custom-modal-content p:last-child { margin-bottom: 0; }
+                .custom-modal-buttons {
+                    display: flex; justify-content: flex-end; gap: 10px;
+                }
+                .modal-btn-confirm, .modal-btn-cancel {
+                    padding: 10px 18px; border: none; border-radius: 5px; cursor: pointer;
+                    font-weight: bold; font-size: 0.9em;
+                }
+                .modal-btn-confirm { background: #d9534f; color: white; }
+                .modal-btn-cancel { background: #f0f0f0; color: #333; }
+                .modal-btn-confirm:hover { background: #c9302c; }
+                .modal-btn-cancel:hover { background: #e0e0e0; }
+                .custom-modal-content .notes-list { list-style-type: none; padding-left: 0; }
+                .custom-modal-content .notes-list li { background: #f9f9f9; border: 1px solid #eee; border-radius: 4px; padding: 10px; margin-bottom: 10px; }
+                .custom-modal-content .notes-list p { margin: 0 0 5px 0; }
+                .custom-modal-content .notes-list small { color: #777; }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Trigger animations
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            modalBox.style.transform = 'scale(1)';
+        }, 10);
 
         // Return a promise that resolves based on button clicks
         return new Promise((resolve) => {
@@ -66,19 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.removeChild(overlay);
                 resolve(false); // Resolves false for No
             };
-            // Don't close confirm modal on overlay click
-            if(!isConfirm) {
-                 overlay.onclick = () => {
+            overlay.onclick = (e) => {
+                 if (e.target === overlay && !isConfirm) {
                     document.body.removeChild(overlay);
                     resolve(false);
-                };
-            }
+                 }
+            };
         });
     }
 
-    // --- 2. Your Existing Code (Alerts & Notes) ---
-    
-    // Auto-hide alerts
+    // --- 2. Your Existing Alert-Hiding Code ---
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         const autoHide = setTimeout(() => hideAlert(alert), 5000);
@@ -97,26 +134,24 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => alert.remove(), 300);
     }
 
-    // Toggle done PTC notes
+    // --- 3. [NEW] "View Notes" Modal Logic ---
     document.querySelectorAll('.btn-view-notes').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.dataset.scheduleId;
-            const popup = document.getElementById(`notes-${id}`);
-            if (popup) popup.style.display = popup.style.display === 'none' ? 'table-row' : 'none';
+            const notesContentDiv = document.getElementById(`notes-content-${id}`);
+            
+            if (notesContentDiv) {
+                // Get the HTML content from your hidden notes div
+                const notesHtmlContent = notesContentDiv.innerHTML;
+                // Show it in a clean modal (isConfirm = false)
+                showModal(notesHtmlContent, false); 
+            } else {
+                showModal('<p>No notes found for this meeting.</p>', false);
+            }
         });
     });
 
-    document.querySelectorAll('.close-popup').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.dataset.scheduleId;
-            const popup = document.getElementById(`notes-${id}`);
-            if (popup) popup.style.display = 'none';
-        });
-    });
-
-    // --- 3. New Cancel Booking Logic ---
-    
-    // Use event delegation on the document
+    // --- 4. [NEW] "Cancel Booking" API Logic ---
     document.addEventListener('click', async function(event) {
         
         // Check if a cancel button was clicked
@@ -124,16 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const button = event.target;
             const bookingId = button.dataset.bookingId;
-            // Assumes the card is the button's closest table row
-            const card = button.closest('tr'); 
 
             if (!bookingId) {
-                await showModal('Error: Booking ID not found.', false);
+                await showModal('<p>Error: Booking ID not found.</p>', false);
                 return;
             }
 
             // 1. Confirm with the user
-            const confirmed = await showModal('Are you sure you want to cancel this booking? This action cannot be undone.', true);
+            const confirmed = await showModal('<p>Are you sure you want to cancel this booking? This action cannot be undone.</p>', true);
             
             if (!confirmed) {
                 return; // User clicked "No"
@@ -154,23 +187,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    await showModal('Booking successfully cancelled.', false);
-                    // 3. Remove the booking card (table row) from the UI
-                    if (card) {
-                        card.remove();
-                    }
-                    // Optional: You can now reload the page to show available slots
+                    await showModal('<p>Booking successfully cancelled.</p>', false);
+                    // Reload the page to show available slots
                     window.location.reload();
 
                 } else {
-                    await showModal('Error: ' + data.error, false);
+                    await showModal('<p>Error: ' + data.error + '</p>', false);
                     // Re-enable the button if it failed
                     button.disabled = false;
                     button.textContent = 'Cancel Booking';
                 }
             } catch (error) {
                 console.error('Error:', error);
-                await showModal('An unexpected error occurred. Please try again.', false);
+                await showModal('<p>An unexpected error occurred. Please try again.</p>', false);
                 button.disabled = false;
                 button.textContent = 'Cancel Booking';
             }

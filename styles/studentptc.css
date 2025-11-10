@@ -1,6 +1,6 @@
 /* =========================================================
-   🎓 STUDENT PTC PAGE — Modern Professional Theme v3
-   ========================================================= */
+    🎓 STUDENT PTC PAGE — Modern Professional Theme v3
+    ========================================================= */
 
 /* ========== LAYOUT ========== */
 .student-ptc .main-content {
@@ -116,6 +116,41 @@
   color: #3f8efc;
 }
 
+/* --- [NEW] Filter Bar Styles --- */
+.student-ptc .card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap; /* For responsive */
+  gap: 10px;
+}
+
+.student-ptc .card-header-row h3 {
+    margin: 0; /* Remove default margin */
+}
+
+.student-ptc .filter-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.student-ptc .filter-form label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+}
+.student-ptc .filter-form select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+/* --- [END] Filter Bar Styles --- */
+
+
 /* ========== CURRENT BOOKING ========== */
 .student-ptc .current-booking p {
   margin: 10px 0;
@@ -123,6 +158,7 @@
   line-height: 1.6;
 }
 
+/* This targets BOTH the old <form> button and the new <button> */
 .student-ptc .cancel-btn {
   background: #dc3545;
   color: #fff;
@@ -133,6 +169,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: 0.25s ease;
+  font-family: "Inter", "Segoe UI", sans-serif;
 }
 
 .student-ptc .cancel-btn:hover {
@@ -176,12 +213,18 @@
 }
 
 /* ========== COMPLETED PTC MEETINGS TABLE ========== */
-.student-ptc .done-bookings table {
+.student-ptc .done-bookings .table-wrapper {
+  overflow-x: auto;
+}
+
+.student-ptc .done-bookings .ptc-table {
+  width: 100%;
   margin-top: 10px;
   border: 1px solid #e4e6eb;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-radius: 10px;
   overflow: hidden;
+  border-collapse: collapse; /* Use collapse for cleaner lines */
 }
 
 .student-ptc .done-bookings td {
@@ -205,46 +248,120 @@
   transform: translateY(-1px);
 }
 
-/* ========== NOTES POPUP ========== */
-.student-ptc .notes-popup {
-  background: #f9fbff;
-  border: 1px solid #dbe4ff;
+/* --- [REMOVED] Old .notes-popup and .close-popup styles --- */
+/* These are now handled by the custom modal */
+
+
+/* --- [NEW] Custom Modal Styles (From studentPtc.js) --- */
+.custom-modal-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0,0,0,0.6); 
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    z-index: 1000;
+    opacity: 0; 
+    transition: opacity 0.2s ease-in-out;
+}
+.custom-modal-box {
+    background: white; 
+    padding: 24px; 
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    max-width: 500px; 
+    width: 90%;
+    transform: scale(0.9); 
+    transition: transform 0.2s ease-in-out;
+    opacity: 1; /* JS will handle entry opacity */
+}
+.custom-modal-content {
+    margin-bottom: 24px; 
+    font-size: 1.05rem; 
+    line-height: 1.6;
+    color: #333;
+    max-height: 60vh; 
+    overflow-y: auto;
+    padding-right: 10px; /* For scrollbar */
+}
+/* Scrollbar for modal content */
+.custom-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-modal-content::-webkit-scrollbar-thumb {
+  background: #ccc;
   border-radius: 10px;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.1);
-  padding: 18px 22px;
-  margin: 8px 0;
-  animation: fadeInUp 0.35s ease;
+}
+.custom-modal-content p:first-child { margin-top: 0; }
+.custom-modal-content p:last-child { margin-bottom: 0; }
+.custom-modal-buttons {
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 12px;
+}
+.modal-btn-confirm, .modal-btn-cancel {
+    padding: 10px 18px; 
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer;
+    font-weight: 600; 
+    font-size: 0.9em;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    transition: all 0.2s ease;
+}
+.modal-btn-confirm { 
+    background: #d9534f; 
+    color: white; 
+}
+.modal-btn-cancel { 
+    background: #f0f0f0; 
+    color: #333; 
+    border: 1px solid #ddd;
+}
+.modal-btn-confirm:hover { 
+    background: #c9302c; 
+    transform: translateY(-1px);
+}
+.modal-btn-cancel:hover { 
+    background: #e6e6e6; 
+    border-color: #ccc;
 }
 
-.student-ptc .notes-popup ul {
-  margin: 10px 0;
-  padding-left: 18px;
-  color: #555;
+/* Notes-specific styles for the modal */
+.custom-modal-content .notes-box {
+    text-align: left;
 }
+.custom-modal-content .notes-box p {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+.custom-modal-content .notes-list { 
+    list-style-type: none; 
+    padding-left: 0; 
+    margin-top: 15px;
+}
+.custom-modal-content .notes-list li { 
+    background: #f9f9f9; 
+    border: 1px solid #eee; 
+    border-radius: 6px; 
+    padding: 12px 15px; 
+    margin-bottom: 10px;
+    text-align: left;
+}
+.custom-modal-content .notes-list li p { 
+    margin: 0 0 5px 0; 
+    font-size: 0.95rem;
+    color: #222;
+}
+.custom-modal-content .notes-list li small { 
+    color: #777; 
+    font-size: 0.8rem;
+}
+/* --- [END] Custom Modal Styles --- */
 
-.student-ptc .notes-popup li {
-  margin-bottom: 4px;
-}
-
-.student-ptc .notes-popup small {
-  color: #888;
-}
-
-.student-ptc .close-popup {
-  background: #dc3545;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: 0.25s ease;
-}
-
-.student-ptc .close-popup:hover {
-  background: #c82333;
-}
 
 /* ========== BUTTONS ========== */
 .student-ptc .btn {
@@ -273,16 +390,17 @@
 }
 
 /* ========== EMPTY STATE ========== */
-.student-ptc .empty-state {
-  text-align: center;
-  padding: 40px 15px;
+.student-ptc .empty-state,
+.student-ptc .section-card p {
+  text-align: left;
+  padding: 10px 0;
   color: #6c757d;
+  font-size: 0.95rem;
 }
 
-.student-ptc .empty-state h4 {
-  font-size: 1.05rem;
-  color: #444;
-  margin-bottom: 8px;
+.student-ptc .section-card .empty-state {
+    padding: 20px 0;
+    text-align: center;
 }
 
 /* ========== ANIMATIONS ========== */
@@ -329,6 +447,20 @@
   .student-ptc td {
     padding: 10px 12px;
   }
+  
+  .student-ptc .card-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+  
+  .student-ptc .filter-form {
+      width: 100%;
+      gap: 8px;
+  }
+  
+  .student-ptc .filter-form select {
+      flex-grow: 1; /* Make selects fill space */
+  }
 }
 
 @media (max-width: 480px) {
@@ -336,6 +468,7 @@
     padding: 12px;
   }
 
+  /* Make all tables responsive */
   .student-ptc table {
     display: block;
     overflow-x: auto;
@@ -344,71 +477,13 @@
 
   .student-ptc .btn,
   .student-ptc .cancel-btn,
-  .student-ptc .btn-view-notes,
-  .student-ptc .close-popup {
+  .student-ptc .btn-view-notes {
     padding: 6px 10px;
     font-size: 0.8rem;
   }
-}
-/* ========== COMPLETED PTC TABLE ========== */
-.student-ptc .done-bookings .table-wrapper {
-  overflow-x: auto;
-}
 
-.student-ptc .done-bookings .ptc-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.student-ptc .done-bookings thead {
-  background: #3f8efc;
-  color: #fff;
-}
-
-.student-ptc .done-bookings th,
-.student-ptc .done-bookings td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e9ecef;
-  text-align: left;
-}
-
-.student-ptc .done-bookings tbody tr:hover {
-  background: #f8faff;
-  transition: 0.2s ease;
-}
-
-.student-ptc .done-bookings th {
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 0.85rem;
-}
-
-/* Notes popup box */
-.student-ptc .notes-box {
-  background: #f9fbff;
-  border-left: 4px solid #3f8efc;
-  border-radius: 8px;
-  padding: 14px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.student-ptc .notes-box ul {
-  list-style: disc;
-  margin-left: 18px;
-  margin-top: 6px;
-}
-
-.student-ptc .notes-box li {
-  margin-bottom: 4px;
-  color: #444;
-}
-
-.student-ptc .notes-box small {
-  color: #888;
-  font-size: 0.8rem;
+  .student-ptc .filter-form {
+      flex-direction: column;
+      align-items: stretch;
+  }
 }
