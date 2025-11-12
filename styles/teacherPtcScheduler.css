@@ -206,12 +206,7 @@
 #done-schedules-body td:nth-child(3) { width: 25%; } /* Student */
 #done-schedules-body th:nth-child(4),
 #done-schedules-body td:nth-child(4) { width: 35%; } /* Notes */
-
-
-/* Student Cell with Name and Code */
-.student-cell {
-   
-}
+ 
 .student-name {
     font-weight: 600;
     color: #333;
