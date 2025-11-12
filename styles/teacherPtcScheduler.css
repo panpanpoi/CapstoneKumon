@@ -1,6 +1,5 @@
 /* =========================================================
-   🎓 TEACHER PTC SCHEDULER PAGE — Compact & Professional
-   Matches the theme of other teacher account pages
+    🎓 TEACHER PTC SCHEDULER PAGE
    ========================================================= */
 
 /* ========== MAIN LAYOUT ========== */
@@ -42,14 +41,26 @@
   flex: 1;
 }
 
-.page-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #333;
+/* ========== PHP-RENDERED ALERTS (from form posts) ========== */
+.alert {
+  padding: 12px 15px;
   margin-bottom: 18px;
+  border-radius: 6px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  border: 1px solid transparent;
+}
+.alert.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+.alert.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
 }
 
 /* ========== CREATE FORM ========== */
@@ -88,6 +99,7 @@
   font-size: 0.85rem;
   color: #555;
   font-weight: 500;
+  margin: 0; /* Override global */
 }
 
 .form-group input[type="date"],
@@ -97,6 +109,7 @@
   border-radius: 5px;
   font-size: 0.85rem;
   transition: 0.2s;
+  width: 100%; /* Override global */
 }
 
 .form-group input:focus {
@@ -144,7 +157,7 @@
   border-collapse: collapse;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  table-layout: fixed; /* <--- FIX for column gap */
 }
 
 .schedule-table thead {
@@ -158,6 +171,8 @@
   text-align: left;
   font-size: 0.85rem;
   border-bottom: 1px solid #e9ecef;
+  vertical-align: top;
+  word-wrap: break-word; /* Prevents long text from breaking layout */
 }
 
 .schedule-table th {
@@ -169,6 +184,46 @@
 
 .schedule-table tbody tr:hover { background: #f8f9fa; }
 
+/* --- Column widths --- */
+/* For the 5-column "Active" table */
+#active-schedules-body th:nth-child(1), 
+#active-schedules-body td:nth-child(1) { width: 18%; } /* Date */
+#active-schedules-body th:nth-child(2),
+#active-schedules-body td:nth-child(2) { width: 22%; } /* Time */
+#active-schedules-body th:nth-child(3),
+#active-schedules-body td:nth-child(3) { width: 15%; } /* Status */
+#active-schedules-body th:nth-child(4),
+#active-schedules-body td:nth-child(4) { width: 25%; } /* Student */
+#active-schedules-body th:nth-child(5),
+#active-schedules-body td:nth-child(5) { width: 20%; } /* Actions */
+
+/* For the 4-column "Done" table */
+#done-schedules-body th:nth-child(1),
+#done-schedules-body td:nth-child(1) { width: 18%; } /* Date */
+#done-schedules-body th:nth-child(2),
+#done-schedules-body td:nth-child(2) { width: 22%; } /* Time */
+#done-schedules-body th:nth-child(3),
+#done-schedules-body td:nth-child(3) { width: 25%; } /* Student */
+#done-schedules-body th:nth-child(4),
+#done-schedules-body td:nth-child(4) { width: 35%; } /* Notes */
+
+
+/* Student Cell with Name and Code */
+.student-cell {
+   
+}
+.student-name {
+    font-weight: 600;
+    color: #333;
+    display: block; /* <--- ADDED this line to stack text */
+}
+.student-code {
+    font-size: 0.8rem;
+    color: #666;
+    display: block; /* <--- ADDED this line to stack text */
+}
+
+
 /* ========== STATUS LABELS ========== */
 .status-open {
   color: #28a745;
@@ -178,6 +233,7 @@
   border-radius: 4px;
   font-size: 0.75rem;
   text-transform: uppercase;
+  display: inline-block;
 }
 
 .status-booked {
@@ -188,21 +244,17 @@
   border-radius: 4px;
   font-size: 0.75rem;
   text-transform: uppercase;
+  display: inline-block;
 }
 
-.status-done {
-  color: #28a745;
-  font-weight: 600;
-}
-
-/* ========== ACTION BUTTONS ========== */
+/* ========== ACTION BUTTONS (Done/Delete) ========== */
 .actions-cell {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
 
-.btn-done, .btn-edit, .btn-delete {
+.btn-done, .btn-delete {
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 0.8rem;
@@ -219,90 +271,306 @@
   background: #28a745;
   color: #fff;
 }
-
 .btn-done:hover:not(:disabled) { background: #218838; }
 .btn-done:disabled { opacity: 0.7; cursor: not-allowed; }
-.btn-pulse { animation: pulse 1s infinite; }
-
-.btn-edit { background: #28a745; color: #fff; }
-.btn-edit:hover { background: #218838; transform: translateY(-1px); }
 
 .btn-delete { background: #dc3545; color: #fff; }
-.btn-delete:hover { background: #c82333; transform: translateY(-1px); }
+.btn-delete:hover { background: #c82333; }
 
+.btn-pulse { animation: pulse 1s infinite; }
 @keyframes pulse {
   0%,100% { transform: scale(1); box-shadow:0 0 0 #28a74550; }
   50% { transform: scale(1.05); box-shadow:0 0 8px #28a74550; }
 }
 
-/* ========== INLINE EDIT FORM ========== */
-.inline-edit-form {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  align-items: center;
+/* ========== "Done PTC" Header (Filter + Search Button) ========== */
+.done-ptc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 16px;
+}
+.done-ptc-header h3 {
+    margin-bottom: 0;
+}
+.btn-history {
+    background: #6c757d;
+}
+.btn-history:hover {
+    background: #5a6268;
 }
 
-.inline-edit-form input {
-  padding: 4px 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  width: 110px;
+/* ========== DRAWER & SEARCH STYLES ========== */
+
+/* --- THIS IS THE FIX for transparent drawer --- */
+wa-drawer#studentHistoryDrawer {
+    --wa-panel-background-color: #fff;
+}
+/* --- END OF FIX --- */
+
+.drawer-content {
+    padding: 20px;
+    height: 100%; 
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.student-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0 10px;
+    flex-shrink: 0;
+}
+.student-search-container .fa-search {
+    color: #888;
+}
+.student-search-container input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 14px;
+    background: transparent;
+    width: 100%;
+}
+.search-results-dropdown {
+    display: none; 
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #eee;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+}
+.search-result-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.search-result-item:hover {
+    background-color: #f4f4f4;
+}
+.search-item-name {
+    font-weight: 600;
+}
+.search-item-code {
+    font-size: 0.85rem;
+    color: #555;
 }
 
-.inline-edit-form input:focus {
-  outline: none;
-  border-color: #0078ff;
-  box-shadow: 0 0 0 2px rgba(0,120,255,0.2);
+/* Drawer History Content */
+#studentHistoryContent {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+.history-placeholder {
+    text-align: center;
+    color: #888;
+    margin-top: 20px;
+}
+#studentHistoryContent ul {
+    list-style: none;
+    padding: 0;
+}
+.history-item {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.history-date {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    border-radius: 6px 6px 0 0;
+}
+.history-date strong {
+    font-size: 1.1rem;
+    color: #333;
+}
+.history-date span {
+    font-size: 0.9rem;
+    color: #555;
+    margin-left: 5px;
+}
+.history-notes {
+    padding: 12px;
 }
 
-/* ========== ALERTS ========== */
-.alert {
-  position: fixed;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 380px;
-  width: 90%;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-  animation: slideDown 0.3s ease;
+/* ========== EDITABLE NOTES STYLES ========== */
+.notes-cell {
+    /* Ensure cell has space */
+    min-width: 250px;
+}
+.note-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.note-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.note-list li:last-child {
+    border-bottom: none;
+}
+.note-text {
+    flex-grow: 1;
+    font-size: 0.85rem;
+    color: #333;
+}
+.note-edit-input {
+    flex-grow: 1;
+    display: none; /* Hidden by default */
+    padding: 4px 6px;
+    font-size: 0.85rem;
+    border: 1px solid #0078ff;
+    border-radius: 4px;
+    margin-right: 5px;
 }
 
-.alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-.alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-.alert-close {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: auto;
-  opacity: 0.7;
-  transition: 0.2s;
+/* Note Action Buttons */
+.note-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 5px;
+    margin-left: 10px;
+}
+.btn-note-edit, .btn-note-delete, .btn-note-save, .btn-note-cancel {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    width: 26px; /* Square shape */
+    height: 26px; /* Square shape */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
 }
 
-.alert-close:hover { opacity: 1; }
+/* This is the CSS FIX for icon visibility */
+.btn-note-edit i, .btn-note-delete i, .btn-note-save i, .btn-note-cancel i {
+    font-size: 14px;
+}
 
-@keyframes slideDown { 0% { opacity: 0; transform: translateX(-50%) translateY(-20px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }
+/* Default state (Edit/Delete visible) */
+.btn-note-edit i { color: #0078ff !important; }
+.btn-note-delete i { color: #dc3545 !important; }
+.btn-note-save { display: none; }
+.btn-note-cancel { display: none; }
+.btn-note-edit:hover { background-color: #e0f0ff; }
+.btn-note-delete:hover { background-color: #f8d7da; }
+
+/* Editing state (Save/Cancel visible) */
+li.editing .note-text { display: none; }
+li.editing .btn-note-edit { display: none; }
+li.editing .btn-note-delete { display: none; }
+
+li.editing .note-edit-input { display: block; }
+li.editing .btn-note-save { display: inline-flex; }
+li.editing .btn-note-cancel { display: inline-flex; }
+
+.btn-note-save i { color: #28a745 !important; }
+.btn-note-cancel i { color: #888 !important; }
+.btn-note-save:hover { background-color: #d4edda; }
+.btn-note-cancel:hover { background-color: #f0f0f0; }
+
+/* "Add Note" form button */
+.btn-note {
+    background: #28a745;
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-note:hover {
+    background: #218838;
+}
+.inline-note-form {
+    display: flex;
+    gap: 5px;
+}
+.inline-note-form input {
+    flex-grow: 1;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+}
+
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
-  .form-row, .inline-edit-form, .actions-cell { flex-direction: column; align-items: stretch; }
+  .form-row { flex-direction: column; align-items: stretch; }
   .form-group { min-width: auto; }
-  .schedule-table th, .schedule-table td { padding: 6px 8px; font-size: 0.75rem; }
-  .inline-edit-form input { width: 100%; }
+  .schedule-table th, .schedule-table td { padding: 8px 10px; font-size: 0.8rem; }
 }
 
 @media (max-width: 480px) {
   .content { padding: 12px 15px; }
   .create-form, .schedule-section { padding: 12px; }
   .schedule-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .done-ptc-header { flex-direction: column; align-items: stretch; }
+}
+
+/* ========== NEW: Custom Alert Toast (Replaces alert()) ========== */
+.custom-alert-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 1px solid transparent;
+    animation: toast-fade-in 0.3s ease;
+}
+
+.custom-alert-toast.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+.custom-alert-toast.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+@keyframes toast-fade-in {
+    from {
+        top: -50px;
+        opacity: 0;
+    }
+    to {
+        top: 20px;
+        opacity: 1;
+    }
 }

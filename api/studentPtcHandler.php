@@ -145,7 +145,7 @@ $params = [$student_id, $filter_year];
 if ($filter_month !== 'all' && $filter_month !== '') {
     $sql .= " AND MONTH(ps.date) = ?";
     $params[] = (int)$filter_month;
-}
+}       
 
 $sql .= " ORDER BY ps.date DESC";
 
