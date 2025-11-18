@@ -116,10 +116,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const student = data.student;
-      const ledger = Array.isArray(data.ledger) ? data.ledger : [];
+      let ledger = Array.isArray(data.ledger) ? data.ledger : [];
+
+      //SORT BY PAID DATE (Oldest -> Latest) 
+      ledger.sort((a, b) => {
+        // a.date is the "Paid on" date (e.g., "2025-11-05")
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        
+        // Subtracting dates works in JS: 
+        // If A is older (smaller), result is negative -> A comes first
+        return dateA - dateB;
+      });
+      // [END SORTING LOGIC] 
 
       const studentName = student.full_name || name || "Unnamed Student";
-
       // --- Update MAIN FORM ---
       selectedStudent.innerHTML = `
         <b>${studentName}</b><br>

@@ -181,5 +181,3 @@ $initials = $_SESSION['initials'];
   <script src="../scr/recordPayment.js"></script>
 </body>
 </html>
-
-
