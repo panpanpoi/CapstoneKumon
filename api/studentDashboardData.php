@@ -2,6 +2,9 @@
 if (!isset($_SESSION)) session_start();
 require_once "../database.php";
 
+// Set Timezone to ensure "Today" is correct (crucial for scheduling)
+date_default_timezone_set('Asia/Manila');
+
 // Check if student is logged in
 if (!isset($_SESSION['student_id'])) {
     $_SESSION['error'] = "Student not logged in.";
@@ -11,7 +14,9 @@ if (!isset($_SESSION['student_id'])) {
 
 $student_id = $_SESSION['student_id'];
 
+// -----------------------------------------------------------------
 // 1. Fetch student information
+// -----------------------------------------------------------------
 $stmt = $pdo->prepare("
     SELECT s.student_id, s.Firstname, s.Lastname, cs.class_id, cs.level
     FROM students s
@@ -22,10 +27,11 @@ $stmt = $pdo->prepare("
 $stmt->execute([$student_id]);
 $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$class_id = $student['class_id'] ?? null;
 $current_level = $student['level'] ?? null;
 
+// -----------------------------------------------------------------
 // 2. Get latest payment details
+// -----------------------------------------------------------------
 $stmt = $pdo->prepare("
     SELECT amount, payment_date
     FROM payments
@@ -42,10 +48,9 @@ if ($latest_payment && !empty($latest_payment['payment_date'])) {
 }
 
 // -----------------------------------------------------------------
-// 3. Get next due payment date (REVISED LOGIC)
+// 3. Get next due payment date
 // -----------------------------------------------------------------
-
-$next_due = null; // Default
+$next_due = null; 
 
 // --- Strategy 1: Find latest VERIFIED payment and add 1 month ---
 $stmt = $pdo->prepare("
@@ -59,7 +64,6 @@ $verified_payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (count($verified_payments) > 0) {
     $covered_dates = [];
     foreach ($verified_payments as $p) {
-        // Convert "Month YYYY" string (e.g., "March 2026") to a valid DateTime object
         $date = date_create_from_format('F Y', $p['tf_month_covered']);
         if ($date) {
             $covered_dates[] = $date->modify('first day of this month');
@@ -67,16 +71,13 @@ if (count($verified_payments) > 0) {
     }
 
     if (count($covered_dates) > 0) {
-        // Find the latest (max) date from the verified payments
         $latest_covered_date = max($covered_dates);
-        // Add 1 month to get the next due date
         $latest_covered_date->modify('+1 month');
-        // Format as "F j, Y" (e.g., April 1, 2026)
         $next_due = $latest_covered_date->format('F j, Y');
     }
 }
 
-// --- Strategy 2: If no verified payment, find earliest FUTURE due date (for new students) ---
+// --- Strategy 2: Fallback (Future due dates) ---
 if ($next_due === null) {
     $stmt = $pdo->prepare("
         SELECT due_date
@@ -93,19 +94,13 @@ if ($next_due === null) {
     }
 }
 
-// --- Strategy 3: Final fallback if still nothing ---
+// --- Strategy 3: Default Fallback ---
 if ($next_due === null) {
-    // Defaults to the first of next month
     $next_due = date("F 1, Y", strtotime("first day of next month"));
 }
 
 // -----------------------------------------------------------------
-// (End of Next Due Logic)
-// -----------------------------------------------------------------
-
-
-// -----------------------------------------------------------------
-// 4. Get upcoming PTC meeting (REVISED LOGIC)
+// 4. Get upcoming PTC meeting
 // -----------------------------------------------------------------
 $stmt = $pdo->prepare("
     SELECT ps.date, ps.startTime, ps.endTime, pb.status
@@ -121,7 +116,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$student_id]);
 $upcoming_ptc = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Format PTC meeting date and time
 if ($upcoming_ptc) {
     if (!empty($upcoming_ptc['date'])) {
         $upcoming_ptc['formatted_date'] = date("F j, Y", strtotime($upcoming_ptc['date']));
@@ -135,37 +129,54 @@ if ($upcoming_ptc) {
 }
 
 // -----------------------------------------------------------------
-// (End of PTC Logic)
+// 5. Get today's class schedule (FIXED LOGIC)
 // -----------------------------------------------------------------
 
+$today = date('l'); // Gets current day name (e.g., "Wednesday")
 
-// 5. Get today's class schedule
-$today = date('l'); // e.g. Monday, Tuesday
+// This query matches your working Student Schedule page exactly
+$stmt = $pdo->prepare("
+    SELECT 
+        cs.schedule_day, 
+        cs.start_time, 
+        cs.end_time, 
+        cs.class_id,
+        u.subject,
+        u.Name AS teacher_name,
+        u.Surname AS teacher_surname
+    FROM class_students cst
+    JOIN class_schedules cs ON cst.class_id = cs.class_id
+    JOIN teachers t ON cst.teacher_id = t.teacher_id
+    JOIN users u ON t.user_id = u.user_id
+    WHERE cst.student_id = ?
+    ORDER BY cs.start_time ASC
+");
+
+$stmt->execute([$student_id]);
+$all_schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $today_schedule = [];
-if ($class_id) {
-    $stmt = $pdo->prepare("
-        SELECT cs.schedule_day, cs.start_time, cs.end_time, cs.class_id
-        FROM class_schedules cs
-        WHERE cs.class_id = ? AND cs.schedule_day = ?
-        ORDER BY cs.start_time ASC
-    ");
-    $stmt->execute([$class_id, $today]);
-    $today_schedule = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Format times for each schedule
-    foreach ($today_schedule as &$sched) {
+// Filter through all classes to find only the ones for today
+foreach ($all_schedules as $sched) {
+    // trim() ensures no hidden spaces cause a mismatch
+    if (trim($sched['schedule_day']) === $today) {
+        
+        // Format times for the dashboard display
         if (!empty($sched['start_time'])) {
             $sched['formatted_start'] = date("g:i A", strtotime($sched['start_time']));
         }
         if (!empty($sched['end_time'])) {
             $sched['formatted_end'] = date("g:i A", strtotime($sched['end_time']));
         }
+        
+        $today_schedule[] = $sched;
     }
-    unset($sched); // break reference
 }
 
+// -----------------------------------------------------------------
 // Return all data
+// -----------------------------------------------------------------
 return [
     'student' => $student,
     'current_level' => $current_level,

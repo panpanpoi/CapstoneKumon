@@ -13,7 +13,7 @@ body {
 /* ========= CONTAINER ========= */
 .attendance-container {
   width: 95%;
-  max-width: 950px;
+  max-width: 1000px; /* Slightly wider to accommodate schedule column */
   background: #fff;
   margin: 40px 0;
   border-radius: 10px;
@@ -40,9 +40,21 @@ body {
   gap: 8px;
 }
 
-.today-date {
+/* Date Controls Group */
+.date-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 0.9rem;
-  opacity: 0.9;
+}
+
+.attendance-header input[type="date"] {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+  outline: none;
+  color: #333;
 }
 
 /* ========= BACK BUTTON ========= */
@@ -79,12 +91,13 @@ body {
   background-color: #f1f4f8;
   color: #333;
   font-weight: 600;
-  padding: 10px 8px;
+  padding: 12px 10px; /* Increased padding for better readability */
   border-bottom: 2px solid #e0e6ed;
+  white-space: nowrap;
 }
 
 .attendance-table td {
-  padding: 10px 8px;
+  padding: 12px 10px;
   border-bottom: 1px solid #edf0f3;
   vertical-align: middle;
 }
@@ -93,13 +106,15 @@ body {
   background-color: #f9fbfd;
 }
 
-/* ========= STATUS LABELS ========= */
+/* ========= STATUS LABELS (Pill Style) ========= */
 .status {
   display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .status.present {
@@ -123,6 +138,12 @@ body {
 }
 
 /* ========= BUTTONS ========= */
+/* General Button Reset */
+button {
+  font-family: inherit;
+}
+
+/* 1. Confirm Button (Blue) */
 .confirmBtn {
   background-color: #0073e6;
   border: none;
@@ -132,41 +153,77 @@ body {
   cursor: pointer;
   font-size: 0.85rem;
   transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
-
 .confirmBtn:hover {
   background-color: #005bb5;
 }
 
-.confirmBtn i {
-  margin-right: 4px;
-}
-#loadDateBtn {
+/* 2. Mark Present Button (Green) */
+.markPresentBtn {
   background-color: #28a745;
   border: none;
   color: #fff;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   transition: background-color 0.2s ease;
 }
-#loadDateBtn:hover {
+.markPresentBtn:hover {
   background-color: #1e7e34;
 }
 
-.disabledBtn {
-  background-color: #f0f0f0;
+/* 3. Mark Absent Button (Red) */
+.markAbsentBtn {
+  background-color: #dc3545;
   border: none;
-  color: #777;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+.markAbsentBtn:hover {
+  background-color: #bd2130;
+}
+
+/* 4. Load Button (Green) */
+#loadDateBtn {
+  background-color: #20c997; /* Slightly different green/teal */
+  border: none;
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+#loadDateBtn:hover {
+  background-color: #1aa179;
+}
+
+/* 5. Disabled/Done Button (Gray) */
+.disabledBtn {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  color: #6c757d;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
+  cursor: not-allowed;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* ========= ROW STATES ========= */
 .pending-row {
-  background-color: #fffef3;
+  background-color: #fff9e6; /* Soft yellow highlight */
 }
 
 /* ========= RESPONSIVE ========= */
@@ -174,16 +231,22 @@ body {
   .attendance-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 15px;
+  }
+
+  .date-controls {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .attendance-table th,
   .attendance-table td {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     padding: 8px 6px;
   }
 
-  .confirmBtn, .disabledBtn {
-    padding: 5px 10px;
+  .confirmBtn, .disabledBtn, .markPresentBtn, .markAbsentBtn {
+    padding: 5px 8px;
+    font-size: 0.8rem;
   }
 }

@@ -1,77 +1,80 @@
 <?php
+// 1. Setup and Configuration
 require_once "../database.php";
-session_start();
-
-// Ensure teacher is logged in
-$teacher_id = $_SESSION['teacher_id'] ?? null;
-if (!$teacher_id) {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Unauthorized access.'
-    ]);
-    exit;
-}
-
-// Get POST data
-$date = $_POST['date'] ?? null;
-$attendanceData = $_POST['attendance'] ?? null;
-
+if (!isset($_SESSION)) session_start();
 header('Content-Type: application/json');
 
-if (!$date || !$attendanceData) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Missing date or attendance data.'
-    ]);
+// Set Timezone to Philippines
+date_default_timezone_set('Asia/Manila');
+
+// 2. Security: Only allow Teachers
+if (!isset($_SESSION['teacher_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized: Teachers only.']);
     exit;
 }
 
-// Decode JSON array
-$attendanceArray = json_decode($attendanceData, true);
-if (!is_array($attendanceArray)) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Invalid attendance data format.'
-    ]);
+$teacher_id = $_SESSION['teacher_id'];
+$student_id = $_POST['student_id'] ?? null;
+$date       = $_POST['date'] ?? date('Y-m-d'); // Default to today
+$currentTime = date('H:i:s'); // Current Manila time
+
+if (!$student_id) {
+    echo json_encode(['success' => false, 'message' => 'Student ID missing.']);
     exit;
 }
 
 try {
-    $pdo->beginTransaction();
-
-    $stmt = $pdo->prepare("
-        INSERT INTO attendance (student_id, class_id, status, attendance_date, confirmed_by, confirmed_at)
-        VALUES (?, ?, ?, ?, ?, NOW())
-        ON DUPLICATE KEY UPDATE
-            status = VALUES(status),
-            confirmed_by = VALUES(confirmed_by),
-            confirmed_at = VALUES(confirmed_at)
+    // 3. GET CLASS ID
+    // Find the class assigned to this student and this teacher.
+    $stmtClass = $pdo->prepare("
+        SELECT class_id 
+        FROM class_students 
+        WHERE student_id = ? AND teacher_id = ? 
+        LIMIT 1
     ");
+    $stmtClass->execute([$student_id, $teacher_id]);
+    $class_id = $stmtClass->fetchColumn();
 
-    foreach ($attendanceArray as $att) {
-        $student_id = $att['student_id'] ?? null;
-        $class_id   = $att['class_id'] ?? null;
-        $status     = $att['status'] ?? null;
-
-        if (!$student_id || !$class_id || !$status) continue;
-
-        $stmt->execute([$student_id, $class_id, $status, $date, $teacher_id]);
+    // Safety Check: If we can't find a class ID, we cannot create an attendance record
+    if (!$class_id) {
+        echo json_encode(['success' => false, 'message' => 'Error: Student is not linked to a class under your account.']);
+        exit;
     }
 
-    $pdo->commit();
+    // 4. Check if attendance exists
+    $stmtCheck = $pdo->prepare("
+        SELECT attendance_id, status
+        FROM attendance 
+        WHERE student_id = ? AND attendance_date = ?
+    ");
+    $stmtCheck->execute([$student_id, $date]);
+    $existing = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Attendance successfully saved.'
-    ]);
+    if ($existing) {
+        // UPDATE existing record (Overwrites 'Absent' or 'Pending')
+        // We perform the update regardless of current status to ensure 'time_in' is set to now
+        $stmt = $pdo->prepare("
+            UPDATE attendance 
+            SET status = 'Present', time_in = ? 
+            WHERE attendance_id = ?
+        ");
+        $stmt->execute([$currentTime, $existing['attendance_id']]);
+    } else {
+        // INSERT new record
+        $stmt = $pdo->prepare("
+            INSERT INTO attendance (student_id, class_id, status, attendance_date, time_in) 
+            VALUES (?, ?, 'Present', ?, ?)
+        ");
+        $stmt->execute([$student_id, $class_id, $date, $currentTime]);
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Marked Present successfully.']);
+
 } catch (PDOException $e) {
-    $pdo->rollBack();
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Database error: ' . $e->getMessage()
-    ]);
+    // Log the actual error to the server error log for debugging
+    error_log("Teacher Mark Attendance Error: " . $e->getMessage());
+    
+    // Return a generic error to the user
+    echo json_encode(['success' => false, 'message' => 'Database Error: Could not save attendance.']);
 }
 ?>
-
-
