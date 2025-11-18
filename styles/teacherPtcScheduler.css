@@ -1,5 +1,5 @@
 /* =========================================================
-    🎓 TEACHER PTC SCHEDULER PAGE
+   🎓 TEACHER PTC SCHEDULER PAGE
    ========================================================= */
 
 /* ========== MAIN LAYOUT ========== */
@@ -157,7 +157,7 @@
   border-collapse: collapse;
   border-radius: 6px;
   overflow: hidden;
-  table-layout: fixed; /* <--- FIX for column gap */
+  table-layout: fixed; 
 }
 
 .schedule-table thead {
@@ -184,18 +184,18 @@
 
 .schedule-table tbody tr:hover { background: #f8f9fa; }
 
-/* --- Column widths --- */
+/* --- Column widths (Adjusted for buttons) --- */
 /* For the 5-column "Active" table */
 #active-schedules-body th:nth-child(1), 
 #active-schedules-body td:nth-child(1) { width: 18%; } /* Date */
 #active-schedules-body th:nth-child(2),
-#active-schedules-body td:nth-child(2) { width: 22%; } /* Time */
+#active-schedules-body td:nth-child(2) { width: 20%; } /* Time */
 #active-schedules-body th:nth-child(3),
 #active-schedules-body td:nth-child(3) { width: 15%; } /* Status */
 #active-schedules-body th:nth-child(4),
-#active-schedules-body td:nth-child(4) { width: 25%; } /* Student */
+#active-schedules-body td:nth-child(4) { width: 22%; } /* Student */
 #active-schedules-body th:nth-child(5),
-#active-schedules-body td:nth-child(5) { width: 20%; } /* Actions */
+#active-schedules-body td:nth-child(5) { width: 25%; } /* Actions (WIDENED) */
 
 /* For the 4-column "Done" table */
 #done-schedules-body th:nth-child(1),
@@ -208,14 +208,14 @@
 #done-schedules-body td:nth-child(4) { width: 35%; } /* Notes */
  
 .student-name {
-    font-weight: 600;
-    color: #333;
-    display: block; /* <--- ADDED this line to stack text */
+  font-weight: 600;
+  color: #333;
+  display: block; 
 }
 .student-code {
-    font-size: 0.8rem;
-    color: #666;
-    display: block; /* <--- ADDED this line to stack text */
+  font-size: 0.8rem;
+  color: #666;
+  display: block; 
 }
 
 
@@ -242,14 +242,15 @@
   display: inline-block;
 }
 
-/* ========== ACTION BUTTONS (Done/Delete) ========== */
+/* ========== ACTION BUTTONS ========== */
 .actions-cell {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* ✅ FIX: Forces buttons to stay on same line */
+  align-items: center;
 }
 
-.btn-done, .btn-delete {
+.btn-done, .btn-delete, .btn-approve {
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 0.8rem;
@@ -260,6 +261,7 @@
   gap: 3px;
   transition: 0.2s;
   border: none;
+  white-space: nowrap; /* Prevents text wrapping inside button */
 }
 
 .btn-done {
@@ -271,6 +273,15 @@
 
 .btn-delete { background: #dc3545; color: #fff; }
 .btn-delete:hover { background: #c82333; }
+
+/* New Approve Button Style */
+.btn-approve {
+    background: #17a2b8;
+    color: #fff;
+}
+.btn-approve:hover:not(:disabled) { background: #138496; }
+.btn-approve:disabled { opacity: 0.7; cursor: not-allowed; }
+
 
 .btn-pulse { animation: pulse 1s infinite; }
 @keyframes pulse {
@@ -299,11 +310,9 @@
 
 /* ========== DRAWER & SEARCH STYLES ========== */
 
-/* --- THIS IS THE FIX for transparent drawer --- */
 wa-drawer#studentHistoryDrawer {
     --wa-panel-background-color: #fff;
 }
-/* --- END OF FIX --- */
 
 .drawer-content {
     padding: 20px;

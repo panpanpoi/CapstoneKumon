@@ -4,38 +4,36 @@ if (!isset($_SESSION)) session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Helper to always return valid JSON
 function jsonResponse($data) {
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// Only allow teachers
 $teacher_id = $_SESSION['teacher_id'] ?? null;
 if (!$teacher_id) {
-    jsonResponse(["success" => false, "message" => "Unauthorized access. Please log in again."]);
+    jsonResponse(["success" => false, "message" => "Unauthorized."]);
 }
 
 try {
-    // ✅ FIX: Added filter "AND ptc.status = 'booked'"
-    // Now only schedules that are actually booked by a student will appear.
+    // ✅ FIX: JOIN logic now accepts 'booked' OR 'approved'
     $sql = "
         SELECT 
             ptc.schedule_id, 
             ptc.date, 
             ptc.startTime, 
             ptc.endTime,
-            ptc.status,
+            -- Get the status from the booking if it exists, otherwise use schedule status
+            COALESCE(pb.status, ptc.status) as real_status,
             s.Firstname AS student_fname,
             s.Lastname AS student_lname
         FROM ptc_schedules ptc
-        -- Join bookings to find who booked it
-        LEFT JOIN ptc_bookings pb ON ptc.schedule_id = pb.schedule_id AND pb.status = 'booked'
-        -- Join students to get the name
+        -- Join bookings: Check for BOTH statuses
+        LEFT JOIN ptc_bookings pb ON ptc.schedule_id = pb.schedule_id 
+                                  AND pb.status IN ('booked', 'approved')
         LEFT JOIN students s ON pb.student_id = s.student_id
         WHERE ptc.teacher_id = ? 
         AND ptc.date >= CURDATE() 
-        AND ptc.status = 'booked' -- <--- THIS LINE FILTERS OUT OPEN SLOTS
+        AND ptc.status = 'booked' -- The slot is occupied in the schedule table
         ORDER BY ptc.date ASC, ptc.startTime ASC
         LIMIT 5
     ";
@@ -47,10 +45,9 @@ try {
         $upcomingPtc = [];
         
         foreach ($results as $row) {
-            $status = $row['status'];
-            $name = "Booked (Unknown)"; 
+            $status = $row['real_status']; // 'booked' or 'approved'
+            $name = "Booked Slot"; 
 
-            // Format the name cleanly
             if (!empty($row['student_fname'])) {
                 $name = trim($row['student_fname'] . ' ' . $row['student_lname']);
             }
@@ -64,19 +61,17 @@ try {
                 "name" => $name,
                 "date" => $dateFormatted,
                 "time" => $timeFormatted,
-                "status" => $status,
+                "status" => $status, // Passing 'approved' or 'booked' to JS
                 "date_raw" => $row['date']
             ];
         }
         
         jsonResponse(["success" => true, "data" => $upcomingPtc]);
     } else {
-         jsonResponse(["success" => false, "message" => "Failed to prepare SQL statement."]);
+         jsonResponse(["success" => false, "message" => "Query error."]);
     }
 
-} catch (PDOException $e) {
-    jsonResponse(["success" => false, "message" => "Database error: " . $e->getMessage()]);
-} catch (Throwable $e) {
-    jsonResponse(["success" => false, "message" => "Server error: " . $e->getMessage()]);
+} catch (Exception $e) {
+    jsonResponse(["success" => false, "message" => "Error: " . $e->getMessage()]);
 }
 ?>

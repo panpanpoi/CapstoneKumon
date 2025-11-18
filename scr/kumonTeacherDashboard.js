@@ -3,7 +3,6 @@ async function fetchAndDisplaySchedule() {
     const contentDiv = document.getElementById('scheduleContent');
     const dayWidgetSpan = document.getElementById('currentDayDisplayWidget');
     
-    // Initial loading state
     if (contentDiv) {
         contentDiv.innerHTML = `
             <div class="no-classes">
@@ -18,14 +17,12 @@ async function fetchAndDisplaySchedule() {
         const data = await response.json();
 
         if (dayWidgetSpan) {
-            // Update the widget title day
             dayWidgetSpan.textContent = data.day || '—';
         }
 
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
             let html = '';
             data.data.forEach(classData => {
-                // Determine level text, ensuring it's not null/empty and adds a space before the parenthesis
                 const levelDisplay = classData.level ? `&nbsp;(Lvl: ${classData.level})` : '';
 
                 html += `
@@ -57,7 +54,7 @@ async function fetchAndDisplaySchedule() {
         if (contentDiv) {
             contentDiv.innerHTML = `
                 <div class="no-classes" style="color: red;">
-                    <i class="fa fa-exclamation-triangle"></i> Failed to load schedule. Check console for details.
+                    <i class="fa fa-exclamation-triangle"></i> Failed to load schedule.
                 </div>
             `;
         }
@@ -68,7 +65,6 @@ async function fetchAndDisplaySchedule() {
 async function fetchAndDisplayPTCSchedule() {
     const ptcContentDiv = document.getElementById('ptcScheduleContent');
     
-    // Set loading state
     if (ptcContentDiv) {
         ptcContentDiv.innerHTML = `
             <div class="no-classes">
@@ -79,7 +75,6 @@ async function fetchAndDisplayPTCSchedule() {
     }
 
     try {
-        // Fetch data from the new dedicated API endpoint
         const response = await fetch('../api/fetchUpcomingPtc.php', { credentials: 'include' });
         const data = await response.json();
 
@@ -87,23 +82,41 @@ async function fetchAndDisplayPTCSchedule() {
             let html = '';
             data.data.forEach(ptc => { 
                 
-                // Set color/style based on status
+                // ✅ FIX: Handle styling for both 'booked' and 'approved'
+                const isApproved = ptc.status === 'approved';
                 const isBooked = ptc.status === 'booked';
-                const style = isBooked ? 
-                    'border-left: 3px solid #FFC300; padding-left: 10px; background: #fff8e8;' : 
-                    'border-left: 3px solid #ccc; padding-left: 10px; background: #fafafa;';
-                const timeColor = isBooked ? '#ff9900' : '#888888';
-                const iconColor = isBooked ? '#FFC300' : '#cccccc';
+                
+                let style = 'border-left: 3px solid #ccc; padding-left: 10px; background: #fafafa;';
+                let timeColor = '#888';
+                let iconColor = '#cccccc';
+                let iconClass = 'fa-calendar';
+                let statusBadge = '';
 
+                if (isApproved) {
+                    // GREEN style for Approved
+                    style = 'border-left: 3px solid #28a745; padding-left: 10px; background: #d4edda;';
+                    timeColor = '#155724';
+                    iconColor = '#28a745';
+                    iconClass = 'fa-check-double';
+                    statusBadge = '<span style="font-size:0.7em; background:#28a745; color:white; padding:2px 6px; border-radius:4px; margin-left:8px; vertical-align:middle;">APPROVED</span>';
+                } else if (isBooked) {
+                    // YELLOW style for Booked (Pending)
+                    style = 'border-left: 3px solid #FFC300; padding-left: 10px; background: #fff8e8;';
+                    timeColor = '#ff9900';
+                    iconColor = '#FFC300';
+                    iconClass = 'fa-calendar-check';
+                    statusBadge = '<span style="font-size:0.7em; background:#FFC300; color:black; padding:2px 6px; border-radius:4px; margin-left:8px; vertical-align:middle;">BOOKED</span>';
+                }
 
                 html += `
                     <div class="class-item" style="${style}">
-                        <span class="class-student" style="font-weight: 600;">
-                            <i class="fa fa-calendar-check" style="color:${iconColor}; margin-right:5px;"></i>
+                        <span class="class-student" style="font-weight: 600; display:flex; align-items:center;">
+                            <i class="fa ${iconClass}" style="color:${iconColor}; margin-right:8px;"></i>
                             ${ptc.name}
+                            ${statusBadge}
                         </span>
                         <span class="class-time" style="background: none; color: ${timeColor}; font-weight: bold;">
-                            ${ptc.date} @ ${ptc.time}
+                            ${ptc.date} <br> <span style="font-weight:normal; font-size:0.9em;">${ptc.time}</span>
                         </span>
                     </div>
                 `;
@@ -131,8 +144,7 @@ async function fetchAndDisplayPTCSchedule() {
     }
 }
 
-// Attach functions to the DOMContentLoaded event
 document.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplaySchedule();
-    fetchAndDisplayPTCSchedule(); // Call the new PTC function
+    fetchAndDisplayPTCSchedule(); 
 });

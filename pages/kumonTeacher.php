@@ -7,6 +7,9 @@ if ($_SESSION['account_type'] !== 'teacher') {
     exit;
 }
 
+// ✅ FIX: Set Timezone to Philippines/Manila so the day matches local time
+date_default_timezone_set('Asia/Manila');
+
 // Variables from session/auth
 $username   = $_SESSION['username']; 
 $userRole   = ucfirst($_SESSION['account_type']); 
@@ -32,6 +35,8 @@ $js_version = time();
   
   <link rel="stylesheet" href="../styles/kumonGlobalStyle.css">
   <link rel="stylesheet" href="../styles/kumonTeacher.css"> 
+  
+  <!-- ✅ Dashboard Layout and Widget Styles -->
   <link rel="stylesheet" href="../styles/kumonTeacherDashboard.css">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,17 +87,16 @@ $js_version = time();
         <?php unset($_SESSION['flash_success']); ?>
     <?php endif; ?>
 
-    <!-- HEADER: Uses styles from teacherLayoutBase.css -->
+    <!-- HEADER -->
     <header class="header">
         <div class="header-left">
-            <!-- Header H1 text is styled by .header-left h1 in teacherLayoutBase.css -->
             <h1 class="section-header"><i class="fa-solid fa-home"></i> Home</h1>
         </div>
     </header>
 
-    <!-- MAIN PANEL: Uses styles from teacherLayoutBase.css -->
+    <!-- MAIN PANEL -->
     <main class="main_panel">
-        <!-- 🔹 DASHBOARD GRID: Contains both Class Schedule and PTC Schedule -->
+        <!-- 🔹 DASHBOARD GRID -->
         <div class="dashboard-grid">
             
             <!-- WIDGET 1: CLASS SCHEDULE -->

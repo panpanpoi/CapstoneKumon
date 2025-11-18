@@ -4,6 +4,9 @@ if (!isset($_SESSION)) session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
+// ✅ FIX: Set Timezone for API as well
+date_default_timezone_set('Asia/Manila');
+
 // Helper to always return valid JSON
 function jsonResponse($data) {
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
@@ -43,11 +46,11 @@ try {
             $row['time_start'] = date("g:i A", strtotime($row['start_time']));
             $row['time_end'] = date("g:i A", strtotime($row['end_time']));
             
-            // ✅ FIX: Combine name fields into a single 'fullName' field
+            // Combine name fields
             $row['fullName'] = trim($row['Firstname'] . ' ' . $row['Lastname']);
             
             // Remove raw time and separate name fields
-            unset($row['start_time'], $row['end_time'], $row['Firstname'], $row['Lastname'], $row['Lastname']);
+            unset($row['start_time'], $row['end_time'], $row['Firstname'], $row['Lastname']);
             
             $todaysClasses[] = $row;
         }
