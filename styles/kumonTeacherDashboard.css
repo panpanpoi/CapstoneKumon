@@ -1,0 +1,155 @@
+/* =========================================
+   Kumon Teacher Dashboard Styles
+   ========================================= */
+
+
+
+/* Grid Container */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Responsive columns */
+    gap: 20px;
+    margin-top: 20px; /* Space below the new header */
+}
+/* HEADER */
+.header {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 14px 22px;
+ border-bottom: 1px solid #e1e1e1;
+ background-color: #ffffff;
+}
+
+.header-left h1 {
+ font-size: 1.25rem;
+ font-weight: 600;
+ color: #222;
+ margin: 0;
+ letter-spacing: 0.3px;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+}
+
+.header-left i {
+ color: #0078ff;
+}
+
+.header-right .header-profile {
+ background: #0078ff;
+ color: white;
+ width: 34px;
+ height: 34px;
+ border-radius: 50%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-weight: 600;
+}
+
+
+/* =========================================
+   Schedule Card Widget
+   ========================================= */
+.schedule-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Soft shadow */
+    padding: 20px;
+    /* Default border is Kumon Blue for Classes */
+    border-left: 6px solid #74C0FC; 
+    transition: transform 0.2s ease;
+}
+
+.schedule-card:hover {
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Enhanced shadow on hover */
+}
+
+/* PTC Widget specific border color */
+.schedule-card.ptc-card {
+    border-left: 6px solid #FFC300; /* Kumon Yellow/Gold Accent for PTC */
+}
+
+/* Card Header (Title + Link) */
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 12px;
+}
+
+.schedule-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 700;
+}
+
+/* View All Link */
+.view-all-link {
+    font-size: 0.85rem;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+/* Class List Container */
+.class-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Individual Class Row */
+.class-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.class-item:last-child {
+    border-bottom: none;
+}
+
+/* Student Name Styling */
+.class-student {
+    font-size: 1rem;
+    color: #444;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+/* Time Badge Styling */
+.class-time {
+    font-weight: 600;
+    color: #0056b3;
+    font-size: 0.85rem;
+    background: #eef7ff; /* Very light blue background */
+    padding: 6px 12px;
+    border-radius: 20px; /* Pill shape */
+    white-space: nowrap;
+}
+
+/* Empty State (No classes) */
+.no-classes {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+}
