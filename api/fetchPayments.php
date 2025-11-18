@@ -15,24 +15,15 @@ if (empty($_SESSION['account_type']) || $_SESSION['account_type'] !== 'admin') {
 }
 
 // 🧩 Get filters
+// We keep the 'active' check to hide soft-deleted rows, but we REMOVE the pagination limit
 $status = $_GET['status'] ?? 'active';
 if (!in_array($status, ['active', 'archived'])) {
     $status = 'active';
 }
 
-// 🧩 Pagination setup
-$page  = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-$limit = isset($_GET['limit']) ? max(5, (int)$_GET['limit']) : 10;
-$offset = ($page - 1) * $limit;
-
 try {
-    // 🧠 Count total rows (for pagination)
-    $countStmt = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE status = :status");
-    $countStmt->execute([':status' => $status]);
-    $totalPayments = (int)$countStmt->fetchColumn();
-    $totalPages = ceil($totalPayments / $limit);
-
-    // 🧾 Fetch payments with student details
+    // 🧾 Fetch ALL payments (No LIMIT/OFFSET)
+    // The JavaScript handles the pagination (splitting into pages of 10)
     $stmt = $pdo->prepare("
         SELECT 
             p.payment_id,
@@ -53,13 +44,10 @@ try {
         FROM payments p
         LEFT JOIN students s ON p.student_id = s.student_id
         WHERE p.status = :status
-        ORDER BY p.payment_date DESC, s.Lastname ASC, s.Firstname ASC
-        LIMIT :limit OFFSET :offset
+        ORDER BY p.payment_date DESC, p.payment_id DESC
     ");
 
     $stmt->bindValue(':status', $status, PDO::PARAM_STR);
-    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
 
     $payments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -91,12 +79,12 @@ try {
             "student_id"       => $row['student_id'] ? (int)$row['student_id'] : null,
             "studentCode"      => $row['studentCode'] ?? "-",
             "student_name"     => trim(($row['Firstname'] ?? '') . ' ' . ($row['Lastname'] ?? '')),
-            "amount"           => (float)$row['amount'], // ✅ raw numeric value, no peso sign
+            "amount"           => (float)$row['amount'],
             "payment_date"     => !empty($row['payment_date']) ? date('Y-m-d', strtotime($row['payment_date'])) : null,
             "due_date"         => !empty($row['due_date']) ? date('Y-m-d', strtotime($row['due_date'])) : null,
             "payment_method"   => $row['payment_method'] ?: "-",
             "reference_number" => $row['reference_number'] ?: "-",
-            "tf_month_covered" => $row['tf_month_covered'] ?: "-", // ✅ Correctly included
+            "tf_month_covered" => $row['tf_month_covered'] ?: "-",
             "remarks"          => $row['remarks'] ?: "",
             "status"           => $row['status'] ?? "active",
             "payment_status"   => $paymentStatus,
@@ -108,10 +96,7 @@ try {
     // ✅ Output response
     echo json_encode([
         "success" => true,
-        "page" => $page,
-        "total_pages" => $totalPages,
         "count" => count($result),
-        "total_count" => $totalPayments,
         "payments" => $result
     ]);
 
@@ -123,5 +108,4 @@ try {
         "details" => $e->getMessage()
     ]);
 }
-
-
+?>
