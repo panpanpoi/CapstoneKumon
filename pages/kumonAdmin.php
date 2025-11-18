@@ -62,7 +62,6 @@ $initials = $_SESSION['initials'];
   <main class="main-content">
     <header class="header">
       <div class="header-right">
-        </div>
         <div class="user-info">
           <div class="user-avatar"><?= htmlspecialchars($initials) ?></div>
           <div class="user-name"><?= htmlspecialchars($username) ?></div>
@@ -71,6 +70,7 @@ $initials = $_SESSION['initials'];
     </header>
 
     <section class="dashboard-content">
+      <!-- 1. MONEY STATS SECTION -->
       <div class="stats-section">
         <div class="section-header">
           <h3><i class="fa fa-chart-line"></i> Payment Overview</h3>
@@ -115,6 +115,70 @@ $initials = $_SESSION['initials'];
           </div>
         </div>
       </div>
+
+      <!-- 2. STUDENT & RECENT SECTION -->
+      <div class="dashboard-grid-row">
+        
+        <!-- LEFT: Student Counts -->
+        <div class="student-stats">
+            <h3><i class="fa fa-users"></i> Student Overview</h3>
+            
+            <div class="stats-grid" style="grid-template-columns: 1fr;"> 
+                
+                <!-- ✅ NEW: Total Students Card -->
+                <div class="stat-card" style="border-left: 4px solid #4318ff;">
+                    <i class="fa-solid fa-users icon" style="color: #4318ff; background: rgba(67,24,255,0.1);"></i>
+                    <div>
+                        <h4>Total Students</h4>
+                        <p id="total-count">0</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Math Students -->
+                    <div class="stat-card" style="border-left: 4px solid #0096c7;">
+                        <i class="fa-solid fa-calculator icon" style="color: #0096c7; background: rgba(0,150,199,0.1);"></i>
+                        <div>
+                            <h4>Math</h4>
+                            <p id="math-count">0</p>
+                        </div>
+                    </div>
+                    <!-- English Students -->
+                    <div class="stat-card" style="border-left: 4px solid #f4a261;">
+                        <i class="fa-solid fa-book-open icon" style="color: #f4a261; background: rgba(244,162,97,0.1);"></i>
+                        <div>
+                            <h4>English</h4>
+                            <p id="english-count">0</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT: Latest Payments Table -->
+        <div class="recent-activity">
+            <h3>
+                <span><i class="fa fa-clock-rotate-left"></i> Latest Payments</span>
+                <a href="viewPayment.php">View All</a>
+            </h3>
+            <table class="recent-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="recent-payments-body">
+                    <tr><td colspan="4" style="text-align:center; padding: 20px;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+      </div>
+
     </section>
   </main>
 
@@ -122,5 +186,3 @@ $initials = $_SESSION['initials'];
   <script src="../scr/kumonAdmin.js"></script>
 </body>
 </html>
-
-
