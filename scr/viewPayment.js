@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${escapeHTML(p.payment_method || "-")}</td>
         <td>${escapeHTML(p.reference_number || "-")}</td>
         <td>${escapeHTML(p.tf_month_covered || "-")}</td>
-        <td>${escapeHTML(p.due_date || "-")}</td>
+        
         <td>${getStatusBadge(p.payment_status)}</td>
         <td>${renderReceipt(p)}</td>
         <td>

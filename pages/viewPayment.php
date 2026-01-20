@@ -104,7 +104,6 @@ $initials = $_SESSION['initials'];
      <th>Method</th>
      <th>Reference #</th>
      <th>TF-Month Covered</th>
-     <th>Due Date</th>
      <th>Status</th>
      <th>Receipt</th>
      <th>Actions</th>
