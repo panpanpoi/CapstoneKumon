@@ -1,6 +1,6 @@
 STI Capstone
 <br>
-Capstone Title: Web-Based Student Management System for Kumon Ortigas-Cainta
+<H1>Capstone Title: Web-Based Student Management System for Kumon Ortigas-Cainta<>
 A web-based student management system developed for Kumon Ortigas-Cainta to help manage student attendance, payment records, and Parent-Teacher Conference (PTC) scheduling.
 
 📌 Project Overview
