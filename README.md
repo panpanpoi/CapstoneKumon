@@ -1,15 +1,13 @@
-STI Capstone
-<br>
-<H1>Capstone Title: Web-Based Student Management System for Kumon Ortigas-Cainta</>
+<h1>Capstone Title: Web-Based Student Management System for Kumon Ortigas-Cainta</h1>
 A web-based student management system developed for Kumon Ortigas-Cainta to help manage student attendance, payment records, and Parent-Teacher Conference (PTC) scheduling.
 
-📌 Project Overview
+<h3>📌 Project Overview</h3>
 
 The system was developed as a capstone project to improve the management of student-related records and reduce the reliance on manual processes.
 
 The system provides separate functionality for administrators, teachers, and students, allowing each user type to access the features relevant to their responsibilities.
 
-Main Features
+<h2>Main Features</h2>
 Student attendance monitoring
 Student payment tracking
 Parent-Teacher Conference (PTC) scheduling
@@ -21,7 +19,7 @@ PTC booking and scheduling
 Role-based access
 Data management and record tracking
 
-🎯 Problem
+<h3>🎯 Problem</h3>
 
 Kumon Ortigas-Cainta previously relied on manual processes for managing several student-related activities.
 
@@ -36,14 +34,15 @@ Difficulty monitoring required Parent-Teacher Conferences
 Limited centralization of student information
 Repetitive administrative work
 
-💡 Solution
+<h3>💡 Solution</h3>
+<br>
 This project provides a centralized web-based system where authorized users can manage student information, attendance, payments, and PTC schedules in one application.
 
 Instead of maintaining separate manual records, the system stores the information in a MySQL database and provides interfaces for administrators, teachers, and students.
 
-User Roles
-Administrator
-
+<h3>User Roles</h3> 
+<br>
+<h2>Administrator</h2>
 Administrators can:
 Manage student and user accounts
 Record and monitor student payments
@@ -53,7 +52,7 @@ Monitor attendance and PTC-related records
 Manage system records
 Teacher
 
-Teachers can:
+<h2>Teachers can:</h2>
 View assigned classes
 View students
 Record student attendance
@@ -61,27 +60,27 @@ Manage PTC schedules
 View relevant student information
 Student
 
-Students can:
+<h2>Students can:</h2>
 View attendance information
 View payment history
 View payment status
 View schedules
 View PTC schedules and bookings
 
-🛠️ Tech Stack
-#Frontend
+<h3>🛠️ Tech Stack</h3>
+<h2>Frontend</h2>
 HTML5, CSS3, JavaScript
 
-#Backend
+<h2>Backend</h2>
 PHP, Database, MySQL, phpMyAdmin
 
-#Development Environment
+<h2>Development Environment</h2>
 XAMPP, Apache, Visual Studio Code
 
-#Version Control
+<h2>Version Control</h2>
 Git and GitHub
 
-#Deployment
+<h2>Deployment</h2>
 InfinityFree
 
 Author: Luke Reyes
