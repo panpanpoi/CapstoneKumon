@@ -1,88 +1,114 @@
-<h1>Capstone Title: Web-Based Student Management System for Kumon Ortigas-Cainta</h1>
-A web-based student management system developed for Kumon Ortigas-Cainta to help manage student attendance, payment records, and Parent-Teacher Conference (PTC) scheduling.
+# Web-Based Student Management System for Kumon Ortigas-Cainta
 
-<h3>📌 Project Overview</h3>
+A web-based student management system developed for **Kumon Ortigas-Cainta** to help manage student attendance, payment records, and Parent-Teacher Conference (PTC) scheduling.
 
-The system was developed as a capstone project to improve the management of student-related records and reduce the reliance on manual processes.
+---
 
-The system provides separate functionality for administrators, teachers, and students, allowing each user type to access the features relevant to their responsibilities.
+## 📌 Project Overview
 
-<h2>Main Features</h2>
-Student attendance monitoring
-Student payment tracking
-Parent-Teacher Conference (PTC) scheduling
-Student and account management
-Teacher class and student management
-Payment history and records
-Student schedule viewing
-PTC booking and scheduling
-Role-based access
-Data management and record tracking
+This system was developed as a **capstone project** to improve the management of student-related records and reduce the reliance on manual processes.
 
-<h3>🎯 Problem</h3>
+The system provides separate functionalities for **Administrators, Teachers, and Students**, allowing each user role to access the features relevant to their responsibilities.
 
-Kumon Ortigas-Cainta previously relied on manual processes for managing several student-related activities.
+---
 
-Payment records were maintained using spreadsheets, while monitoring student attendance and Parent-Teacher Conferences required manually checking and updating records.
+## ✨ Main Features
 
-This created several challenges:
+- **Student Attendance Monitoring**
+- **Student Payment Tracking**
+- **Parent-Teacher Conference (PTC) Scheduling**
+- **Student and Account Management**
+- **Teacher Class and Student Management**
+- **Payment History and Records**
+- **Student Schedule Viewing**
+- **PTC Booking and Scheduling**
+- **Role-Based Access**
+- **Centralized Data Management and Record Tracking**
 
-Difficulties tracking student payment status
-Time-consuming manual record checking
-Increased possibility of inconsistent or outdated records
-Difficulty monitoring required Parent-Teacher Conferences
-Limited centralization of student information
-Repetitive administrative work
+---
 
-<h3>💡 Solution</h3>
-<br>
-This project provides a centralized web-based system where authorized users can manage student information, attendance, payments, and PTC schedules in one application.
+## 🎯 Problem
 
-Instead of maintaining separate manual records, the system stores the information in a MySQL database and provides interfaces for administrators, teachers, and students.
+Kumon Ortigas-Cainta previously relied on manual processes to manage several student-related activities.
 
-<h3>User Roles</h3> 
-<br>
-<h2>Administrator</h2>
+Payment records were maintained using spreadsheets, while student attendance and Parent-Teacher Conferences required manual checking and updating of records.
+
+This resulted in several challenges:
+
+- Difficulty tracking student payment status
+- Time-consuming manual record checking
+- Increased possibility of inconsistent or outdated records
+- Difficulty monitoring required Parent-Teacher Conferences
+- Limited centralization of student information
+- Repetitive administrative tasks
+
+---
+
+## 💡 Solution
+
+The project provides a **centralized web-based system** where authorized users can manage student information, attendance, payments, and PTC schedules in one application.
+
+Instead of maintaining separate manual records, the system stores information in a **MySQL database** and provides dedicated interfaces for Administrators, Teachers, and Students.
+
+---
+
+## 👥 User Roles
+
+### 👨‍💼 Administrator
+
 Administrators can:
-Manage student and user accounts
-Record and monitor student payments
-Verify payment records
-Manage student information
-Monitor attendance and PTC-related records
-Manage system records
-Teacher
 
-<h2>Teachers can:</h2>
-View assigned classes
-View students
-Record student attendance
-Manage PTC schedules
-View relevant student information
-Student
+- Manage student and user accounts
+- Record and monitor student payments
+- Verify payment records
+- Manage student information
+- Monitor attendance records
+- Monitor PTC-related records
+- Manage system records
 
-<h2>Students can:</h2>
-View attendance information
-View payment history
-View payment status
-View schedules
-View PTC schedules and bookings
+### 👨‍🏫 Teacher
 
-<h3>🛠️ Tech Stack</h3>
-<h2>Frontend</h2>
-HTML5, CSS3, JavaScript
+Teachers can:
 
-<h2>Backend</h2>
-PHP, Database, MySQL, phpMyAdmin
+- View assigned classes
+- View students
+- Record student attendance
+- Manage PTC schedules
+- View relevant student information
 
-<h2>Development Environment</h2>
-XAMPP, Apache, Visual Studio Code
+### 👨‍🎓 Student
 
-<h2>Version Control</h2>
-Git and GitHub
+Students can:
 
-<h2>Deployment</h2>
-InfinityFree
+- View attendance information
+- View payment history
+- View payment status
+- View class schedules
+- View PTC schedules and bookings
 
-Author: Luke Reyes
-<br>
-External Advisor: Karl Edward S. Gonzales
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| **Frontend** | HTML5, CSS3, JavaScript |
+| **Backend** | PHP |
+| **Database** | MySQL, phpMyAdmin |
+| **Development Environment** | XAMPP, Apache |
+| **Code Editor** | Visual Studio Code |
+| **Version Control** | Git, GitHub |
+| **Deployment** | InfinityFree |
+
+---
+
+## 📂 Project Structure
+
+```text
+CapstoneKumon/
+│
+├── pages/
+├── handler/
+├── styles/
+├── scr/
+└── README.md
